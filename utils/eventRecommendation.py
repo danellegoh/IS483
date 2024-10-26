@@ -197,4 +197,7 @@ def get_eligible_events(user_id):
     # Return the list of eligible event IDs
     return jsonify({"code": 200, "data": eligible_event_ids}), 200
 
+if __name__ == '__main__':
+    app.run(port=5042, debug=True)
+
 
