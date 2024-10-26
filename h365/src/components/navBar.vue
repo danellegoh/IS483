@@ -58,6 +58,7 @@ export default {
 <style scoped>
 ul {
     padding-left: 0px;
+    margin: 0px;
 }
 
 .navbar {
@@ -69,7 +70,7 @@ ul {
 
     position: fixed;
     bottom: 0;
-    z-index: 50000;
+    z-index: 10;
 }
 
 .nav-link {

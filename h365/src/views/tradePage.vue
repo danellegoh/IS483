@@ -69,10 +69,11 @@
         />
 
     </div>
-
-    <div class="bookNowContainer">
-        <button class="bookButton"> New Trade Request </button>
-    </div>
+    <router-link :to="{ name: 'newTradePage'}">
+        <div class="bookNowContainer">
+            <button class="bookButton"> New Trade Request </button>
+        </div>
+    </router-link>
 
 </template>
 

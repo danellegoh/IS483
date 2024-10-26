@@ -25,7 +25,8 @@ const routes = [
     {
       path: "/home",
       name: "homePage",
-      component: () => import("@/views/homePage.vue")
+      component: () => import("@/views/homePage.vue"),
+      // meta: { hideNavBar: true }
     },
 
     {
@@ -84,9 +85,17 @@ const routes = [
     },
 
     {
+      path: "/newTrade",
+      name: "newTradePage",
+      component: () => import("@/views/newTradePage.vue"),
+      meta: { hideNavBar: true }
+    },
+
+    {
       path: "/test",
       name: "testTest",
-      component: () => import("@/components/testTest.vue")
+      component: () => import("@/components/testTest2.vue"),
+      meta: { hideNavBar: true }
     },
 
     {

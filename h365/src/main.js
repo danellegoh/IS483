@@ -5,7 +5,8 @@ import axios from 'axios';
 import store from './store';
 import './assets/styling/general.css';
 
-import { create, NTabs, NTab, NTabPane, NProgress, NSpace } from 'naive-ui'
+import { create, NTabs, NTab, NTabPane, NProgress, NSpace, NSteps, NStep, 
+    NButtonGroup, NButton, NRadioGroup, NRadioButton } from 'naive-ui'
 
 const naive = create({
     components: [
@@ -13,7 +14,13 @@ const naive = create({
         NTab,
         NTabPane,
         NProgress,
-        NSpace
+        NSpace,
+        NSteps,
+        NStep,
+        NButtonGroup,
+        NButton,
+        NRadioGroup,
+        NRadioButton
     ]
 })
 
