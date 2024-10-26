@@ -8,7 +8,7 @@
 
     <div class="pagePad">
         <n-space vertical class="trade-request-container">
-            <n-steps :current="currentStep" :status="currentStatus">
+            <n-steps :current="stepState.currentStep" :status="stepState.currentStatus">
                 <n-step title="Select Trade" />
                 <n-step title="Select Yours" />
                 <n-step title="Confirmation" />
@@ -28,25 +28,22 @@
     </div>
 
         <div class="step-content">
-            <div v-if="currentStep == 1">
-                <selectTrade @card-selected="handleCardWant" @next="nextStep"/>
+            <div v-if="stepState.currentStep === 1">
+                <selectTrade @card-selected="handleCardWant" @next="nextStep" />
             </div>
 
-            <div v-if="currentStep == 2">
-                <selectYours @card-selected="handleCardGive" @back="previousStep" @next="nextStep"/>
+            <div v-if="stepState.currentStep === 2">
+                <selectYours @card-selected="handleCardGive" @back="previousStep" @next="nextStep" />
             </div>
 
-            <div v-if="currentStep == 3">
-                <!-- <p>Requested Card: {{ cardWantTitle }}</p>
-                <p>Card to Give: {{ cardGiveTitle }}</p> -->
-
+            <div v-if="stepState.currentStep === 3">
+                
                 <div class="pagePad">
                     <div class="overall-card drop-shadow">
                         <div class="offer">
                             <div class="card">
                                 <p class="head">Offering Up</p>
                                 <img :src="getImageSrc(cardGiveSet, cardGiveTitle)">
-                                <!-- <img :src="getCardImage(selectedTradeCard.title, selectedTradeCard.type)" /> -->
                                 <p class="cardName">{{ cardGiveTitle }}</p>
                                 <p class="cardSet">{{ cardGiveSet }}</p>
                             </div>
@@ -58,7 +55,6 @@
                             <div class="card">
                                 <p class="head">Requesting For</p>
                                 <img :src="getImageSrc(cardWantSet, cardWantTitle)">
-                                <!-- <img :src="getCardImage(selectedYourCard.title, selectedYourCard.type)" /> -->
                                 <p class="cardName">{{ cardWantTitle }}</p>
                                 <p class="cardSet">{{ cardWantSet }}</p>
                             </div>
@@ -71,20 +67,17 @@
                     <button @click="back" class="backButton"> Back </button>
                     <button @click="next" class="nextButton"> Confirm </button>
                 </div>
-                <!-- {{ cardWant.card_id }}
-                {{ cardGive.card_id }} -->
-                <!-- <tradeConfirmation @back="previousStep" @confirm="confirmTrade"/> -->
 
             </div>
+
         </div>
 
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
-
-import selectTrade from '../components/selectTrade.vue'
-import selectYours from '../components/selectYours.vue'
+import { defineComponent, reactive } from "vue";
+import selectTrade from '../components/selectTrade.vue';
+import selectYours from '../components/selectYours.vue';
 
 export default defineComponent({
     components: {
@@ -103,129 +96,121 @@ export default defineComponent({
             cardGiveTitle: '',
             cardWantSet: '',
             cardGiveSet: '',
-        }
-    },
-
-    setup() {
-        const currentRef = ref(1);
-        console.log(currentRef)
-        return {
-            currentStatus: ref("process"),
-            currentStep: currentRef,
-            next() {
-                if (currentRef.value === null)
-                currentRef.value = 1;
-                else if (currentRef.value >= 4)
-                currentRef.value = null;
-                else currentRef.value++;
-            },
-            prev() {
-                if (currentRef.value === 0)
-                currentRef.value = null;
-                else if (currentRef.value === null)
-                currentRef.value = 4;
-                else currentRef.value--;
-            }
         };
     },
 
-  methods: {
-    goBack() {
-        this.$router.go(-1);
+    setup() {
+        const stepState = reactive({
+            currentStep: 1,
+            currentStatus: "process"
+        });
+
+        function next() {
+            if (stepState.currentStep < 3) {
+                stepState.currentStep++;
+            }
+        }
+
+        function prev() {
+            if (stepState.currentStep > 1) {
+                stepState.currentStep--;
+            }
+        }
+
+        return {
+            stepState,
+            next,
+            prev
+        };
     },
-    
-    searchCards() {
-        this.searchResults = {};
 
-        if (this.searchInput) {
-            var lowerCaseInput = this.searchInput.toLowerCase();
+    methods: {
+        goBack() {
+            this.$router.go(-1);
+        },
 
-            for (let type in this.allCards) {
-                console.log(type);
-                if (type.toLowerCase().includes(lowerCaseInput)) {
-                    this.searchResults[type] = this.allCards[type];
-                } else {
-                    // console.log(this.allCards[type]);
-                    var card_set = this.allCards[type];
-                    // console.log("card set check", card_set);
-                    for (let i = 0; i < card_set.length; i++) {
-                        let card = card_set[i];
-                        console.log("card", card);
-                        if (card.title.toLowerCase().includes(lowerCaseInput)) {
-                            console.log("title check pass", card.title);
-                            if (!this.searchResults[type]) {
-                                this.searchResults[type] = [];
+        searchCards() {
+            this.searchResults = {};
+
+            if (this.searchInput) {
+                const lowerCaseInput = this.searchInput.toLowerCase();
+                for (let type in this.allCards) {
+                    if (type.toLowerCase().includes(lowerCaseInput)) {
+                        this.searchResults[type] = this.allCards[type];
+                    } else {
+                        const card_set = this.allCards[type];
+                        for (let card of card_set) {
+                            if (card.title.toLowerCase().includes(lowerCaseInput)) {
+                                if (!this.searchResults[type]) {
+                                    this.searchResults[type] = [];
+                                }
+                                this.searchResults[type].push(card);
                             }
-                            this.searchResults[type].push(card);
                         }
                     }
                 }
             }
+        },
 
-            console.log("search results check", this.searchResults);
-            
-        } else {
-            this.searchResults = {};
-        }
-    },
+        handleCardWant(card) {
+            this.cardWant = card;
+            this.cardWantTitle = card.title;
+            this.cardWantSet = card.card_type;
+        },
 
-    nextStep() {
-        if (this.currentStep < this.steps.length ) {
-            if (this.currentStep == 2) {
-                this.fetchCardTitles();
+        handleCardGive(card) {
+            this.cardGive = card;
+            this.cardGiveTitle = card.title;
+            this.cardGiveSet = card.card_type;
+        },
+
+        nextStep() {
+            if (this.stepState.currentStep < 3) {
+                this.stepState.currentStep++;
             }
-            this.currentStep++;
-        }
-    },
+        },
 
-    previousStep() {
-        if (this.currentStep > 0) {
-            this.currentStep--;
-        }
-    },
-
-    handleCardWant(card) {
-        console.log("haha want", card);
-        this.cardWant = card;
-    },
-
-    handleCardGive(card) {
-        console.log("haha give", card);
-        this.cardGive = card;
-    },
-
-    async fetchCardTitles() {
-        if (this.cardWant && this.cardGive) {
-            try {
-                // console.log("want", this.cardWant.card_id);
-                // console.log("give", this.cardGive.card_id);
-
-                const wantResponse = await this.$http.get(`http://127.0.0.1:5003/card/${this.cardWant.card_id}`);
-                const giveResponse = await this.$http.get(`http://127.0.0.1:5003/card/${this.cardGive.card_id}`);
-                // console.log(wantResponse);
-                
-                this.cardWantTitle = wantResponse.data.data.title;
-                this.cardGiveTitle = giveResponse.data.data.title;
-                this.cardWantSet = wantResponse.data.data.card_type;
-                this.cardGiveSet = giveResponse.data.data.card_type;
-            } catch (error) {
-                console.error("Error fetching card titles:", error);
+        previousStep() {
+            if (this.stepState.currentStep > 1) {
+                this.stepState.currentStep--;
             }
-        }
-    },
+        },
 
-    getImageSrc(set, title) {
-        // console.log("Image source path:", srcPath);
-        return require(`@/assets/icons/collection/${set.toLowerCase().replace(/\s+/g, "_")}/${title.toLowerCase()}.png`);
-    },
+        confirmTrade() {
+            if (this.cardWant && this.cardGive) {
+                console.log("Confirming trade:", this.cardWant, this.cardGive);
+                alert("Trade confirmed!");
+            } else {
+                alert("Error: Cards are missing!");
+            }
+        },
+    
+        async fetchCardTitles() {
+            if (this.cardWant && this.cardGive) {
+                try {
+                    const wantResponse = await this.$http.get(`http://127.0.0.1:5003/card/${this.cardWant.card_id}`);
+                    const giveResponse = await this.$http.get(`http://127.0.0.1:5003/card/${this.cardGive.card_id}`);
 
+                    this.cardWantTitle = wantResponse.data.data.title;
+                    this.cardGiveTitle = giveResponse.data.data.title;
+                    this.cardWantSet = wantResponse.data.data.card_type;
+                    this.cardGiveSet = giveResponse.data.data.card_type;
+                } catch (error) {
+                    console.error("Error fetching card titles:", error);
+                }
+            }
+        },
+
+        getImageSrc(set, title) {
+            return require(`@/assets/icons/collection/${set.toLowerCase().replace(/\s+/g, "_")}/${title.toLowerCase()}.png`);
+        },
     },
 
     computed: {
         filteredCardsData() {
             return Object.keys(this.searchResults).length > 0 && this.searchInput
-            ? this.searchResults
-            : this.allCards;
+                ? this.searchResults
+                : this.allCards;
         }
     }
 });

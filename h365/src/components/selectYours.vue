@@ -85,7 +85,7 @@ export default {
 
         selectCard(card) {
             this.selectedCard = card;
-            // this.$emit('cardSelected', card);
+            this.$emit('cardSelected', card);
         },
 
         back() {
