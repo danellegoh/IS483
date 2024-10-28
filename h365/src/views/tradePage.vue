@@ -56,25 +56,27 @@
             </div>
         </div>
 
-        <Popup
-            v-if="isPopupVisible"
-            :visible="isPopupVisible"
-            :type="popupType"
-            :tradeCardName="tradeCardName"
-            :receiveCardName="receiveCardName"
-            :tradeWith="tradeWith"
-            :tradeId="selectedTradeId"
-            :errorMessage="errorMessage"
-            @close="closePopup"
-            @confirm="acceptTrade"
-        />
-
     </div>
-    <router-link :to="{ name: 'newTradePage'}">
+    <!-- <router-link :to="{ name: 'newTradePage'}"> -->
         <div class="bookNowContainer">
-            <button class="bookButton"> New Trade Request </button>
+            <button class="bookButton" @click="checkTradeRequest"> 
+            New Trade Request </button>
         </div>
-    </router-link>
+    <!-- </router-link> -->
+
+    <Popup
+        v-if="isPopupVisible"
+        :visible="isPopupVisible"
+        :type="popupType"
+        :tradeCardName="tradeCardName"
+        :receiveCardName="receiveCardName"
+        :tradeWith="tradeWith"
+        :tradeId="selectedTradeId"
+        :errorMessage="errorMessage"
+        :errorContent="popupContent"
+        @close="closePopup"
+        @confirm="acceptTrade"
+    />
 
 </template>
 
@@ -113,9 +115,9 @@ export default {
     data() {
         return {
             isPopupVisible: false,
-            tradeCardName: 'Card A',  // Example data
-            receiveCardName: 'Card B',  // Example data
-            tradeWith: 'User123',  // Example data
+            tradeCardName: '',
+            receiveCardName: '',
+            tradeWith: '',
             selectedTradeId: '',
             trades: [],
             searchInput: '',
@@ -125,7 +127,9 @@ export default {
             errorFound: false,
             selectedTradeData: null,
             userCards: null,
-            userActiveTrade: null
+            userActiveTrade: null,
+            popupType: '',
+            popupContent: ''
         };
     },
     methods: {
@@ -302,6 +306,30 @@ export default {
                 console.log("Error in processing trade:" + error);
             }
 
+        },
+
+        async checkTradeRequest() {
+            try {
+                const response = await fetch(`http://localhost:5013/trade/user/${this.userId}`, {
+                    method: 'GET',
+                });
+                const result = await response.json();
+
+                if (response.ok && result.code == 200) {
+                    this.showGeneralPopup("You have already put in a trade in the last 24 hours.");
+                } else {
+                    this.$router.push({ name: 'newTradePage' });
+                }
+            } catch (error) {
+                console.error("Error checking trade request:", error);
+                alert("An error occurred while checking trade request. Please try again.");
+            }
+        },
+
+        showGeneralPopup(content) {
+            this.popupContent = content;
+            this.popupType = 'general';
+            this.isPopupVisible = true;
         }
     },
     mounted() {

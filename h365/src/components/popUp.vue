@@ -110,93 +110,107 @@
             </button>
         </div>
 
+
+        <!-- general error pop up -->
+        <div>
+            <p class="head"> Oops! </p>
+            <p class="cbody" style="padding: 0;"> You have already put in a trade in the last 24 hours. </p>
+            <div class="coolButton">
+                <button style="background-color: var(--blue);" @click="closePopup"> Close </button>
+            </div>
+        </div>
       </div>
     </div>
 </template>
 
 <script>
 export default {
-props: {
-    visible: {
-        type: Boolean,
-        default: false
+    props: {
+        visible: {
+            type: Boolean,
+            default: false
+        },
+        type: {
+            type: String,  // 'unlock', 'trade', 'info' or 'event-code'
+            default: ''
+        },
+        cardName: {
+            type: String,
+            default: ''
+        },
+        cardId: {
+            type: [String, Number],
+            default: ''
+        },
+        cardPrice: {
+            type: Number, // Used for unlock popup
+            default: 0
+        },
+        tradeCardName: {
+            type: String, // Used for trade popup (card to trade)
+            default: ''
+        },
+        receiveCardName: {
+            type: String, // Used for trade popup (card to receive)
+            default: ''
+        },
+        tradeWith: {
+            type: String, // Used for trade popup (person trading with)
+            default: ''
+        },
+        cardImage: {
+            type: String, // Used for info popup
+            default: ''
+        },
+        cardSet: {
+            type: String, // Used for info popup
+            default: ''
+        },
+        cardDescription: {
+            type: String, // Used for info popup
+            default: ''
+        },
+        cardRecommendation: {
+            type: String, // Used for info popup
+            default: ''
+        },
+        eventName: {
+            type: String,
+            default: ''
+        },
+        errorMessage: { 
+            type: String, 
+            default: '' 
+        },
+        tradeId: {
+            type: [String, Number], 
+            default: ''
+        },
+        errorContent: {
+            type: String,
+            default: ''
+        }
     },
-    type: {
-        type: String,  // 'unlock', 'trade', 'info' or 'event-code'
-        default: ''
+    data() {
+        return {
+        userEntryCode: ''  // This is where the user's event code will be stored
+        };
     },
-    cardName: {
-        type: String,
-        default: ''
-    },
-    cardId: {
-        type: [String, Number],
-        default: ''
-    },
-    cardPrice: {
-        type: Number, // Used for unlock popup
-        default: 0
-    },
-    tradeCardName: {
-        type: String, // Used for trade popup (card to trade)
-        default: ''
-    },
-    receiveCardName: {
-        type: String, // Used for trade popup (card to receive)
-        default: ''
-    },
-    tradeWith: {
-        type: String, // Used for trade popup (person trading with)
-        default: ''
-    },
-    cardImage: {
-        type: String, // Used for info popup
-        default: ''
-    },
-    cardSet: {
-        type: String, // Used for info popup
-        default: ''
-    },
-    cardDescription: {
-        type: String, // Used for info popup
-        default: ''
-    },
-    cardRecommendation: {
-        type: String, // Used for info popup
-        default: ''
-    },
-    eventName: {
-        type: String,
-        default: ''
-    },
-    errorMessage: { 
-        type: String, default: '' 
-    },
-    tradeId: {
-        type: [String, Number], 
-        default: ''
+    methods: {
+        closePopup() {
+            this.$emit('close');
+        },
+        confirmTrade() {
+            this.$emit('confirm', this.tradeId);
+        },
+        submitEventCode() {
+            // Emit the event code input by the user to the parent
+            this.$emit('validate-code', this.userEntryCode);
+        },
+        confirmUnlock() {
+            this.$emit('unlock-card', this.cardId);
+        }
     }
-},
-data() {
-    return {
-      userEntryCode: ''  // This is where the user's event code will be stored
-    };
-},
-methods: {
-    closePopup() {
-        this.$emit('close');
-    },
-    confirmTrade() {
-        this.$emit('confirm', this.tradeId);
-    },
-    submitEventCode() {
-        // Emit the event code input by the user to the parent
-        this.$emit('validate-code', this.userEntryCode);
-    },
-    confirmUnlock() {
-        this.$emit('unlock-card', this.cardId);
-    }
-}
 }
 </script>
 
@@ -219,7 +233,8 @@ methods: {
     padding: 20px;
     border-radius: 8px;
     width: 300px;
-    text-align: center;
+    /* text-align: center; */
+    text-align: justify;
 }
 
 .popupClose {
@@ -328,10 +343,6 @@ button {
 .coolButton {
     display: flex;
     justify-content: center;
-}
-
-.popupContent {
-    text-align: justify;
 }
 
 .code {
