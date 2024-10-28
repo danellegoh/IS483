@@ -180,12 +180,11 @@ export default defineComponent({
             if (this.cardWant && this.cardGive) {
                 try {
                     const tradeData = {
-                        user_id: this.$store.state.userId,  // Ensure Vuex state holds the user ID
+                        user_id: this.$store.state.userId,
                         card_one_id: this.cardGive.card_id,
                         card_two_id: this.cardWant.card_id
                     };
 
-                    // Make the API call
                     const response = await fetch("http://127.0.0.1:5014/create_trade", {
                         method: "POST",
                         headers: {
@@ -194,19 +193,16 @@ export default defineComponent({
                         body: JSON.stringify(tradeData)
                     });
 
-                    // Check if the response is successful
                     if (response.ok) {
                         const result = await response.json();
 
                         console.log("Trade created successfully: ", result);
 
-                        // Redirect to myTradesPage
                         this.$router.push({ 
                             name: "myTradesPage", 
                             params: { trade: result.data || {} }
                         });
                     } else {
-                        // Log and show any errors
                         const error = await response.json();
                         console.error("Error creating trade:", error);
                         alert(`Error: ${error.message || "Failed to create trade."}`);

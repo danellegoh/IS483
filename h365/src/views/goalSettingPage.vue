@@ -57,7 +57,7 @@
                             <input type="radio" v-model="selectedIntensity" value="1" />
                             1
                         </label>
-                        <p> Low </p>
+                        <p> Very Light </p>
                     </div>
 
                     <div class="selection">
@@ -65,7 +65,7 @@
                             <input type="radio" v-model="selectedIntensity" value="2" />
                             2
                         </label>
-                        <p> Moderate </p>
+                        <p> Light </p>
                     </div>
 
                     <div class="selection">
@@ -73,25 +73,53 @@
                             <input type="radio" v-model="selectedIntensity" value="3" />
                             3
                         </label>
+                        <p> Moderate </p>
+                    </div>
+
+                    <div class="selection">
+                        <label class="radio-button" :class="{ selected: selectedIntensity === '4' }">
+                            <input type="radio" v-model="selectedIntensity" value="4" />
+                            4
+                        </label>
                         <p> High </p>
+                    </div>
+
+                    <div class="selection">
+                        <label class="radio-button" :class="{ selected: selectedIntensity === '5' }">
+                            <input type="radio" v-model="selectedIntensity" value="5" />
+                            5
+                        </label>
+                        <p> Vigorous </p>
                     </div>
                 </div>
 
                 <div class="info">
-                    <p>
-                        <span> Light: </span>
-                        Gentle activities eg. walking, yoga
-                    </p>
+                    <table>
+                        <tr>
+                            <td class="header"><span> Very Light </span></td>
+                            <td> Minimal effort activities, eg. slow walking, stretching, or light household tasks. </td>
+                        </tr>
 
-                    <p>
-                        <span> Moderate: </span>
-                        Activities that increase heart rate, eg. cycling swimming
-                    </p>
+                        <tr>
+                            <td class="header"><span> Light </span></td>
+                            <td> Low-intensity activities that require some effort, eg. brisk walking, yoga, or casual cycling. </td>
+                        </tr>
 
-                    <p>
-                        <span> High: </span>
-                        Intense activities eg. running, HIIT workouts
-                    </p>
+                        <tr>
+                            <td class="header"><span> Moderate </span></td>
+                            <td> Activities that elevate heart rate and breathing, eg. swimming, dancing, or leisurely jogging. </td>
+                        </tr>
+
+                        <tr>
+                            <td class="header"><span> High </span></td>
+                            <td> Challenging activities that demand substantial effort, eg. running, strength training, or spin classes. </td>
+                        </tr>
+
+                        <tr>
+                            <td class="header"><span> Vigorous </span></td>
+                            <td> Very intense activities that push physical limits, eg. sprinting, HIIT sessions, or competitive sports. </td>
+                        </tr>
+                    </table>
                 </div>
 
             </div>
@@ -273,7 +301,8 @@ input {
 .radio-buttons {
     display: flex;
     gap: 10px;
-    font-size: 13px;
+    font-size: 10px;
+    justify-content: center;
 }
 
 .radio-button {
@@ -283,7 +312,6 @@ input {
     border-radius: 6px;
     cursor: pointer;
     text-align: center;
-    width: 100px;
     transition: background-color 0.3s, border-color 0.3s;
     margin-bottom: 5px;
 }
@@ -317,6 +345,21 @@ input {
     color: var(--red);
     font-size: 12px;
     margin-top: 5px;
+}
+
+table {
+    border-radius: 6px;
+    border: 1px solid #E9E9E7;
+    margin-top: 10px;
+}
+
+td {
+    padding: 5px;
+}
+
+.header {
+    background-color: #efeeed;
+    line-height: 10px;
 }
 
 </style>
