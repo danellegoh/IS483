@@ -316,7 +316,7 @@ export default {
                 const result = await response.json();
 
                 if (response.ok && result.code == 200) {
-                    this.showGeneralPopup("You have already put in a trade in the last 24 hours.");
+                    this.showGeneralPopup("A trade request has already been submitted within the last 24 hours.");
                 } else {
                     this.$router.push({ name: 'newTradePage' });
                 }

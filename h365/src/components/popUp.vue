@@ -112,9 +112,9 @@
 
 
         <!-- general error pop up -->
-        <div>
+        <div v-if="type === 'general'">
             <p class="head"> Oops! </p>
-            <p class="cbody" style="padding: 0;"> You have already put in a trade in the last 24 hours. </p>
+            <p class="cbody" style="padding: 0;"> {{ errorContent }} </p>
             <div class="coolButton">
                 <button style="background-color: var(--blue);" @click="closePopup"> Close </button>
             </div>
@@ -307,8 +307,9 @@ export default {
     font-size: 14px;
     color: var(--default-text);
     padding: 0 8px;
-    line-height: 15px;
+    line-height: 18px;
     text-align: justify;
+    margin-top: 5px;
 }
 
 .body {
