@@ -73,7 +73,7 @@ def create_goal():
         try:
             db.session.add(new_goal)
             db.session.commit()
-            return jsonify(new_goal.json()), 200
+            return jsonify({"code": 200, "data":new_goal.json()}), 200
         except Exception as e:
             db.session.rollback()
             print(str(e))
@@ -114,6 +114,29 @@ def update_goal(goal_id):
             return jsonify({"error": str(e)}), 400
         
     return jsonify({"error": "Goal not found"}), 404
+
+# Update partial fields of goal by ID
+@app.route('/goal/<int:goal_id>', methods=['PATCH'])
+def partial_update_goal(goal_id):
+    goal = Goal.query.get(goal_id)
+    if goal:
+        data = request.json
+
+        if 'goal_description' in data:
+            goal.goal_description = data['goal_description']
+        if 'tier' in data:
+            goal.tier = data['tier']
+        if 'target' in data:
+            goal.target = data['target']
+        
+        try:
+            db.session.commit()
+            return jsonify({"code": 200, "data": goal.json()}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"code": 400, "error": str(e)}), 400
+    
+    return jsonify({"code": 404, "error": "Goal not found"}), 404
 
 # Delete a goal by ID
 @app.route('/goal/<int:goal_id>', methods=['DELETE'])

@@ -187,6 +187,8 @@ export default {
     data() {
         return {
             streakCount: 1,
+            weekStarted: 0,
+            weekCurrent: 0,
 
             currentWeekly: 0,
             goalWeekly: 0,
@@ -325,6 +327,8 @@ export default {
 
                 // console.log(response.data.data.streak_count)
                 this.streakCount = response.data.data.streak_count;
+                this.weekStarted = response.data.data.week_started;
+                this.weekCurrent = response.data.data.week_current;
 
                 this.currentWeekly = response.data.data.weekly_time_lapse;
                 this.goalWeekly = goalData[0].target;

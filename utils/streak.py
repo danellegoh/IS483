@@ -20,8 +20,7 @@ class Streak(db.Model):
     week_current = db.Column(db.Integer, nullable=False)
     streak_count = db.Column(db.Integer, nullable=False, default=0)
 
-    def __init__(self, streak_id, goal_id, week_started, week_current, streak_count=1):
-        self.streak_id = streak_id
+    def __init__(self, goal_id, week_started, week_current, streak_count=1):
         self.goal_id = goal_id
         self.week_started = week_started
         self.week_current = week_current
@@ -42,8 +41,8 @@ def create_streak():
     data = request.json
     new_streak = Streak(
         goal_id=data.get('goal_id'),
-        week_started=data.get('week_started'),
-        week_current=data.get('week_current', None),
+        week_started=data.get('week_started', datetime.date(datetime.now()).isocalendar()[1]),
+        week_current=data.get('week_current', 0),
         streak_count=data.get('streak_count', 1)
     )
     try:

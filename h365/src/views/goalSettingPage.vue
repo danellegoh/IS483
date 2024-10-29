@@ -190,6 +190,12 @@ export default {
                     target: this.goal
                 })
                 console.log(goalResponse);
+                const goal_id = goalResponse.data.data.goal_id;
+
+                const streakResponse = await this.$http.post("http://127.0.0.1:5010/streak", {
+                    goal_id: goal_id,
+                })
+                console.log(streakResponse);
 
                 this.$router.push('/home');
             }
