@@ -1,6 +1,6 @@
 <template>
     <div class="pagePad">
-        <div v-for="(cards, cardType) in allCards" :key="cardType" class="set">
+        <div v-for="(cards, cardType) in availableCards" :key="cardType" class="set">
             <div class="set">
                 <p class="cardSet"> {{ cardType }} </p>
                 <div class="colDisplay">
@@ -28,6 +28,8 @@ export default {
     data() {
         return {
             allCards: {},
+            userCards: [],
+            availableCards: {},
             selectedCard: null,
         }
     },
@@ -47,10 +49,31 @@ export default {
                     return acc;
                 }, {});
                 this.allCards = groupedCards;
-
+                this.filterAvailableCards();
             } catch (error) {
                 console.error("Error fetching all cards:" + error);
             }
+        },
+
+        async fetchUserCards() {
+            try {
+                const userResponse = await this.$http.get(`http://127.0.0.1:5006/usercard/user/${this.$store.state.userId}`);
+                this.userCards = userResponse.data.data.cards;
+            } catch (error) {
+                console.error("Error fetching user cards:", error);
+            }
+        },
+
+        filterAvailableCards() {
+            const ownedCardIds = new Set(this.userCards.map(card => card.card_id));
+            const filteredCards = Object.entries(this.allCards).reduce((acc, [cardType, cards]) => {
+                const availableCards = cards.filter(card => !ownedCardIds.has(card.card_id));
+                if (availableCards.length) {
+                    acc[cardType] = availableCards;
+                }
+                return acc;
+            }, {});
+            this.availableCards = filteredCards;
         },
 
         getCardImage(card_title, card_set) {
@@ -88,8 +111,9 @@ export default {
         }
     },
 
-    mounted() {
-        this.fetchAllCards();
+    async mounted() {
+        await this.fetchUserCards();
+        await this.fetchAllCards();
     },
 }
 

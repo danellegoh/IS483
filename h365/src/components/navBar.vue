@@ -1,55 +1,65 @@
 <template>
-    <!-- <div id="app"> -->
-        <nav>
-            <ul>
-                <div class="navbar">
-                    <li class="nav-link">
-                        <router-link :to="{ name: 'homePage' }" active-class="active-link">
-                            <div class="nav-item">
-                                <img class="navIcon" :src="isActiveRoute('homePage') ? require('../assets/icons/navbar/home_selected.png') : require('../assets/icons/navbar/home.png')">
-                                <a href="./views/homePage.vue" :class="isActiveRoute('homePage') ? 'active-text' : 'inactive-text'">Home</a>
-                            </div>
-                            </router-link>
-                    </li>
+    <nav>
+        <ul>
+            <div class="navbar">
+                <li class="nav-link">
+                    <router-link :to="{ name: 'homePage' }" class="nav-item" exact-active-class="active-link">
+                        <img
+                            class="navIcon"
+                            :src="isActiveSection('home') 
+                                ? require('../assets/icons/navbar/home_selected.png') 
+                                : require('../assets/icons/navbar/home.png')"
+                        />
+                        <span :class="isActiveSection('home') ? 'active-text' : 'inactive-text'">Home</span>
+                    </router-link>
+                </li>
 
-                    <li class="nav-link">
-                        <router-link :to="{ name: 'eventsPage' }" active-class="active-link">
-                            <div class="nav-item">
-                                <img class="navIcon" :src="isActiveRoute('eventsPage') ? require('../assets/icons/navbar/explore_selected.png') : require('../assets/icons/navbar/explore.png')">
-                                <a href="./views/eventsPage.vue" :class="isActiveRoute('eventsPage') ? 'active-text' : 'inactive-text'">Explore</a>
-                            </div>
-                            </router-link>
-                    </li>
+                <li class="nav-link">
+                    <router-link :to="{ name: 'eventsPage' }" class="nav-item" exact-active-class="active-link">
+                        <img
+                            class="navIcon"
+                            :src="isActiveSection('events') 
+                                ? require('../assets/icons/navbar/explore_selected.png') 
+                                : require('../assets/icons/navbar/explore.png')"
+                        />
+                        <span :class="isActiveSection('events') ? 'active-text' : 'inactive-text'">Explore</span>
+                    </router-link>
+                </li>
 
-                    <li class="nav-link">
-                        <router-link :to="{ name: 'collectionPage' }" active-class="active-link">
-                            <div class="nav-item">
-                                <img class="navIcon" :src="isActiveRoute('collectionPage') ? require('../assets/icons/navbar/collection_selected.png') : require('../assets/icons/navbar/collection.png')">
-                                <a href="./views/collectionPage.vue" :class="isActiveRoute('collectionPage') ? 'active-text' : 'inactive-text'">Collection</a>
-                            </div>
-                            </router-link>
-                    </li>
+                <li class="nav-link">
+                    <router-link :to="{ name: 'collectionPage' }" class="nav-item" exact-active-class="active-link">
+                        <img
+                            class="navIcon"
+                            :src="isActiveSection('collection') 
+                                ? require('../assets/icons/navbar/collection_selected.png') 
+                                : require('../assets/icons/navbar/collection.png')"
+                        />
+                        <span :class="isActiveSection('collection') ? 'active-text' : 'inactive-text'">Collection</span>
+                    </router-link>
+                </li>
 
-                    <li class="nav-link">
-                        <router-link :to="{ name: 'profilePage' }" active-class="active-link">
-                            <div class="nav-item">
-                                <img class="navIcon" :src="isActiveRoute('profilePage') ? require('../assets/icons/navbar/profile_selected.png') : require('../assets/icons/navbar/profile.png')">
-                                <a href="./views/profilePage.vue" :class="isActiveRoute('profilePage') ? 'active-text' : 'inactive-text'">Profile</a>
-                            </div>
-                        </router-link>
-                    </li>
-
-                </div>
-            </ul>
-        </nav>
-    <!-- </div> -->
+                <li class="nav-link">
+                    <router-link :to="{ name: 'profilePage' }" class="nav-item" exact-active-class="active-link">
+                        <img
+                            class="navIcon"
+                            :src="isActiveSection('profile') 
+                                ? require('../assets/icons/navbar/profile_selected.png') 
+                                : require('../assets/icons/navbar/profile.png')"
+                        />
+                        <span :class="isActiveSection('profile') ? 'active-text' : 'inactive-text'">Profile</span>
+                    </router-link>
+                </li>
+            </div>
+        </ul>
+    </nav>
 </template>
 
 <script>
 export default {
   methods: {
-    isActiveRoute(routeName) {
-      return this.$route.name === routeName;
+    // This checks if the current route's meta section matches the given section name
+    isActiveSection(section) {
+      return this.$route.meta.section === section;
     }
   }
 };
@@ -57,8 +67,8 @@ export default {
 
 <style scoped>
 ul {
-    padding-left: 0px;
-    margin: 0px;
+    padding-left: 0;
+    margin: 0;
 }
 
 .navbar {
@@ -67,7 +77,6 @@ ul {
     background-color: var(--default-white);
     justify-content: space-between;
     width: 100%;
-
     position: fixed;
     bottom: 0;
     z-index: 10;
@@ -94,8 +103,7 @@ ul {
     width: 20px;
 }
 
-.nav-link a {
-    display: block;
+.nav-link span {
     font-family: text-semibold;
     font-size: 10.5px;
 }
@@ -107,5 +115,4 @@ ul {
 .inactive-text {
     color: var(--default-text);
 }
-
 </style>

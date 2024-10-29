@@ -64,13 +64,19 @@
             :tradeCardName="tradeCardName"
             :receiveCardName="receiveCardName"
             :tradeWith="tradeWith"
+            :errorContent="popupContent"
             @close="closePopup"
         />
 
     </div>
 
-    <div class="bookNowContainer">
+    <!-- <div class="bookNowContainer">
         <button class="bookButton"> New Trade Request </button>
+    </div> -->
+
+    <div class="bookNowContainer">
+        <button class="bookButton" @click="checkTradeRequest"> 
+        New Trade Request </button>
     </div>
 
 </template>
@@ -174,6 +180,30 @@ export default {
                         this.searchResults.push(trade);
                     }
                 }
+        },
+        
+        async checkTradeRequest() {
+            try {
+                const response = await fetch(`http://localhost:5013/trade/user/${this.userId}`, {
+                    method: 'GET',
+                });
+                const result = await response.json();
+
+                if (response.ok && result.code == 200) {
+                    this.showGeneralPopup("A trade request has already been submitted within the last 24 hours.");
+                } else {
+                    this.$router.push({ name: 'newTradePage' });
+                }
+            } catch (error) {
+                console.error("Error checking trade request:", error);
+                alert("An error occurred while checking trade request. Please try again.");
+            }
+        },
+
+        showGeneralPopup(content) {
+            this.popupContent = content;
+            this.popupType = 'general';
+            this.isPopupVisible = true;
         }
     },
     mounted() {

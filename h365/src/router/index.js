@@ -26,62 +26,70 @@ const routes = [
       path: "/home",
       name: "homePage",
       component: () => import("@/views/homePage.vue"),
-      // meta: { hideNavBar: true }
+      meta: { section: 'home' }
     },
 
     {
       path: "/report",
       name: "monthlyReport",
       component: () => import("@/views/monthlyReport.vue"),
-      props: true
+      props: true,
+      meta: { section: 'home' }
     },
 
     {
       path: "/events",
       name: "eventsPage",
-      component: () => import("@/views/eventsPage.vue")
+      component: () => import("@/views/eventsPage.vue"),
+      meta: { section: 'events' }
     },
 
     {
       path: "/booked",
       name: "bookedEventsPage",
-      component: () => import("@/views/bookedEventsPage.vue")
+      component: () => import("@/views/bookedEventsPage.vue"),
+      meta: { section: 'events' }
     },
 
     {
       path: "/event/:eventId",
       name: "viewEventPage",
-      component: () => import("@/views/viewEventPage.vue")
+      component: () => import("@/views/viewEventPage.vue"),
+      meta: { section: 'events' }
     },
 
     {
       path: "/collection",
       name: "collectionPage",
-      component: () => import("@/views/collectionPage.vue")
+      component: () => import("@/views/collectionPage.vue"),
+      meta: { section: 'collection' }
     },
 
-    {
-      path: "/popup",
-      name: "popup",
-      component: () => import("@/components/popUp.vue")
-    },
+    // {
+    //   path: "/popup",
+    //   name: "popup",
+    //   component: () => import("@/components/popUp.vue"),
+    // },
 
     {
       path: "/store",
       name: "storePage",
-      component: () => import("@/views/storePage.vue")
+      component: () => import("@/views/storePage.vue"),
+      meta: { section: 'collection' }
     },
 
     {
       path: "/trade",
       name: "tradePage",
-      component: () => import("@/views/tradePage.vue")
+      component: () => import("@/views/tradePage.vue"),
+      meta: { section: 'collection' }
     },
 
     {
       path: "/mytrades",
       name: "myTradesPage",
-      component: () => import("@/views/myTradesPage.vue")
+      component: () => import("@/views/myTradesPage.vue"),
+      meta: { section: 'collection' }
     },
 
     {
@@ -91,17 +99,18 @@ const routes = [
       meta: { hideNavBar: true }
     },
 
-    {
-      path: "/test",
-      name: "testTest",
-      component: () => import("@/components/testTest2.vue"),
-      meta: { hideNavBar: true }
-    },
+    // {
+    //   path: "/test",
+    //   name: "testTest",
+    //   component: () => import("@/components/testTest2.vue"),
+    //   meta: { hideNavBar: true }
+    // },
 
     {
       path: "/profile",
       name: "profilePage",
-      component: () => import("@/views/profilePage.vue")
+      component: () => import("@/views/profilePage.vue"),
+      meta: { section: 'profile' }
     },
 ]
 
