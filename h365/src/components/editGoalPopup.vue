@@ -1,40 +1,3 @@
-<!-- Info Popup -->
-<!-- <div class="card">
-    <div class="head">
-        <img src="../assets/icons/collection/lightbulb.png">
-        <p> Did you know </p>
-    </div>
-
-    <p class="cbody">
-        {{ cardDescription }}
-    </p>
-
-    <div class="head">
-        <img src="../assets/icons/collection/recommendation.png">
-        <p> Recommendation </p>
-    </div>
-
-    <p class="cbody">
-    {{ cardRecommendation }}
-    </p>
-
-    <div class="coolButton">
-        <button style="background-color: var(--blue);" @click="closePopup"> Cool! </button>
-    </div>
-</div> -->
-
-<!-- general popup -->
-<!-- <div>
-    <div class="card">
-        <p class="head"> Oops! </p>
-        <p class="cbody" style="padding: 0;"> You have already put in a trade in the last 24 hours. </p>
-        <div class="coolButton">
-            <button style="background-color: var(--blue);" @click="closePopup"> Close </button>
-        </div>
-    </div>
-</div> -->
-
-
 <template>
     <!-- edit goal popup -->
     <div>
@@ -156,7 +119,6 @@ button {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    /* padding: 10px; */
 }
 
 .head {

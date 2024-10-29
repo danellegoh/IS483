@@ -60,12 +60,12 @@
                                 <p> {{ card.points_required }} </p>
                             </div>
 
-                            <button 
+                            <button
                                 v-if="userCards.includes(card.card_id)"
                                 class="viewCardBtn" @click="openInfoPopup(card.card_id, card.description, card.recommendation)"> View 
                             </button>
 
-                            <button 
+                            <button
                                 v-else
                                 class="bookEventBtn" @click="openUnlockPopup(card.title, card.points_required, card.card_id)"> Unlock 
                             </button>

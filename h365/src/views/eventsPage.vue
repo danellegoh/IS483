@@ -48,7 +48,7 @@
                                 <div class="cardImage">
                                     <img src="../assets/icons/events/event1.png">
                                 </div>
-                                
+
                                 <div class="cardText">
 
                                     <!-- v-if few slots left -->
@@ -57,7 +57,7 @@
                                     </div>
 
                                     <!-- programme name -->
-                                    <p class="programmeName" v-if="event.event_program != 'Null'">{{ event.event_program }}</p>
+                                    <p class="programmeName" v-if="event.event_program != 'Null'"> {{ event.event_program }} </p>
 
                                     <!-- activity name -->
                                     <p class="eventName">{{ event.title }}</p>
