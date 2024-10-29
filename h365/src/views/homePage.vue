@@ -375,7 +375,7 @@ export default {
                     mr_movingMinutes: this.mr_movingMinutes,
                     mr_topActivity: this.mr_topActivity,
                     mr_totalDistance: this.mr_totalDistance,
-                    mr_allActivitites: JSON.stringify(this.mr_allActivitites), // Stringify the array before passing
+                    mr_allActivitites: JSON.stringify(this.mr_allActivitites),
                     mr_month: this.month
                 }
             }).then(() => { 

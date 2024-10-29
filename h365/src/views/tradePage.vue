@@ -140,13 +140,6 @@ export default {
             this.isPopupVisible = true;
         },
         async openTradePopup(tradeCardName, receiveCardName, tradeWith, tradeId) {
-            this.tradeCardName = tradeCardName;
-            this.receiveCardName = receiveCardName;
-            this.tradeWith = tradeWith;
-            this.selectedTradeId = tradeId;
-            this.popupType = 'trade';
-            this.isPopupVisible = true;
-
             try {
                 // FETCH REQUIRED INFORMATION
                 // fetch trade information
@@ -172,8 +165,7 @@ export default {
 
                 // error handling: when trade request selected is user's own request
                 if (this.selectedTradeData.user_id == this.userId) {
-                    this.errorMessage = "Unable to accept trade request with yourself. Please select a different trade request.";
-                    this.errorFound = true;
+                    this.showGeneralPopup("Unable to accept trade request with yourself. Please select a different trade request.");
                     return;
                 }
 
@@ -183,21 +175,26 @@ export default {
 
                 // error handling: user two already owns the card being offered
                 if (userTwoRequestedCard) {
-                    this.errorMessage = "You already own the offered collectible. Please select a different trade request.";
-                    this.errorFound = true;
+                    this.showGeneralPopup("You already own the offered collectible. Please select a different trade request.");
                     return;
                 }
 
                 // error handling: user two does not have the card being requested
                 if (userTwoTargetCard === undefined) {
-                    this.errorMessage = "You do not have the requested collectible in your collection."
-                    this.errorFound = true;
+                    this.showGeneralPopup("You do not have the requested collectible in your collection.");
                     return;
                 }
 
             } catch (error) {
                 console.log("error in popup");
             }
+
+            this.tradeCardName = tradeCardName;
+            this.receiveCardName = receiveCardName;
+            this.tradeWith = tradeWith;
+            this.selectedTradeId = tradeId;
+            this.popupType = 'trade';
+            this.isPopupVisible = true;
         },
         closePopup() {
             this.isPopupVisible = false;
