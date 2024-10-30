@@ -131,7 +131,7 @@ export default {
             default: false
         },
         type: {
-            type: String,  // 'unlock', 'trade', 'info' or 'event-code'
+            type: String,  // 'unlock', 'trade', 'info', 'event-code', or 'general'
             default: ''
         },
         cardName: {

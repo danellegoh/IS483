@@ -53,31 +53,19 @@
                         <div :class="['card', { 'card-owned': userCards.includes(card.card_id) }]">
                             <p class="cardName"> {{ card.title }} </p>
 
-                            <!-- <img v-if="card.title == 'Oliver'" src="../assets/icons/collection/fruit_basket/oliver.png">
-                            <img v-else-if="card.title == 'Selena'" src="../assets/icons/collection/fruit_basket/selena.png">
-                            <img v-else-if="card.title == 'Benny'" src="../assets/icons/collection/fruit_basket/benny.png">
-                            <img v-else-if="card.title == 'Gracia'" src="../assets/icons/collection/fruit_basket/gracia.png">
-                            <img v-else-if="card.title == 'Penny'" src="../assets/icons/collection/fruit_basket/penny.png">
-
-                            <img v-else-if="card.title == 'LeBron'" src="../assets/icons/collection/weekend_action/lebron.png">
-                            <img v-else-if="card.title == 'Williams'" src="../assets/icons/collection/weekend_action/williams.png">
-                            <img v-else-if="card.title == 'Weber'" src="../assets/icons/collection/weekend_action/weber.png">
-                            <img v-else-if="card.title == 'Valdez'" src="../assets/icons/collection/weekend_action/valdez.png">
-                            <img v-else-if="card.title == 'Dele'" src="../assets/icons/collection/weekend_action/dele.png"> -->
-
                             <img :src="getCardImage(card.title, card.card_type)" />
 
                             <div class="price">
-                                <img src="../assets/icons/collection/coin.png">
+                                <img src="../assets/icons/collection/coin.png" style="margin-right: 5px;">
                                 <p> {{ card.points_required }} </p>
                             </div>
 
-                            <button 
+                            <button
                                 v-if="userCards.includes(card.card_id)"
                                 class="viewCardBtn" @click="openInfoPopup(card.card_id, card.description, card.recommendation)"> View 
                             </button>
 
-                            <button 
+                            <button
                                 v-else
                                 class="bookEventBtn" @click="openUnlockPopup(card.title, card.points_required, card.card_id)"> Unlock 
                             </button>

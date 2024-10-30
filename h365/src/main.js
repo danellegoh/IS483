@@ -6,7 +6,8 @@ import store from './store';
 import './assets/styling/general.css';
 
 import { create, NTabs, NTab, NTabPane, NProgress, NSpace, NSteps, NStep, 
-    NButtonGroup, NButton, NRadioGroup, NRadioButton } from 'naive-ui'
+    NButtonGroup, NButton, NRadioGroup, NRadioButton, NCheckbox, NDynamicInput, 
+    NInputNumber, NInput } from 'naive-ui'
 
 const naive = create({
     components: [
@@ -20,7 +21,11 @@ const naive = create({
         NButtonGroup,
         NButton,
         NRadioGroup,
-        NRadioButton
+        NRadioButton,
+        NCheckbox,
+        NDynamicInput,
+        NInputNumber,
+        NInput,
     ]
 })
 

@@ -25,14 +25,17 @@
             <div class="card">
                 <div class="cardTop">
                     <div class="tradeInfo">
-                        <p class="head"> Trade Request </p>
-                        <p class="body"> {{ trade.name }} </p>
+                        <div class="left">
+                            <p class="head"> Trade Request </p>
+                            <p class="body"> {{ trade.name }} </p>
+                        </div>
+
+                        <div class="right">
+                            <p class="timeOfTrade" style="margin: 0;"> {{ dateOfTrade }} </p>
+                            <p class="timeOfTrade"> {{ timeOfTrade }} </p>
+                        </div>
+
                     </div>
-                    <!-- need to replace method on click if proceeding with delete functionality -->
-                    <!-- <div class="deleteBtn" @click="openTradePopup(trade.card_one_title, trade.card_two_title, trade.name)">
-                        <p> Delete </p>
-                        <i class="uil uil-trash"></i>
-                    </div> -->
                 </div>
                 <div class="divider"></div>
                 <div class="cardBottom">
@@ -42,6 +45,7 @@
                             <img :src="getCardImage(trade.card_one_title, trade.card_one_type)" />
                             <p class="cardName"> {{ trade.card_one_title }} </p>
                             <p class="cardSet"> {{ trade.card_one_type }} </p>
+
                         </div>
                     </div>
                     <i class="uil uil-exchange"></i>
@@ -117,12 +121,14 @@ export default {
     data() {
         return {
             isPopupVisible: false,
-            tradeCardName: 'Card A',  // Example data
-            receiveCardName: 'Card B',  // Example data
-            tradeWith: 'User123',  // Example data
+            tradeCardName: '',
+            receiveCardName: '',
+            tradeWith: '',
             myTrades: [],
             searchInput: '',
-            searchResults: []
+            searchResults: [],
+            dateOfTrade: '',
+            timeOfTrade: '',
         };
     },
     methods: {
@@ -132,6 +138,7 @@ export default {
             this.popupType = 'info';
             this.isPopupVisible = true;
         },
+
         openTradePopup(tradeCardName, receiveCardName, tradeWith) {
             this.tradeCardName = tradeCardName;
             this.receiveCardName = receiveCardName;
@@ -139,9 +146,11 @@ export default {
             this.popupType = 'trade';
             this.isPopupVisible = true;
         },
+
         closePopup() {
             this.isPopupVisible = false;
         },
+
         getCardImage(card_title, card_set) {
             if (!card_title || !card_set) {
                 console.error("Invalid card_title or card_set:", card_title, card_set);
@@ -153,18 +162,47 @@ export default {
             const formattedSetName = card_set.toLowerCase().replace(/\s+/g, "_");
             return require(`@/assets/icons/collection/${formattedSetName}/${formattedTitle}.png`);
         },
+
         goBack() {
             this.$router.go(-1);
         },
+
         async fetchMyTrades() {
             try {
                 const response = await this.$http.get("http://127.0.0.1:5013/trade/user/" + this.userId);
-                console.log(response.data.data);
+                // console.log('haha', response.data.data);
                 this.myTrades = response.data.data;
+
+                const tradeDate = response.data.data[0].trade_date;
+                // console.log(tradeDate);
+                // console.log(typeof(tradeDate));
+
+                const date = new Date(tradeDate);
+                const formattedDate = date.toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    timeZone: "UTC",
+                });
+
+                const formattedTime = date.toLocaleTimeString("en-GB", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                    timeZone: "UTC",
+                });
+
+                this.dateOfTrade = formattedDate;
+                this.timeOfTrade = formattedTime;
+
+                // console.log(`Date: ${formattedDate}`);
+                // console.log(`Time: ${formattedTime}`);
+
             } catch (error) {
                 console.log("Error fetching trades:" + error);
             }
         },
+
         async searchTrades() {
                 console.log("checking search input:", this.searchInput);
                 var lowerCaseInput = this.searchInput.toLowerCase();
@@ -204,7 +242,7 @@ export default {
             this.popupContent = content;
             this.popupType = 'general';
             this.isPopupVisible = true;
-        }
+        },
     },
     mounted() {
         this.fetchMyTrades();
@@ -387,6 +425,31 @@ div .search-bar {
 .bookNowContainer {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
     z-index: 10;
+}
+
+.tradeInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.tradeInfo .left {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.tradeInfo .right {
+    text-align: right;
+    font-family: text-medium;
+    font-size: 10px;
+    color: var(--text-highlight);
+    align-items:end
+}
+
+.timeOfTrade {
+    margin: 0;
 }
 
 </style>
