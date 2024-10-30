@@ -20,7 +20,7 @@ class Streak(db.Model):
     week_current = db.Column(db.Integer, nullable=False)
     streak_count = db.Column(db.Integer, nullable=False, default=0)
 
-    def __init__(self, goal_id, week_started, week_current, streak_count=1):
+    def __init__(self, goal_id, week_started, week_current, streak_count=0):
         self.goal_id = goal_id
         self.week_started = week_started
         self.week_current = week_current
@@ -43,12 +43,12 @@ def create_streak():
         goal_id=data.get('goal_id'),
         week_started=data.get('week_started', datetime.date(datetime.now()).isocalendar()[1]),
         week_current=data.get('week_current', 0),
-        streak_count=data.get('streak_count', 1)
+        streak_count=data.get('streak_count', 0)
     )
     try:
         db.session.add(new_streak)
         db.session.commit()
-        return jsonify(new_streak.json()), 200
+        return jsonify({"code": 201, "data": new_streak.json()}), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
@@ -58,7 +58,7 @@ def create_streak():
 def get_streaks(goal_id):
     streaks = Streak.query.filter_by(goal_id=goal_id).all()
     if streaks:
-        return jsonify([streak.json() for streak in streaks]), 200
+        return jsonify({"code": 200, "data": [streak.json() for streak in streaks]}), 200
     return jsonify({"error": "No streaks found for this goal"}), 404
 
 # Get a streak by ID
@@ -66,9 +66,10 @@ def get_streaks(goal_id):
 def get_streak(streak_id):
     streak = Streak.query.get(streak_id)
     if streak:
-        return jsonify(streak.json()), 200
-    return jsonify({"error": "Streak not found"}), 404
+        return jsonify({"code": 200, "data": streak.json()}), 200
+    return jsonify({"code": 404, "error": "Streak not found"}), 404
 
+# Update a streak by ID
 @app.route('/streak/<int:streak_id>', methods=['PUT'])
 def update_streak(streak_id):
     streak = Streak.query.get(streak_id)

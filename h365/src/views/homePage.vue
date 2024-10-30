@@ -304,13 +304,14 @@ export default {
             try {
                 const goalResponse = await this.$http.get("http://127.0.0.1:5011/goals/" + this.userId)
                 const goalData = goalResponse.data;
-                // console.log(goalData)
+                console.log(goalData)
                 const goal_id = goalData[0].goal_id;
 
                 const streakResponse = await this.$http.get("http://127.0.0.1:5010/streaks/" + goal_id)
                 const streakData = streakResponse.data;
-                // console.log(streakData)
-                const streak_id = streakData[0].streak_id;
+                console.log(streakData)
+                const streak_id = streakData['data'][0].streak_id;
+                // console.log("streak id:", streak_id);
 
                 const payload = {
                     goal_id: goal_id,
