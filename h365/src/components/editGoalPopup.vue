@@ -1,7 +1,12 @@
 <template>
     <!-- edit goal popup -->
-    <div>
+    <div v-if="visible" class="popupOverlay">
         <div class="card">
+            <div class="close-button-container">
+                <div class="close-button" @click="closePopup">
+                    <i class="uil uil-times"></i>
+                </div>
+            </div>
 
             <!-- consistently hitting goal -->
             <div class="content" v-if="caseType == 1">
@@ -36,7 +41,7 @@
 
             <div class="container" v-if="caseType == 1 || caseType == 2">
                 <n-input-number
-                v-model:value="goalValue"
+                v-model:value="localGoalValue"
                 :min="150" 
                 :step="5" 
                 show-button
@@ -58,21 +63,30 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-
 export default {
-    setup() {
-        const goalValue = ref(150);
-        const caseType = ref(3);
-
-        function confirmGoal() {
-            console.log(`Confirmed new goal: ${goalValue.value}`);
+    props: {
+        visible: {
+            type: Boolean,
+            default: false
+        },
+        caseType: {
+            type: Number,
+            default: 0
+        },
+        goalValue: {
+            type: Number,
+            default: 150
         }
-
+    },
+    data() {
+        // const goalValue = ref(150);
+        // const caseType = ref(3);
+        console.log("visible prop", this.visible);
+        console.log("case type received", this.caseType);
         return {
-            goalValue,
-            caseType,
-            confirmGoal,
+            // goalValue,
+            // caseType
+            localGoalValue: this.goalValue
         };
     },
 
@@ -80,12 +94,28 @@ export default {
         closePopup() {
             this.$emit('close');
         },
+        confirmGoal() {
+            this.$emit('confirm', this.localGoalValue);
+            console.log(`Confirmed new goal: ${this.localGoalValue}`);
+        }
     }
 };
 
 </script>
 
 <style scoped>
+.popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 20000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 i {
     font-size: 25px;
@@ -142,6 +172,13 @@ button {
   justify-content: center;
   align-items: center;
   margin-bottom: 16px;
+  position: relative;
 }
 
+.close-button-container {
+    position: absolute; 
+    top: 10px; 
+    right: 15px; 
+    cursor: pointer; 
+}
 </style>

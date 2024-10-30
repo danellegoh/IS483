@@ -160,6 +160,15 @@
             </div>
 
         </div>
+
+        <PopupGoal
+            v-if="showPopup"
+            :visible="showPopup"
+            :caseType="caseType"
+            :goalValue="goalWeekly"
+            @close="showPopup = false"
+            @confirm="handleGoalChange"
+        />
         
     </div>
 
@@ -170,8 +179,12 @@
 <script>
 import { useStore } from 'vuex';
 import { computed } from 'vue';
+import PopupGoal from '@/components/editGoalPopup.vue';
 
 export default {
+    components: {
+        PopupGoal
+    },
     setup() {
         // console.log("home page");
         const store = useStore();
@@ -189,6 +202,13 @@ export default {
             streakCount: 1,
             weekStarted: 0,
             weekCurrent: 0,
+            goalId: 0,
+
+            goalMet: false,
+            toPrompt: false,
+            showPopup: false,
+            caseType: 1,
+            localGoalValue: 0,
 
             currentWeekly: 0,
             goalWeekly: 0,
@@ -306,6 +326,7 @@ export default {
                 const goalData = goalResponse.data;
                 console.log(goalData)
                 const goal_id = goalData[0].goal_id;
+                this.goalId = goal_id;
 
                 const streakResponse = await this.$http.get("http://127.0.0.1:5010/streaks/" + goal_id)
                 const streakData = streakResponse.data;
@@ -330,6 +351,8 @@ export default {
                 this.streakCount = response.data.data.streak_count;
                 this.weekStarted = response.data.data.week_started;
                 this.weekCurrent = response.data.data.week_current;
+                this.goalMet = response.data.data.goal_met;
+                this.toPrompt = response.data.data.to_prompt;
 
                 this.currentWeekly = response.data.data.weekly_time_lapse;
                 this.goalWeekly = goalData[0].target;
@@ -386,6 +409,47 @@ export default {
             }).then(() => { 
                 this.$route.params.mr_allActivitites = this.mr_allActivitites;
             });
+        },
+
+        async checkForPopup() {
+            console.log("goal met:", this.goalMet);
+            console.log("to prompt:", this.toPrompt);
+            console.log("goal:", this.goalWeekly);
+            this.toPrompt = true;
+            if (this.toPrompt == true) {
+                this.showPopup = true;
+                if (this.goalMet == true) {
+                    this.caseType = 1;
+                } else {
+                    if (this.goalWeekly == 150) {
+                        this.caseType = 3;
+                    } else if (this.goalWeekly > 150) {
+                        this.caseType = 2;
+                    }
+                }
+            } else {
+                console.log("No prompt needed");
+            }
+        },
+
+        async handleGoalChange(localGoalValue) {
+            try {
+                console.log("goal change received on home page", localGoalValue);
+                const goalResponse = await this.$http.patch("http://127.0.0.1:5011/goal/" + this.goalId, {
+                    target: localGoalValue
+                })
+                console.log(goalResponse);
+
+                const userResponse = await this.$http.patch("http://127.0.0.1:5001/user/id/" + this.userId, {
+                    target_minutes: localGoalValue,
+                    goal_date: new Date().toISOString().split('T')[0]
+                })
+                console.log(userResponse);
+
+                this.showPopup = false;
+            } catch (error) {
+                console.log("error in updating goal:", error);
+            }
         }
     },
 
@@ -394,6 +458,7 @@ export default {
             this.getPreviousMonth();
             this.fetchUserData();
             await this.syncNow();
+            await this.checkForPopup();
         } catch (error) {
             console.log("error:", error);
         }
