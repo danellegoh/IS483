@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS "user" (
     password VARCHAR(40) NOT NULL,
     parent_id INT REFERENCES "user" (user_id) ON DELETE SET NULL,
     role VARCHAR(40) NOT NULL,
-    created_date TIMESTAMPTZ NOT NULL,
-    last_login TIMESTAMPTZ NOT NULL,
+    created_date TIMESTAMP NOT NULL,
+    last_login TIMESTAMP NOT NULL,
     total_point INT NOT NULL,
     health_tier INT NOT NULL,
     target_minutes INT NOT NULL,
@@ -36,11 +36,11 @@ CREATE TABLE events (
     second_title TEXT NOT NULL,
     description TEXT NOT NULL,
     location VARCHAR(40) NOT NULL,
-    start_date TIMESTAMPTZ NOT NULL,
-    end_date TIMESTAMPTZ NOT NULL,
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
     organiser VARCHAR(40) NOT NULL,
     event_type VARCHAR(40) NOT NULL,
-    created_date TIMESTAMPTZ NOT NULL,
+    created_date TIMESTAMP NOT NULL,
     max_signups INT NOT NULL,
     current_signups INT NOT NULL,
     mode VARCHAR(40) NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE user_cards (
     user_card_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES "user" (user_id) ON DELETE CASCADE,
     card_id INT NOT NULL REFERENCES cards (card_id) ON DELETE CASCADE,
-    earned_date TIMESTAMPTZ NOT NULL
+    earned_date TIMESTAMP NOT NULL
 );
 
 CREATE TABLE health (
@@ -94,7 +94,7 @@ CREATE TABLE health_recommendation (
     user_id INT NOT NULL REFERENCES "user" (user_id) ON DELETE CASCADE,
     health_goal VARCHAR(40) NOT NULL,
     recommendation_text TEXT NOT NULL,
-    generated_date TIMESTAMPTZ NOT NULL,
+    generated_date TIMESTAMP NOT NULL,
     progress VARCHAR(40) NOT NULL
 );
 
@@ -102,14 +102,14 @@ CREATE TABLE health_coin (
     points_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES "user" (user_id) ON DELETE CASCADE,
     points_earned INT NOT NULL,
-    earned_date TIMESTAMPTZ NOT NULL,
+    earned_date TIMESTAMP NOT NULL,
     source VARCHAR(40) NOT NULL
 );
 
 CREATE TABLE performance (
     record_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES "user" (user_id) ON DELETE CASCADE,
-    date TIMESTAMPTZ NOT NULL,
+    date TIMESTAMP NOT NULL,
     remark TEXT NOT NULL
 );
 
@@ -118,7 +118,7 @@ CREATE TABLE trade (
     user_id INT NOT NULL REFERENCES "user" (user_id) ON DELETE CASCADE,
     card_one_id INT NOT NULL,
     card_two_id INT NOT NULL,
-    trade_date TIMESTAMPTZ NOT NULL
+    trade_date TIMESTAMP NOT NULL
 );
 
 CREATE TABLE goal (
@@ -126,7 +126,7 @@ CREATE TABLE goal (
     user_id INT NOT NULL REFERENCES "user" (user_id) ON DELETE CASCADE,
     goal_description VARCHAR(256) NOT NULL,
     tier INT NOT NULL,
-    date_created TIMESTAMPTZ NOT NULL,
+    date_created TIMESTAMP NOT NULL,
     target INT NOT NULL
 );
 
