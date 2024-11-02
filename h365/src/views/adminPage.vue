@@ -76,9 +76,13 @@
                         <tr v-for="participant in participants[event.event_id]" :key="participant.user_event_id">
                             <td>{{ participant.name }}</td>
                             <td>{{ participant.contact_details }}</td>
+                            <td>{{ participant.completed }}</td>
+
                             <td>
                                 <n-checkbox
                                     v-model="attendance[event.event_id][participant.user_event_id]"
+                                    :checked="participant.completed"
+                                    @update:checked="(checked) => handleAttendanceChange(event.event_id, participant, checked)"
                                 />
                             </td>
                         </tr>
@@ -134,7 +138,7 @@ export default {
         async fetchEvents() {
             try {
                 const response = await this.$http.get("http://127.0.0.1:5002/events");
-                console.log("Fetched events:", response.data);
+                // console.log("Fetched events:", response.data);
                 this.events = response.data.map(event => {
                     const { formattedDate: formattedStartDate, formattedTime: formattedStartTime } = this.formatDateTime(event.start_date);
                     const { formattedDate: formattedEndDate, formattedTime: formattedEndTime } = this.formatDateTime(event.end_date);
@@ -165,10 +169,10 @@ export default {
 
         async fetchParticipants(eventId) {
             try {
-                console.log(`Fetching participants for event ID: ${eventId}`);
+                // console.log(`Fetching participants for event ID: ${eventId}`);
                 const response = await this.$http.get(`http://127.0.0.1:5007/userevent/eventusers/${eventId}`);
                 if (response.data && response.data.code == 200) {
-                    console.log("Participants data:", response.data.data);
+                    // console.log("Participants data:", response.data.data);
                     this.participants[eventId] = response.data.data;
 
                     if (!this.attendance[eventId]) {
@@ -196,8 +200,40 @@ export default {
                 this.expandedEventId = eventId;
                 this.fetchParticipants(eventId);
             }
-            console.log("Expanded Event ID:", this.expandedEventId);
+            // console.log("Expanded Event ID:", this.expandedEventId);
         },
+
+
+        async handleAttendanceChange(eventId, participant, checked) {
+            console.log("Checkbox changed:", checked, "for user_event_id:", participant.user_event_id);
+            if (checked && !this.attendance[eventId][participant.user_event_id]) {
+                const user_event_ids = [participant.user_event_id];
+                const user_ids = [participant.user_id];
+
+                try {
+                    await this.$http.post(`http://127.0.0.1:5016/attendance/${eventId}`, {
+                        user_event_ids,
+                        user_ids
+                    });
+                    console.log("Attendance recorded successfully for user_event_id:", participant.user_event_id);
+                } catch (error) {
+                    console.error("Error recording attendance:", error);
+                }
+            }
+
+            this.attendance[eventId][participant.user_event_id] = checked;
+
+            try {
+                await this.$http.patch(`http://127.0.0.1:5007/userevent/${participant.user_event_id}`, {
+                    completed: checked
+                });
+                console.log("Attendance updated successfully for user_event_id:", participant.user_event_id);
+
+                this.fetchParticipants(eventId);
+            } catch (error) {
+                console.error("Error updating attendance status:", error);
+            }
+        }
     },
 
     watch: {
