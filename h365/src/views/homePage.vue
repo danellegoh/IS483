@@ -415,7 +415,6 @@ export default {
             console.log("goal met:", this.goalMet);
             console.log("to prompt:", this.toPrompt);
             console.log("goal:", this.goalWeekly);
-            this.toPrompt = true;
             if (this.toPrompt == true) {
                 this.showPopup = true;
                 if (this.goalMet == true) {
