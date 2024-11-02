@@ -17,11 +17,11 @@ VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 # mvp_URL = "http://localhost:5021/estimate_mvpa"
 # coin_URL = "http://localhost:5004/healthcoins"
 # user_URL = "http://localhost:5001/user"
-goal_URL = f"{VERCEL_BASE_URL}/api/goal"
-streak_URL = f"{VERCEL_BASE_URL}/api/streak"
-mvp_URL = f"{VERCEL_BASE_URL}/api/estimate_mvpa"
-coin_URL = f"{VERCEL_BASE_URL}/api/healthcoins"
-user_URL = f"{VERCEL_BASE_URL}/api/user"
+goal_URL = f"{VERCEL_BASE_URL}/goal"
+streak_URL = f"{VERCEL_BASE_URL}/streak"
+mvp_URL = f"{VERCEL_BASE_URL}/estimate_mvpa"
+coin_URL = f"{VERCEL_BASE_URL}/healthcoins"
+user_URL = f"{VERCEL_BASE_URL}/user"
 
 @app.route('/update_streak', methods=['POST'])
 def update_streak_if_mvpa():

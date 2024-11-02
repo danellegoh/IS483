@@ -27,12 +27,12 @@ VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 # healthCoinURL = "http://localhost:5004/healthcoins"
 # userCardURL = "http://localhost:5006/usercard"
 # userEventURL = "http://localhost:5007/userevent"
-userURL = f"{VERCEL_BASE_URL}/api/user"
-eventURL = f"{VERCEL_BASE_URL}/api/event"
-cardURL = f"{VERCEL_BASE_URL}/api/card"
-healthCoinURL = f"{VERCEL_BASE_URL}/api/healthcoins"
-userCardURL = f"{VERCEL_BASE_URL}/api/usercard"
-userEventURL = f"{VERCEL_BASE_URL}/api/userevent"
+userURL = f"{VERCEL_BASE_URL}/user"
+eventURL = f"{VERCEL_BASE_URL}/event"
+cardURL = f"{VERCEL_BASE_URL}/card"
+healthCoinURL = f"{VERCEL_BASE_URL}/healthcoins"
+userCardURL = f"{VERCEL_BASE_URL}/usercard"
+userEventURL = f"{VERCEL_BASE_URL}/userevent"
 
 @app.route('/attendance/<int:event_id>', methods=['POST'])
 def process_attendance(event_id):

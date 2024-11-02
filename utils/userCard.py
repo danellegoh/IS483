@@ -24,9 +24,9 @@ VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 # cardURL = "http://localhost:5003/card/"
 # userURL = "http://localhost:5001/user/"
 # healthCoinURL = "http://localhost:5004/healthcoins"
-cardURL = f"{VERCEL_BASE_URL}/api/card/"
-userURL = f"{VERCEL_BASE_URL}/api/user/"
-healthCoinURL = f"{VERCEL_BASE_URL}/api/healthcoins"
+cardURL = f"{VERCEL_BASE_URL}/card/"
+userURL = f"{VERCEL_BASE_URL}/user/"
+healthCoinURL = f"{VERCEL_BASE_URL}/healthcoins"
 
 class UserCard(db.Model):
     __tablename__ = 'user_cards'

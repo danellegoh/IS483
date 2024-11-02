@@ -23,8 +23,8 @@ VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 
 # userURL = "http://localhost:5001/user/"
 # eventURL = "http://localhost:5002/event/"
-userURL = f"{VERCEL_BASE_URL}/api/user/"
-eventURL = f"{VERCEL_BASE_URL}/api/event/"
+userURL = f"{VERCEL_BASE_URL}/user/"
+eventURL = f"{VERCEL_BASE_URL}/event/"
 
 class User(db.Model):    
     user_id = db.Column(db.Integer, primary_key=True)

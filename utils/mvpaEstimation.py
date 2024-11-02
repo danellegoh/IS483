@@ -21,7 +21,7 @@ CORS(app)
 VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 
 # strava_URL = "http://localhost:5020"
-strava_URL = f"{VERCEL_BASE_URL}/api/activities"
+strava_URL = f"{VERCEL_BASE_URL}/activities"
 
 class strava_users(db.Model):
     tablename = 'strava_users'

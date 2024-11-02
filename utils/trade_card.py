@@ -14,8 +14,8 @@ VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 
 # userCard_URL = "http://localhost:5006/usercard"
 # trade_URL = "http://localhost:5013/trade"
-userCard_URL = f"{VERCEL_BASE_URL}/api/usercard"
-trade_URL = f"{VERCEL_BASE_URL}/api/trade"
+userCard_URL = f"{VERCEL_BASE_URL}/usercard"
+trade_URL = f"{VERCEL_BASE_URL}/trade"
 
 @app.route("/trade_card", methods=['POST'])
 def trade_card():

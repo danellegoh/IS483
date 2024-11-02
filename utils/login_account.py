@@ -12,7 +12,7 @@ CORS(app)
 VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 
 # user_URL = "http://localhost:5001/user"
-user_URL = f"{VERCEL_BASE_URL}/api/user"
+user_URL = f"{VERCEL_BASE_URL}/user"
 
 @app.route("/user_login", methods=['POST'])
 def user_login():
