@@ -248,7 +248,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 h1 {
     font-family: text-bold;
     font-size: 25px;
