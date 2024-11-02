@@ -2,6 +2,13 @@
     <div class="pagePad">
         <h1> Event Attendance </h1>
 
+        <div class="searchAndFilter" style="padding: 0; margin: 0 0 32px 0;">
+            <div class="search-bar">
+                <i class="uil uil-search"></i>
+                <input type="text" v-model="searchInput" @input="searchEvents" placeholder="Search by event name" />
+            </div>
+        </div>
+
         <n-collapse v-model:value="expandedEventId" accordion>
             <n-collapse-item
                 v-for="event in events"
@@ -93,10 +100,12 @@ import { reactive } from 'vue';
 export default {
     data() {
         return {
+            allEvents: [],
             events: [],
             participants: reactive({}),
             expandedEventId: null,
             attendance: reactive({}),
+            searchInput: "",
         };
     },
 
@@ -137,8 +146,20 @@ export default {
                         formattedEndTime
                     };
                 });
+                this.allEvents = this.events;
             } catch (error) {
                 console.error("Failed to fetch events:", error);
+            }
+        },
+
+        searchEvents() {
+            if (this.searchInput.trim() === "") {
+                this.allEvents = this.events;
+            } else {
+                const keyword = this.searchInput.toLowerCase();
+                this.events = this.allEvents.filter(event => 
+                    event.title.toLowerCase().includes(keyword)
+                );
             }
         },
 
@@ -200,6 +221,10 @@ h1 {
 
 .pagePad {
     padding: 32px;
+}
+
+.search-bar {
+    width: 100%;
 }
 
 .display-flex {
