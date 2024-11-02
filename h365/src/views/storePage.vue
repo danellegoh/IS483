@@ -98,6 +98,8 @@ import Popup from '@/components/popUp.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     components: {
         Popup
@@ -144,7 +146,11 @@ export default {
             console.log("unlocking card with ID:", cardId);
 
             try {
-                const response = await this.$http.post("http://127.0.0.1:5006/usercard/buy", {
+                // const response = await this.$http.post("http://127.0.0.1:5006/usercard/buy", {
+                //     user_id: this.userId,
+                //     card_id: cardId
+                // })
+                const response = await this.$http.post(`${apiBaseURL}/usercard/buy`, {
                     user_id: this.userId,
                     card_id: cardId
                 })
@@ -172,7 +178,8 @@ export default {
         // Fetch user data
         async fetchUserData() {
             try {
-                const userReponse = await this.$http.get("http://127.0.0.1:5001/user/" + this.userEmail);
+                // const userReponse = await this.$http.get("http://127.0.0.1:5001/user/" + this.userEmail);
+                const userReponse = await this.$http.get(`${apiBaseURL}/user/${this.userEmail}`);
                 const userData = userReponse.data.data;
                 this.numHealthCoins = userData["total_point"];
             } catch (error) {
@@ -182,7 +189,8 @@ export default {
         // Fetch user cards
         async fetchUserCards() {
             try {
-                const userCardResponse = await this.$http.get("http://127.0.0.1:5006/usercard/user/" + this.userId);
+                // const userCardResponse = await this.$http.get("http://127.0.0.1:5006/usercard/user/" + this.userId);
+                const userCardResponse = await this.$http.get(`${apiBaseURL}/usercard/user/${this.userId}`);
                 const userCardData = userCardResponse.data.data;
                 
                 this.userCards = userCardData["cards"].map(card => card["card_id"]);
@@ -192,7 +200,8 @@ export default {
             }
         },
         async fetchAllCards() {
-            const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
+            // const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
+            const cardReponse = await this.$http.get(`${apiBaseURL}/cards`);
             const cardData = cardReponse.data;
             for (let i = 0; i < cardData.length; i++) {
                 let card_type = cardData[i]["card_type"];

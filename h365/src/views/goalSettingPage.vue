@@ -138,6 +138,8 @@
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     setup() {
         console.log("goal setting page");
@@ -175,14 +177,26 @@ export default {
             try {
                 console.log("Submit goal attempt");
                 console.log("User email:", this.userEmail);
-                const userResponse = await this.$http.patch("http://127.0.0.1:5001/user/" + this.userEmail, {
+                // const userResponse = await this.$http.patch("http://127.0.0.1:5001/user/" + this.userEmail, {
+                //         target_minutes: this.goal,
+                //         preferred_intensity: this.selectedIntensity,
+                //         goal_date: new Date().toISOString().split('T')[0]
+                // })
+                const userResponse = await this.$http.patch(`${apiBaseURL}/user/${this.userEmail}`, {
                         target_minutes: this.goal,
                         preferred_intensity: this.selectedIntensity,
                         goal_date: new Date().toISOString().split('T')[0]
                 })
                 console.log(userResponse);
 
-                const goalResponse = await this.$http.post("http://127.0.0.1:5011/goal", {
+                // const goalResponse = await this.$http.post("http://127.0.0.1:5011/goal", {
+                //     user_id: this.userId,
+                //     goal_description: "Hit MVPA goal",
+                //     tier: 1,
+                //     completed: false,
+                //     target: this.goal
+                // })
+                const goalResponse = await this.$http.post(`${apiBaseURL}/goal`, {
                     user_id: this.userId,
                     goal_description: "Hit MVPA goal",
                     tier: 1,
@@ -192,7 +206,10 @@ export default {
                 console.log(goalResponse);
                 const goal_id = goalResponse.data.data.goal_id;
 
-                const streakResponse = await this.$http.post("http://127.0.0.1:5010/streak", {
+                // const streakResponse = await this.$http.post("http://127.0.0.1:5010/streak", {
+                //     goal_id: goal_id,
+                // })
+                const streakResponse = await this.$http.post(`${apiBaseURL}/streak`, {
                     goal_id: goal_id,
                 })
                 console.log(streakResponse);

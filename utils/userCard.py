@@ -185,7 +185,9 @@ def buy_new_card():
         card_id = data.get('card_id')
 
         # (1) Fetch card info and validate response
+        print("checking url", cardURL + str(card_id))
         cardResponse = invoke_http(cardURL + str(card_id), method='GET')
+        print("checking response", cardResponse)
         if cardResponse["code"] != 200:
             return jsonify({"code": 400, "error": "Error retrieving card details"}), 400
         card_info = cardResponse["data"]

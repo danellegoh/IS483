@@ -29,6 +29,8 @@
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     props: ['yourCards'],
 
@@ -42,7 +44,8 @@ export default {
     methods: {
         async fetchUserCards() {
             try {
-                const response = await fetch("http://127.0.0.1:5006/usercard/user/" + this.userId);
+                // const response = await fetch("http://127.0.0.1:5006/usercard/user/" + this.userId);
+                const response = await fetch(`${apiBaseURL}/usercard/user/${this.userId}`);
                 const data = await response.json();
                 console.log(data);
 

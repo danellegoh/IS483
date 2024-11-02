@@ -102,6 +102,8 @@ import Popup from '@/components/popUp.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     name: 'viewEventPage',
     components: {
@@ -144,7 +146,8 @@ export default {
         console.log("eventID:", eventId);
 
         try {
-            const response = await this.$http.get("http://127.0.0.1:5002/event/" + eventId);
+            // const response = await this.$http.get("http://127.0.0.1:5002/event/" + eventId);
+            const response = await this.$http.get(`${apiBaseURL}/event/${eventId}`);
             const eventData = response.data.data;
             console.log(eventData);
 
@@ -198,7 +201,12 @@ export default {
             console.log("join event attempt");
 
             try {
-                const response = await this.$http.post("http://127.0.0.1:5007/userevent/enrol", {
+                // const response = await this.$http.post("http://127.0.0.1:5007/userevent/enrol", {
+                //     user_id: this.userId,
+                //     event_id: this.eventId,
+                //     entry_code: this.entryCode
+                // })
+                const response = await this.$http.post(`${apiBaseURL}/userevent/enrol`, {
                     user_id: this.userId,
                     event_id: this.eventId,
                     entry_code: this.entryCode

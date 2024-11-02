@@ -92,6 +92,8 @@ import Popup from '@/components/popUp.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     components: {
         Popup
@@ -169,7 +171,8 @@ export default {
 
         async fetchMyTrades() {
             try {
-                const response = await this.$http.get("http://127.0.0.1:5013/trade/user/" + this.userId);
+                // const response = await this.$http.get("http://127.0.0.1:5013/trade/user/" + this.userId);
+                const response = await this.$http.get(`${apiBaseURL}/trade/user/${this.userId}`);
                 // console.log('haha', response.data.data);
                 this.myTrades = response.data.data;
 
@@ -222,7 +225,10 @@ export default {
         
         async checkTradeRequest() {
             try {
-                const response = await fetch(`http://localhost:5013/trade/user/${this.userId}`, {
+                // const response = await fetch(`http://localhost:5013/trade/user/${this.userId}`, {
+                //     method: 'GET',
+                // });
+                const response = await fetch(`${apiBaseURL}/trade/user/${this.userId}`, {
                     method: 'GET',
                 });
                 const result = await response.json();

@@ -9,6 +9,9 @@ import hashlib
 app = Flask(__name__)
 CORS(app)
 
+from dotenv import load_dotenv
+load_dotenv()
+
 VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 
 # user_URL = "http://localhost:5001/user"

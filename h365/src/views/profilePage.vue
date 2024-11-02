@@ -84,6 +84,8 @@
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     setup() {
         console.log("profile page");
@@ -113,7 +115,8 @@ export default {
     },
     async mounted() {
         try {
-            const response = await this.$http.get("http://127.0.0.1:5001/user/profile/" + this.userEmail);
+            // const response = await this.$http.get("http://127.0.0.1:5001/user/profile/" + this.userEmail);
+            const response = await this.$http.get(`${apiBaseURL}/user/profile/${this.userEmail}`);
             const userData = response["data"]["data"];
 
             this.userName = userData["name"];

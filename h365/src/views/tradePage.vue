@@ -86,6 +86,8 @@ import { useRouter } from 'vue-router';
 import Popup from '@/components/popUp.vue';
 import { useStore } from 'vuex';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     components: {
         Popup
@@ -143,17 +145,20 @@ export default {
             try {
                 // FETCH REQUIRED INFORMATION
                 // fetch trade information
-                const tradeResponse = await this.$http.get("http://127.0.0.1:5013/trade/" + tradeId);
+                // const tradeResponse = await this.$http.get("http://127.0.0.1:5013/trade/" + tradeId);
+                const tradeResponse = await this.$http.get(`${apiBaseURL}/trade/${tradeId}`);
                 this.selectedTradeData = tradeResponse.data;
                 console.log(this.selectedTradeData);
 
                 // fetch user's active trade requests
-                const userTradeResponse = await this.$http.get("http://127.0.0.1:5013/trade/user/" + this.userId);
+                // const userTradeResponse = await this.$http.get("http://127.0.0.1:5013/trade/user/" + this.userId);
+                const userTradeResponse = await this.$http.get(`${apiBaseURL}/trade/user/${this.userId}`);
                 this.userActiveTrade = userTradeResponse.data.data[0];
                 console.log("trade for signed-in user:", this.userActiveTrade);
 
                 // fetch user's card information
-                const userTwoResponse = await this.$http.get("http://127.0.0.1:5006/usercard/user/" + this.userId);
+                // const userTwoResponse = await this.$http.get("http://127.0.0.1:5006/usercard/user/" + this.userId);
+                const userTwoResponse = await this.$http.get(`${apiBaseURL}/usercard/user/${this.userId}`);
                 this.userCards = userTwoResponse.data.data.cards;
 
                 // START OF VALIDATION & ERROR HANDLING
@@ -218,7 +223,8 @@ export default {
         },
         async fetchAllTrades() {
             try {
-                const response = await this.$http.get("http://127.0.0.1:5013/active_trades");
+                // const response = await this.$http.get("http://127.0.0.1:5013/active_trades");
+                const response = await this.$http.get(`${apiBaseURL}/active_trades`);
                 console.log(response.data.data);
                 this.trades = response.data.data;
             } catch (error) {
@@ -228,7 +234,8 @@ export default {
         async searchTrades() {
             console.log("checking search input:", this.searchInput);
             try {
-                const url = "http://127.0.0.1:5013/trade/search";
+                // const url = "http://127.0.0.1:5013/trade/search";
+                const url = `${apiBaseURL}/trade/search`;
                 const params = {};
                 params.search_input = this.searchInput;
 
@@ -250,7 +257,8 @@ export default {
                 // no errors above, proceed with processing trade & swapping of cards
                 if (!this.errorFound) {
                     // user one card information
-                    const userOneResponse = await this.$http.get("http://127.0.0.1:5006/usercard/user/" + this.selectedTradeData.user_id);
+                    // const userOneResponse = await this.$http.get("http://127.0.0.1:5006/usercard/user/" + this.selectedTradeData.user_id);
+                    const userOneResponse = await this.$http.get(`${apiBaseURL}/usercard/user/${this.selectedTradeData.user_id}`);
                     const userOneCards = userOneResponse.data.data.cards;
                     console.log(userOneCards);
                     const userOneTargetCard = userOneCards.find(card => card.card_id == this.selectedTradeData.card_one_id);
@@ -271,7 +279,16 @@ export default {
                     // console.log(user_card_id_two);
 
                     // process trade & swap cards
-                    const processTradeResponse = await this.$http.post("http://127.0.0.1:5015/trade_card", {
+                    // const processTradeResponse = await this.$http.post("http://127.0.0.1:5015/trade_card", {
+                    //     trade_id: tradeId,
+                    //     user_card_id_one: user_card_id_one,
+                    //     user_id_one: this.selectedTradeData.user_id,
+                    //     card_id_one: this.selectedTradeData.card_one_id,
+                    //     user_card_id_two: user_card_id_two,
+                    //     user_id_two: this.userId,
+                    //     card_id_two: this.selectedTradeData.card_two_id
+                    // });
+                    const processTradeResponse = await this.$http.post(`${apiBaseURL}/trade_card`, {
                         trade_id: tradeId,
                         user_card_id_one: user_card_id_one,
                         user_id_one: this.selectedTradeData.user_id,
@@ -286,7 +303,8 @@ export default {
                     if (this.concurrentTradeFound) {
                         console.log("perform deletion of concurrent trade");
                         const tradeToDelete = this.userActiveTrade.trade_id;
-                        const deleteTradeResponse = await this.$http.delete("http://127.0.0.1:5013/trade/" + tradeToDelete)
+                        // const deleteTradeResponse = await this.$http.delete("http://127.0.0.1:5013/trade/" + tradeToDelete)
+                        const deleteTradeResponse = await this.$http.delete(`${apiBaseURL}/trade/${tradeToDelete}`);
                         console.log(deleteTradeResponse);
                     }
 
@@ -307,7 +325,10 @@ export default {
 
         async checkTradeRequest() {
             try {
-                const response = await fetch(`http://localhost:5013/trade/user/${this.userId}`, {
+                // const response = await fetch(`http://localhost:5013/trade/user/${this.userId}`, {
+                //     method: 'GET',
+                // });
+                const response = await fetch(`${apiBaseURL}/trade/user/${this.userId}`, {
                     method: 'GET',
                 });
                 const result = await response.json();

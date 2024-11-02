@@ -312,6 +312,8 @@ import { defineComponent, ref, watch } from "vue";
 import { useRouter } from 'vue-router';
 import datePicker from '../components/datePicker.vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default defineComponent({
     components: {
         datePicker
@@ -337,7 +339,8 @@ export default defineComponent({
     },
     async mounted() {
         // to update eventData
-        this.$http.get("http://127.0.0.1:5002/event/available")
+        // this.$http.get("http://127.0.0.1:5002/event/available")
+        this.$http.get(`${apiBaseURL}/event/available`)
         .then(response => {
             var eventDataResponse = response.data.data;
             // console.log(eventDataResponse);
@@ -513,7 +516,8 @@ export default defineComponent({
             console.log("checking search input:", this.searchInput);
             console.log("checking date input:", this.dateInput);
             try {
-                const url = "http://127.0.0.1:5002/event/search";
+                // const url = "http://127.0.0.1:5002/event/search";
+                const url = `${apiBaseURL}/event/search`;
                 const params = {};
 
                 // add search_input if provided
