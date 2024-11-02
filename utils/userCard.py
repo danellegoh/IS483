@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 # from .user import User
@@ -7,16 +8,25 @@ from invokes import invoke_http
 
 from datetime import datetime
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS' ] = False
 
 db = SQLAlchemy(app)
 CORS(app)
 
-cardURL = "http://localhost:5003/card/"
-userURL = "http://localhost:5001/user/"
-healthCoinURL = "http://localhost:5004/healthcoins"
+VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
+
+# cardURL = "http://localhost:5003/card/"
+# userURL = "http://localhost:5001/user/"
+# healthCoinURL = "http://localhost:5004/healthcoins"
+cardURL = f"{VERCEL_BASE_URL}/api/card/"
+userURL = f"{VERCEL_BASE_URL}/api/user/"
+healthCoinURL = f"{VERCEL_BASE_URL}/api/healthcoins"
 
 class UserCard(db.Model):
     __tablename__ = 'user_cards'
@@ -242,5 +252,7 @@ def buy_new_card():
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
 
+# if __name__ == '__main__':
+#     app.run(port=5006, debug=True)
 if __name__ == '__main__':
-    app.run(port=5006, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')

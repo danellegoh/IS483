@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 # from .user import User
@@ -5,8 +6,12 @@ from flask_cors import CORS, cross_origin
 
 from datetime import datetime, timedelta, date
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS' ] = False
 
 db = SQLAlchemy(app)
@@ -371,5 +376,7 @@ def search_event():
         }), 500
 
 
+# if __name__ == '__main__':
+#     app.run(port=5002, debug=True)
 if __name__ == '__main__':
-    app.run(port=5002, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')

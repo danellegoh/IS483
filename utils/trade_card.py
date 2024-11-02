@@ -10,8 +10,12 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-userCard_URL = "http://localhost:5006/usercard"
-trade_URL = "http://localhost:5013/trade"
+VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
+
+# userCard_URL = "http://localhost:5006/usercard"
+# trade_URL = "http://localhost:5013/trade"
+userCard_URL = f"{VERCEL_BASE_URL}/api/usercard"
+trade_URL = f"{VERCEL_BASE_URL}/api/trade"
 
 @app.route("/trade_card", methods=['POST'])
 def trade_card():
@@ -106,5 +110,7 @@ def processCardTrade(trade_details):
     
     return trade_result
         
+# if __name__ == '__main__':
+#     app.run(port=5015, debug=True)
 if __name__ == '__main__':
-    app.run(port=5015, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')

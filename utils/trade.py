@@ -1,18 +1,27 @@
+import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timedelta
 from invokes import invoke_http
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 CORS(app)
 
-userURL = "http://localhost:5001/user"
-cardURL = "http://localhost:5003/card"
+VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
+
+# userURL = "http://localhost:5001/user"
+# cardURL = "http://localhost:5003/card"
+userURL = f"{VERCEL_BASE_URL}/api/user"
+cardURL = f"{VERCEL_BASE_URL}/api/card"
 
 class Trade(db.Model):
     __tablename__ = 'trade'
@@ -334,6 +343,8 @@ def delete_trade(trade_id):
             return jsonify({"code": 400, "error": str(e)}), 400
     return jsonify({"code": 404, "error": "Trade not found"}), 404
 
+# if __name__ == '__main__':
+#     app.run(port=5013, debug=True)
 if __name__ == '__main__':
-    app.run(port=5013, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')
 

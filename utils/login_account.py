@@ -9,7 +9,10 @@ import hashlib
 app = Flask(__name__)
 CORS(app)
 
-user_URL = "http://localhost:5001/user"
+VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
+
+# user_URL = "http://localhost:5001/user"
+user_URL = f"{VERCEL_BASE_URL}/api/user"
 
 @app.route("/user_login", methods=['POST'])
 def user_login():
@@ -92,5 +95,7 @@ def processLoginInformation(login_information):
             "data": {"user_result": user_result["data"]}
         }
 
-if __name__ == "__main__":
-    app.run(port=5009, debug=True)
+# if __name__ == "__main__":
+#     app.run(port=5009, debug=True)
+if __name__ == '__main__':
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')

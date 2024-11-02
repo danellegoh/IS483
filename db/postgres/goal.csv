@@ -1,0 +1,4 @@
+goal_id,user_id,goal_description,tier,date_created,target
+1,1,Hit MVPA goal,2,2024-10-06 00:00:00,100
+2,2,Hit MVPA goal,3,2024-10-06 00:00:00,120
+3,3,Hit MVPA goal,1,2024-10-04 00:00:00,150

@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 # from user import User
@@ -7,15 +8,23 @@ from invokes import invoke_http
 
 from datetime import datetime, timedelta, date
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS' ] = False
 
 db = SQLAlchemy(app)
 CORS(app)
 
-userURL = "http://localhost:5001/user/"
-eventURL = "http://localhost:5002/event/"
+VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
+
+# userURL = "http://localhost:5001/user/"
+# eventURL = "http://localhost:5002/event/"
+userURL = f"{VERCEL_BASE_URL}/api/user/"
+eventURL = f"{VERCEL_BASE_URL}/api/event/"
 
 class User(db.Model):    
     user_id = db.Column(db.Integer, primary_key=True)
@@ -342,5 +351,7 @@ def get_users_by_event(event_id):
             "message": f"An error occurred: {str(e)}"
         }), 500
     
+# if __name__ == '__main__':
+#     app.run(port=5007, debug=True)
 if __name__ == '__main__':
-    app.run(port=5007, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')

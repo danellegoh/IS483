@@ -8,19 +8,31 @@ from os import environ
 import hashlib
 from datetime import datetime
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS' ] = False
 
 db = SQLAlchemy(app)
 CORS(app)
 
-userURL = "http://localhost:5001/user"
-eventURL = "http://localhost:5002/event"
-cardURL = "http://localhost:5003/card"
-healthCoinURL = "http://localhost:5004/healthcoins"
-userCardURL = "http://localhost:5006/usercard"
-userEventURL = "http://localhost:5007/userevent"
+VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
+
+# userURL = "http://localhost:5001/user"
+# eventURL = "http://localhost:5002/event"
+# cardURL = "http://localhost:5003/card"
+# healthCoinURL = "http://localhost:5004/healthcoins"
+# userCardURL = "http://localhost:5006/usercard"
+# userEventURL = "http://localhost:5007/userevent"
+userURL = f"{VERCEL_BASE_URL}/api/user"
+eventURL = f"{VERCEL_BASE_URL}/api/event"
+cardURL = f"{VERCEL_BASE_URL}/api/card"
+healthCoinURL = f"{VERCEL_BASE_URL}/api/healthcoins"
+userCardURL = f"{VERCEL_BASE_URL}/api/usercard"
+userEventURL = f"{VERCEL_BASE_URL}/api/userevent"
 
 @app.route('/attendance/<int:event_id>', methods=['POST'])
 def process_attendance(event_id):
@@ -123,5 +135,7 @@ def process_attendance(event_id):
         "error": "Invalid JSON input"
     }), 400
 
+# if __name__ == '__main__':
+#     app.run(port=5016, debug=True)
 if __name__ == '__main__':
-    app.run(port=5016, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')

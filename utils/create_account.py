@@ -5,11 +5,18 @@ import requests
 from invokes import invoke_http
 from os import environ
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS' ] = False
 
-user_URL = "http://localhost:5001/user"
+VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
+
+# user_URL = "http://localhost:5001/user"
+user_URL = f"{VERCEL_BASE_URL}/api/user"
 
 @app.route("/create_account", methods=['POST'])
 def create_account():
@@ -82,5 +89,7 @@ def processUserInformation(user_information):
             "message": "An unexpected error occurred while checking for user"
         }
 
+# if __name__ == '__main__':
+#     app.run(port=5008, debug=True)
 if __name__ == '__main__':
-    app.run(port=5008, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')

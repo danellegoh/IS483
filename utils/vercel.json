@@ -1,0 +1,95 @@
+{
+    "version": 2,
+    "builds": [
+        { "src": "card.py", "use": "@vercel/python" },
+        { "src": "completeEvent.py", "use": "@vercel/python"}, 
+        { "src": "create_account.py", "use": "@vercel/python"}, 
+        { "src": "create_trade.py", "use": "@vercel/python"}, 
+        { "src": "event.py", "use": "@vercel/python"}, 
+        { "src": "goal.py", "use": "@vercel/python"}, 
+        { "src": "healthCoin.py", "use": "@vercel/python"}, 
+        { "src": "healthRecommendation.py", "use": "@vercel/python"}, 
+        { "src": "login_account.py", "use": "@vercel/python"}, 
+        { "src": "mvpaEstimation.py", "use": "@vercel/python"}, 
+        { "src": "strava.py", "use": "@vercel/python"}, 
+        { "src": "streak.py", "use": "@vercel/python"}, 
+        { "src": "streakCalculation.py", "use": "@vercel/python"}, 
+        { "src": "trade_card.py", "use": "@vercel/python"}, 
+        { "src": "trade.py", "use": "@vercel/python"}, 
+        { "src": "user.py", "use": "@vercel/python"}, 
+        { "src": "userCard.py", "use": "@vercel/python"}, 
+        { "src": "userEvent.py", "use": "@vercel/python"}
+    ],
+    "routes": [
+        { "src": "/api/card", "dest": "card.py" },
+        { "src": "/api/cards", "dest": "card.py" },
+        { "src": "/api/card/grouped", "dest": "card.py" },
+        { "src": "/api/card/(?<card_id>\\d+)", "dest": "card.py" },
+        { "src": "/api/card/event/(?<event_id>\\d+)", "dest": "card.py" },
+
+        { "src": "/api/attendance/(?<event_id>\\d+)", "dest": "completeEvent.py" },
+
+        { "src": "/api/create_account", "dest": "create_account.py" },
+
+        { "src": "/api/create_trade", "dest": "create_trade.py" },
+
+        { "src": "/api/event", "dest": "event.py" },
+        { "src": "/api/events", "dest": "event.py" },
+        { "src": "/api/event/(?<event_id>\\d+)", "dest": "event.py" },
+        { "src": "/api/event/available", "dest": "event.py" },
+        { "src": "/api/event/search", "dest": "event.py" },
+
+        { "src": "/api/goal", "dest": "goal.py" },
+        { "src": "/api/goals/(?<user_id>\\d+)", "dest": "goal.py" },
+        { "src": "/api/goal/(?<goal_id>\\d+)", "dest": "goal.py" },
+
+        { "src": "/api/healthcoins", "dest": "healthCoin.py" },
+        { "src": "/api/healthcoins/(?<points_id>\\d+)", "dest": "healthCoin.py" },
+
+        { "src": "/api/healthrecommendation", "dest": "healthRecommendation.py" },
+        { "src": "/api/healthrecommendation/(?<recommendation_id>\\d+)", "dest": "healthRecommendation.py" },
+
+        { "src": "/api/user_login", "dest": "login_account.py" },
+
+        { "src": "/api/check_activities_access", "dest": "mvpaEstimation.py" },
+        { "src": "/api/estimate_mvpa", "dest": "mvpaEstimation.py" },
+
+        { "src": "/api/connect", "dest": "strava.py" },
+        { "src": "/api/callback", "dest": "strava.py" },
+        { "src": "/api/activities", "dest": "strava.py" },
+
+        { "src": "/api/streak", "dest": "streak.py" },
+        { "src": "/api/streaks/(?<goal_id>\\d+)", "dest": "streak.py" },
+        { "src": "/api/streak/(?<streak_id>\\d+)", "dest": "streak.py" },
+
+        { "src": "/api/update_streak", "dest": "streakCalculation.py" },
+
+        { "src": "/api/trade_card", "dest": "trade_card.py" },
+
+        { "src": "/api/trade", "dest": "trade.py" },
+        { "src": "/api/trades", "dest": "trade.py" },
+        { "src": "/api/active_trades", "dest": "trade.py" },
+        { "src": "/api/trade/(?<trade_id>\\d+)", "dest": "trade.py" },
+        { "src": "/api/trade/user/(?<user_id>\\d+)", "dest": "trade.py" },
+        { "src": "/api/trade/search", "dest": "trade.py" },
+
+        { "src": "/api/user", "dest": "user.py" },
+        { "src": "/api/users", "dest": "user.py" },
+        { "src": "/api/user/(?<email>[^/]+)", "dest": "user.py" },
+        { "src": "/api/user/id/(?<user_id>\\d+)", "dest": "user.py" },
+        { "src": "/api/user/profile/(?<email>[^/]+)", "dest": "user.py" },
+
+        { "src": "/api/usercard", "dest": "userCard.py" },
+        { "src": "/api/usercard/(?<user_card_id>\\d+)", "dest": "userCard.py" },
+        { "src": "/api/usercard/user/(?<user_id>\\d+)", "dest": "userCard.py" },
+        { "src": "/api/usercard/user/(?<user_id>\\d+)/card/(?<card_id>\\d+)", "dest": "userCard.py" },
+        { "src": "/api/usercard/buy", "dest": "userCard.py" },
+
+        { "src": "/api/userevent", "dest": "userEvent.py" },
+        { "src": "/api/userevents", "dest": "userEvent.py" },
+        { "src": "/api/userevent/(?<user_event_id>\\d+)", "dest": "userEvent.py" },
+        { "src": "/api/userevent/active/(?<user_id>\\d+)", "dest": "userEvent.py" },
+        { "src": "/api/userevent/enrol", "dest": "userEvent.py" },
+        { "src": "/api/userevent/eventusers/(?<event_id>\\d+)", "dest": "userEvent.py" }
+    ]
+}

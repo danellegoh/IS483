@@ -10,11 +10,18 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-goal_URL = "http://localhost:5011/goal"
-streak_URL = "http://localhost:5010/streak"
-mvp_URL = "http://localhost:5021/estimate_mvpa"
-coin_URL = "http://localhost:5004/healthcoins"
-user_URL = "http://localhost:5001/user"
+VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
+
+# goal_URL = "http://localhost:5011/goal"
+# streak_URL = "http://localhost:5010/streak"
+# mvp_URL = "http://localhost:5021/estimate_mvpa"
+# coin_URL = "http://localhost:5004/healthcoins"
+# user_URL = "http://localhost:5001/user"
+goal_URL = f"{VERCEL_BASE_URL}/api/goal"
+streak_URL = f"{VERCEL_BASE_URL}/api/streak"
+mvp_URL = f"{VERCEL_BASE_URL}/api/estimate_mvpa"
+coin_URL = f"{VERCEL_BASE_URL}/api/healthcoins"
+user_URL = f"{VERCEL_BASE_URL}/api/user"
 
 @app.route('/update_streak', methods=['POST'])
 def update_streak_if_mvpa():
@@ -37,7 +44,7 @@ def update_streak_if_mvpa():
                 "message": "streakCalculation.py internal error: " + ex_str
             }), 500
     else: 
-        print("haha :(")
+        print("wrong input")
 
 def processStreakInformation(streak_information):
     try:
@@ -200,6 +207,8 @@ def processStreakInformation(streak_information):
             "data": str(e)
         }), 500
 
+# if __name__ == '__main__':
+#     app.run(port=5030, debug=True)
 if __name__ == '__main__':
-    app.run(port=5030, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')
         

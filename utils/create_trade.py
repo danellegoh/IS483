@@ -9,8 +9,12 @@ from os import environ
 app = Flask(__name__)
 CORS(app)
 
-userCard_URL = "http://localhost:5006/usercard"
-trade_URL = "http://localhost:5013/trade"
+VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
+
+# userCard_URL = "http://localhost:5006/usercard"
+# trade_URL = "http://localhost:5013/trade"
+userCard_URL = f"{VERCEL_BASE_URL}/api/usercard"
+trade_URL = f"{VERCEL_BASE_URL}/api/trade"
 
 @app.route("/create_trade", methods=['POST'])
 def create_new_trade():
@@ -78,5 +82,7 @@ def processCardTrades(trade_details):
         return {"code": 500, "message": str(e)}
 
         
+# if __name__ == '__main__':
+#     app.run(port=5014, debug=True)
 if __name__ == '__main__':
-    app.run(port=5014, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')
