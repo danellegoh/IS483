@@ -134,7 +134,7 @@ export default {
 
                 this.$store.commit('setUserId', userId);
                 this.$store.commit('setUserEmail', userEmail);
-                this.$store.commit('setUserRole', userRole);
+                // this.$store.commit('setUserRole', userRole);
 
                 // for first-time users
                 if (userRole == "Admin") {

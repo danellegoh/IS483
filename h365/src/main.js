@@ -7,7 +7,7 @@ import './assets/styling/general.css';
 
 import { create, NTabs, NTab, NTabPane, NProgress, NSpace, NSteps, NStep, 
     NButtonGroup, NButton, NRadioGroup, NRadioButton, NCheckbox, NDynamicInput, 
-    NInputNumber, NInput } from 'naive-ui'
+    NInputNumber, NInput, NCollapse, NCollapseItem } from 'naive-ui'
 
 const naive = create({
     components: [
@@ -26,6 +26,8 @@ const naive = create({
         NDynamicInput,
         NInputNumber,
         NInput,
+        NCollapse,
+        NCollapseItem,
     ]
 })
 
