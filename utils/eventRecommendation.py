@@ -122,29 +122,36 @@ def get_user_by_id(user_id):
 def map_location_to_group(location):
     location_map = {
         "North": [
-            "woodlands", "yishun", "sembawang", "canberra", "khatib", 
-            "admiralty", "yio chu kang", "ang mo kio"
+            "woodlands", "woodlands north", "woodlands south", "yishun", "sembawang", "canberra", 
+            "khatib", "admiralty", "yio chu kang", "ang mo kio", "marsiling", "springleaf", 
+            "lentor", "mayflower", "bright hill", "upper thomson", "tagore"
         ],
         "East": [
-            "bedok", "changi", "pasir ris", "tampines", "simei", "loyang", 
-            "paya lebar", "upper changi"
+            "bedok", "changi", "pasir ris", "tampines", "simei", "loyang", "paya lebar", 
+            "upper changi", "eunos", "kembangan", "tanah merah", "expo", "changi airport", 
+            "dakota", "mountbatten", "ubis", "geylang bahru", "tampines east", "tampines west", 
+            "bedok north", "bedok reservoir", "kaki bukit", "ubi", "tai seng", "macpherson", 
+            "aljunied", "paya lebar"
         ],
         "South": [
-            "sentosa", "marina bay", "bukit merah", "harbourfront", 
-            "telok blangah", "tanjong pagar", "keppel"
+            "sentosa", "marina bay", "bukit merah", "harbourfront", "telok blangah", "tanjong pagar", 
+            "keppel", "downtown", "raffles place", "outram park", "marina south pier", "gardens by the bay", 
+            "fort canning", "maxwell", "telok ayer", "bayfront", "marina bay sands", "marina barrage"
         ],
         "West": [
-            "jurong west", "jurong east", "clementi", "bukit batok", 
-            "choa chu kang", "bukit panjang", "tengah", "boon lay", "tuas"
+            "jurong west", "jurong east", "clementi", "bukit batok", "choa chu kang", "bukit panjang", 
+            "tengah", "boon lay", "tuas", "pioneer", "lakeside", "joo koon", "gul circle", 
+            "haw par villa", "one north", "buona vista", "dover", "kent ridge", "clementi west", 
+            "jalan bahar", "jurong pier"
         ],
         "Central": [
-            "orchard", "novena", "dhoby ghaut", "bencoolen", "newton", 
-            "queenstown", "tiong bahru", "bukit timah", "kallang", 
-            "toa payoh", "bendemeer", "rochor", "city hall"
-        ],
-        "Northeast": [
-            "sengkang", "punggol", "serangoon", "hougang", "kovan", 
-            "buangkok", "compassvale", "fernvale"
+            "orchard", "novena", "dhoby ghaut", "bencoolen", "newton", "queenstown", "tiong bahru", 
+            "bukit timah", "kallang", "toa payoh", "bendemeer", "rochor", "city hall", "somerset", 
+            "bugis", "promenade", "farrer park", "jalan besar", "little india", "braddell", 
+            "redhill", "commonwealth", "stamford", "keong saik", "golden mile", "bras basah", 
+            "botanic gardens", "clarke quay", "esplanade", "raffles quay", "chinatown", 
+            "great world", "havelock", "holland village", "tan kah kee", "farrer road", "caldecott", 
+            "stevens", "napier", "orchard boulevard", "havelock road", "goldhill plaza", "bukit ho swee"
         ]
     }
 
@@ -158,36 +165,45 @@ def map_location_to_group(location):
 
 @app.route('/user/<int:user_id>/eligible-events', methods=['GET'])
 def get_eligible_events(user_id):
-    #get user data
+    # Get user data
     user = User.query.get(user_id)
     if not user:
         return jsonify({"code": 404, "error": "User not found"}), 404
+
+    # Determine user's location group based on their location
+    user_location_group = user.location_group.lower()
     
-    #get all event data
+    # Get all event data
     events = Event.query.all()
     eligible_event_ids = []
 
     current_date = datetime.now()
 
-    #condition based event filtering
+    # Condition-based event filtering
     for event in events:
         event_location_group = map_location_to_group(event.location)
+        
+        if not event_location_group:
+            # Skip events with an unrecognized location
+            continue
 
         try:
             # Convert event.start_date to datetime if it's in string format
             if isinstance(event.start_date, str):
-                event_start_date = datetime.strptime(event.start_date, '%d/%m/%Y %H:%M:%S')
+                event_start_date = datetime.strptime(event.start_date, '%Y-%m-%d %H:%M:%S')  # Update format if needed
             else:
                 event_start_date = event.start_date  # Already a datetime object
 
-            #1. check that event is existing
-            if (event_start_date < current_date and
-                #2. check that event has slots for signing up
+            # Check conditions:
+            # 1. Event start date is in the future
+            # 2. Event has available slots for signing up
+            # 3. Event tier matches user health tier
+            # 4. Event location group matches user's location group
+            if (event_start_date > current_date and
                 int(event.current_signups) < int(event.max_signups) and
-                #3. check that event tier matches user health tier
                 int(event.tier) == int(user.health_tier) and
-                #4 event location matches user location group
-                event_location_group.lower() == user.location_group.lower()):
+                event_location_group == user_location_group):
+                
                 # Collect only the event_id of eligible events
                 eligible_event_ids.append(event.event_id)
 
