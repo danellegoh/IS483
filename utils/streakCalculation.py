@@ -54,7 +54,7 @@ def processStreakInformation(streak_information):
     # Get Streak 
     
     estimated_met = met_result["weekly_met"]
-    streak_result = invoke_http(f"{streak_URL}/{user_id}")
+    streak_result = invoke_http(f"{streak_URL}/{streak_id}")
     print("haha2", streak_result)
 
     coinEarned = 0

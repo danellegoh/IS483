@@ -53,7 +53,7 @@
                         <div :class="['card', { 'card-owned': userCards.includes(card.card_id) }]">
                             <p class="cardName"> {{ card.title }} </p>
 
-                            <img :src="getCardImage(card.title, card.card_type)" />
+                            <img :src="getCardImage(card.title, card.collection_id)" />
 
                             <div class="price">
                                 <img src="../assets/icons/collection/coin.png" style="margin-right: 5px;">
@@ -118,7 +118,8 @@ export default {
             userCards: [],
             errorMessage: '',
             searchInput: '',
-            searchResults: {}
+            searchResults: {},
+            collectionDataById: {}
         };
     },
     methods: {
@@ -192,25 +193,43 @@ export default {
             }
         },
         async fetchAllCards() {
+            const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+            const collectionData = collectionResponse.data.data;
+            for (let i = 0; i < collectionData.length; i++) {
+                this.collectionDataById[collectionData[i]["collection_id"]] = {"card_type": collectionData[i]["collection_name"], "expired": collectionData[i]["expired"]}
+            }
+            console.log(this.collectionDataById);
+
             const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
             const cardData = cardReponse.data;
+            console.log(cardData);
             for (let i = 0; i < cardData.length; i++) {
-                let card_type = cardData[i]["card_type"];
-                if (!this.allCards[card_type]) {
-                    this.allCards[card_type] = [];
+                if (cardData[i]["event_id"] == null) {
+                    let collection_id = cardData[i]["collection_id"];
+                    let card_type = this.collectionDataById[collection_id]["card_type"];
+                    let expired = this.collectionDataById[collection_id]["expired"];
+                    console.log(card_type, expired);
+                    if (!expired) {
+                        if (!this.allCards[card_type]) {
+                            this.allCards[card_type] = [];
+                        }
+                        this.allCards[card_type].push(cardData[i]);
+                    }
                 }
-                this.allCards[card_type].push(cardData[i]);
             }
+            console.log("checking all cards from fetch all", this.allCards);
             this.numCards = cardData.length;
         },
-        getCardImage(card_title, card_set) {
-            if (!card_title || !card_set) {
-                console.error("Invalid card_title or card_set:", card_title, card_set);
+        getCardImage(card_title, card_collection_id) {
+            // console.log("check collection id:", card_collection_id);
+            if (!card_title || !card_collection_id) {
+                console.error("Invalid card_title or card_collection_id:", card_title, card_collection_id);
                 return ;
             }
 
             const formattedTitle = card_title.toLowerCase().replace(/\s+/g, "_");
             // console.log(formattedTitle);
+            const card_set = this.collectionDataById[card_collection_id]["card_type"]
             const formattedSetName = card_set.toLowerCase().replace(/\s+/g, "_");
             return require(`@/assets/icons/collection/${formattedSetName}/${formattedTitle}.png`);
         },
@@ -221,7 +240,7 @@ export default {
                 var lowerCaseInput = this.searchInput.toLowerCase();
 
                 for (let type in this.allCards) {
-                    console.log(type);
+                    console.log("checking type in search", type);
                     if (type.toLowerCase().includes(lowerCaseInput)) {
                         this.searchResults[type] = this.allCards[type];
                     } else {

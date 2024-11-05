@@ -69,7 +69,7 @@ CREATE TABLE user_events (
 CREATE TABLE cards (
     card_id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(40) NOT NULL,
-    card_type VARCHAR(40) NOT NULL,
+    collection_id INT NOT NULL,
     points_required INT NOT NULL,
     event_id INT NULL,
     description VARCHAR(200) NOT NULL,
@@ -172,3 +172,9 @@ CREATE TABLE strava_users (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE collection (
+    collection_id INT NOT NULL AUTO_INCREMENT,
+    collection_name VARCHAR(50),
+    expired BOOLEAN NOT NULL,
+    PRIMARY KEY (collection_id)
+)
