@@ -175,6 +175,6 @@ CREATE TABLE strava_users (
 CREATE TABLE collection (
     collection_id INT NOT NULL AUTO_INCREMENT,
     collection_name VARCHAR(50),
-    expired BOOLEAN NOT NULL,
+    expired DATETIME,
     PRIMARY KEY (collection_id)
 )

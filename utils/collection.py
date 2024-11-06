@@ -15,7 +15,7 @@ class Collection(db.Model):
     
     collection_id = db.Column(db.Integer, primary_key=True)
     collection_name = db.Column(db.String(64), nullable=False)
-    expired = db.Column(db.Boolean, nullable=False, default=True)
+    expired = db.Column(db.DateTime, nullable=True, default=True)
 
     def __init__(self, collection_name, expired=True):
         self.collection_name = collection_name

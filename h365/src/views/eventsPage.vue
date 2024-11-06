@@ -306,8 +306,166 @@
 
 </style>
 
-
 <script>
+import { defineComponent, ref, watch, computed } from "vue";
+import { useRouter } from 'vue-router';
+import datePicker from '../components/datePicker.vue';
+import { useStore } from 'vuex';
+import axios from 'axios';
+
+export default defineComponent({
+    components: {
+        datePicker
+    },
+    setup() {
+        console.log("all events page");
+        const selectedTab = ref('allEvents');
+        const router = useRouter();
+
+        const store = useStore();
+        const userId = computed(() => store.state.userId);
+
+        watch(selectedTab, (newTab) => {
+            if (newTab === 'allEvents') {
+                router.push({ path: '/events' });
+            } else if (newTab === 'bookedEvents') {
+                router.push({ path: '/booked' });
+            }
+        });
+
+        return {
+            selectedTab,
+            userId
+        };
+    },
+    async mounted() {
+        this.fetchEvents();
+        if (this.userId) {
+            await this.fetchRecommendedEvents();
+        }
+    },
+    data() {
+        return {
+            searchInput: "",
+            dateInput: null,
+            sortedDates: [],
+            eventData: {},
+            recommendedEvents: {},
+            filteredEvents: null
+        };
+    },
+    methods: {
+        async fetchEvents() {
+            try {
+                const response = await axios.get("http://127.0.0.1:5002/event/available");
+                const eventDataResponse = response.data.data;
+                this.eventData = {};
+                this.sortedDates = [];
+                for (const event of eventDataResponse) {
+                    const date_key = event.start_date.split("T")[0];
+                    if (!this.eventData[date_key]) {
+                        this.eventData[date_key] = [];
+                        this.sortedDates.push(date_key);
+                    }
+                    this.eventData[date_key].push(event);
+                }
+                this.sortedDates.sort();
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        },
+        async fetchRecommendedEvents() {
+            try {
+                const response = await axios.get(`http://localhost:5042/user/${this.userId}/eligible-events`);
+                if (response.data.code === 200) {
+                    const eventIds = response.data.data;
+                    const eventDetailsPromises = eventIds.map(id =>
+                        axios.get(`http://localhost:5002/event/${id}`)
+                    );
+                    const eventDetailsResponses = await Promise.all(eventDetailsPromises);
+                    
+                    this.recommendedEvents = {};
+
+                    for (const res of eventDetailsResponses) {
+                        const event = res.data.data;
+                        const date_key = event.start_date.split("T")[0];
+                        if (!this.recommendedEvents[date_key]) {
+                            this.recommendedEvents[date_key] = [];
+                        }
+                        this.recommendedEvents[date_key].push(event);
+                    }
+                } else {
+                    console.error("Failed to fetch recommended events:", response.data.error);
+                }
+            } catch (error) {
+                console.error("Error fetching recommended events:", error);
+            }
+        },
+        formattedDate(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate();
+            const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
+            const year = date.getFullYear();
+            const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
+            return `${day} ${month} ${year}, ${weekday}`;
+        },
+        formattedDateHeader(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        },
+        formattedTime(startDateStr, endDateStr) {
+            const startDate = new Date(startDateStr);
+            const endDate = new Date(endDateStr);
+            const formatTime = date => new Intl.DateTimeFormat('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            }).format(date);
+            return `${formatTime(startDate)} - ${formatTime(endDate)}`;
+        },
+        async searchEvents() {
+            const url = "http://127.0.0.1:5002/event/search";
+            const params = {};
+            if (this.searchInput) params.search_input = this.searchInput;
+            if (this.dateInput) params.date_input = this.dateInput.split("T")[0];
+
+            try {
+                const response = await axios.get(url, { params });
+                if (response.status === 200) {
+                    const responseData = response.data.data;
+                    this.filteredEvents = {};
+                    this.sortedDates = [];
+                    for (const event of responseData) {
+                        const date_key = event.start_date.split("T")[0];
+                        if (!this.filteredEvents[date_key]) {
+                            this.filteredEvents[date_key] = [];
+                            this.sortedDates.push(date_key);
+                        }
+                        this.filteredEvents[date_key].push(event);
+                    }
+                }
+            } catch (error) {
+                console.log("Error during search:", error);
+                this.filteredEvents = null;
+                this.sortedDates = [];
+            }
+        }
+    },
+    computed: {
+        filteredEventsData() {
+            return this.searchInput || this.dateInput ? this.filteredEvents || {} : this.eventData;
+        }
+    }
+});
+</script>
+
+
+
+<!-- <script>
 import { defineComponent, ref, watch } from "vue";
 import { useRouter } from 'vue-router';
 import datePicker from '../components/datePicker.vue';
@@ -594,4 +752,4 @@ export default defineComponent({
         }
     }
 });
-</script>
+</script> -->
