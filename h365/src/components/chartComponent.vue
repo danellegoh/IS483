@@ -109,12 +109,13 @@ export default {
         }
     },
     mounted() {
+        console.log("Received chartData:", this.chartData);
         this.renderChart();
     },
     methods: {
         renderChart() {
             const ctx = this.$refs.chartCanvas.getContext('2d');
-            new Chart(ctx, {
+            this.chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: this.chartData,
                 options: {
@@ -151,6 +152,20 @@ export default {
                     }
                 }
             });
+        },
+        updateChart() {
+            if (this.chartInstance) {
+                this.chartInstance.data = this.chartData;
+                this.chartInstance.update();
+            }
+        }
+    },
+    watch: {
+        chartData: {
+        deep: true,
+        handler() {
+            this.updateChart();
+        }
         }
     }
 }
