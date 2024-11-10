@@ -175,11 +175,13 @@ export default {
             try {
                 console.log("Submit goal attempt");
                 console.log("User email:", this.userEmail);
-                const userResponse = await this.$http.patch("http://127.0.0.1:5001/user/" + this.userEmail, {
-                        target_minutes: this.goal,
-                        preferred_intensity: this.selectedIntensity,
-                        goal_date: new Date().toISOString().split('T')[0]
-                })
+
+                const userResponse = await this.$http.patch(`http://127.0.0.1:5041/user/id/${this.userId}`, {
+                    target_minutes: this.goal,
+                    preferred_intensity: this.selectedIntensity,
+                    goal_date: new Date().toISOString().split('T')[0]
+                });
+
                 console.log(userResponse);
 
                 const goalResponse = await this.$http.post("http://127.0.0.1:5011/goal", {
