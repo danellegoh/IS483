@@ -129,7 +129,8 @@ export default {
             userCards: null,
             userActiveTrade: null,
             popupType: '',
-            popupContent: ''
+            popupContent: '',
+            collectionDataById: {}
         };
     },
     methods: {
@@ -218,9 +219,16 @@ export default {
         },
         async fetchAllTrades() {
             try {
-                const response = await this.$http.get("http://127.0.0.1:5013/active_trades");
-                console.log(response.data.data);
-                this.trades = response.data.data;
+                const tradeResponse = await this.$http.get("http://127.0.0.1:5013/active_trades");
+                console.log(tradeResponse.data.data);
+                this.trades = tradeResponse.data.data;
+
+                const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+                const collectionData = collectionResponse.data.data;
+                for (let i = 0; i < collectionData.length; i++) {
+                    this.collectionDataById[collectionData[i]["collection_id"]] = {"card_type": collectionData[i]["collection_name"], "expired": collectionData[i]["expired"]}
+                }
+                console.log(this.collectionDataById);
             } catch (error) {
                 console.log("Error fetching trades:" + error);
             }

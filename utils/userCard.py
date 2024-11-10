@@ -17,6 +17,7 @@ CORS(app)
 cardURL = "http://localhost:5003/card/"
 userURL = "http://localhost:5001/user/"
 healthCoinURL = "http://localhost:5004/healthcoins"
+collectionURL = "http://localhost:5022/collections"
 
 class UserCard(db.Model):
     __tablename__ = 'user_cards'
@@ -100,15 +101,26 @@ def get_user_cards_by_user(user_id):
         if user_cards:
             count = len(user_cards)
             all_cards_info = []
+
+            collectionResponse = invoke_http(collectionURL, method='GET')
+            collection_info = {}
+
+            # use collection_id as key to get collection name
+            for collection in collectionResponse['data']:
+                collection_info[collection['collection_id']] = {'collection_name': collection['collection_name'], 'expired': collection['expired']}
+            print(collection_info)
+
             for card in user_cards:
-                response = invoke_http(cardURL + str(card.card_id), method='GET')
-                card_info = response["data"]
+                cardResponse = invoke_http(cardURL + str(card.card_id), method='GET')
+                card_info = cardResponse["data"]
+                collection_id = card_info['collection_id']
                 all_cards_info.append({
                     "user_card_id": card.user_card_id,
                     "user_id": card.user_id,
                     "card_id": card.card_id,
                     "earned_date": card.earned_date,
-                    "card_type": card_info['card_type'],
+                    "collection_id": collection_id,
+                    "card_type": collection_info[collection_id]['collection_name'],
                     "title": card_info['title'],
                     "points_required": card_info['points_required'],
                     "event_id": card_info['event_id'],

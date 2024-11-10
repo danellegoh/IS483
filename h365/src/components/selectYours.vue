@@ -11,7 +11,7 @@
                         @click="selectCard(card)"
                         >
                         <p class="cardName"> {{ card.title }} </p>
-                        <img :src="getCardImage(card.title, card.card_type)" />
+                        <img :src="getCardImage(card.title, cardType)" />
                     </div>
                 </div>
             </div>
@@ -66,6 +66,8 @@ export default {
         },
 
         getCardImage(card_title, card_set) {
+            // console.log(card_title);
+            // console.log(card_set);
             if (!card_title || !card_set) {
                 console.error("Invalid card_title or card_set:", card_title, card_set);
                 return;
@@ -74,7 +76,7 @@ export default {
             const formattedTitle = card_title.toLowerCase().replace(/\s+/g, "_");
             const formattedSetName = card_set.toLowerCase().replace(/\s+/g, "_");
 
-            console.log(`Fetching image for: ${formattedSetName}/${formattedTitle}.png`);
+            // console.log(`Fetching image for: ${formattedSetName}/${formattedTitle}.png`);
             try {
                 return require(`@/assets/icons/collection/${formattedSetName}/${formattedTitle}.png`);
             } catch (error) {
@@ -84,6 +86,7 @@ export default {
         },
 
         selectCard(card) {
+            console.log("checking selected card", card);
             this.selectedCard = card;
             this.$emit('cardSelected', card);
         },

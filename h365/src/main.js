@@ -4,10 +4,11 @@ import router from "./router"
 import axios from 'axios';
 import store from './store';
 import './assets/styling/general.css';
+import Countdown from 'vue3-flip-countdown'
 
 import { create, NTabs, NTab, NTabPane, NProgress, NSpace, NSteps, NStep, 
     NButtonGroup, NButton, NRadioGroup, NRadioButton, NCheckbox, NDynamicInput, 
-    NInputNumber, NInput } from 'naive-ui'
+    NInputNumber, NInput, NCollapse, NCollapseItem } from 'naive-ui'
 
 const naive = create({
     components: [
@@ -26,6 +27,8 @@ const naive = create({
         NDynamicInput,
         NInputNumber,
         NInput,
+        NCollapse,
+        NCollapseItem,
     ]
 })
 
@@ -36,4 +39,4 @@ const app = createApp(App)
 
 app.config.globalProperties.$http = axios;
 
-app.use(router).use(naive).use(store).mount('#app')
+app.use(router).use(naive).use(store).use(Countdown).mount('#app')

@@ -118,7 +118,6 @@ export default {
                 this.loginError = "";
                 console.log("Login successful:", response.data);
 
-                // Check for first login from user
                 const userResponse = await this.$http.get("http://127.0.0.1:5001/user/" + this.email);
                 console.log(userResponse);
                 const userData = userResponse["data"]["data"];
@@ -126,20 +125,28 @@ export default {
 
                 const userId = userData["user_id"];
                 const userEmail = userData["email"];
+                const userRole = userData["role"];
+                console.log(userRole);
 
-                 // Store user data in session storage
                 sessionStorage.setItem('userId', userId);
                 sessionStorage.setItem('userEmail', userEmail);
+                sessionStorage.setItem('userRole', userRole);
 
-                // Set userId and userEmail in Vuex
                 this.$store.commit('setUserId', userId);
                 this.$store.commit('setUserEmail', userEmail);
+                // this.$store.commit('setUserRole', userRole);
 
-                // If goal data is 0, goal has not been set yet, therefore first login
-                if (userData["preferred_intensity"] == 0 || userData["target_minutes"] == 0 ) {
+                // for first-time users
+                if (userRole == "Admin") {
+                    this.$router.push('/admin');
+                } 
+                
+                // redirection to admin page
+                else if (userData["preferred_intensity"] == 0 || userData["target_minutes"] == 0 ) {
                     this.$router.push('/info');
                 }
-                // If goal data has been set, redirect to home page
+
+                // redirection to home page
                 else {
                     this.$router.push('/home');
                 }
