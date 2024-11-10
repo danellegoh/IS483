@@ -299,7 +299,7 @@ export default {
                 const streakResponse = await this.$http.get("http://127.0.0.1:5010/streaks/" + goal_id)
                 const streakData = streakResponse.data;
                 // console.log(streakData)
-                const streak_id = streakData[0].streak_id;
+                const streak_id = streakData["data"][0].streak_id;
 
                 const payload = {
                     goal_id: goal_id,
@@ -309,6 +309,7 @@ export default {
                 const response = await axios.post('http://localhost:5030/update_streak', payload, {
                     headers: { 'Content-Type': 'application/json' }
                 });
+                console.log(response.data.data);
                 this.streakCount = response.data.data.streak_count;
 
                 this.currentWeekly = response.data.data.weekly_time_lapse;
@@ -376,11 +377,27 @@ export default {
             } catch (error) {
                 console.log("error in updating goal:", error);
             }
-        }
+        },
+        getPreviousMonth() {
+            const currentDate = new Date();
+            let month = currentDate.getMonth();
+
+            if (month === 0) {
+                month = 11;
+            } else {
+                month -= 1;
+            }
+
+            // Get the month name from the month index
+            const monthNames = ["January", "February", "March", "April", "May", "June", 
+                                "July", "August", "September", "October", "November", "December"];
+            this.lastMonth = monthNames[month];
+        },
     },
     async mounted() {
         try {
             this.fetchUserData();
+            this.getPreviousMonth();
             await this.syncNow();
         } catch (error) {
             console.log("Error during component mount:", error);
