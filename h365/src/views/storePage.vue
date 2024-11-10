@@ -23,13 +23,7 @@
         </div>
     </div>
 
-    <!-- <div class="container">
-        <div class="info">
-            Redeem your HealthCoins for exclusive digital collectibles and showcase them on your profile.
-        </div>
-    </div> -->
-
-    <div class="pagePad" style="padding-bottom: 16px;">
+    <div class="pagePad" style="padding-bottom: 5px;">
         <div class="limited up">
             <p> 🔥 GET IT BEFORE IT'S GONE 🔥 </p>
 
@@ -45,9 +39,16 @@
                     labelSize="0.8rem"
                 />
             </div>
+
+            <div class="shopltd">
+                <button @click="isOpen = !isOpen" class="shopNowBtn"> 
+                    Shop Now!
+                </button>
+            </div>
+
         </div>
 
-        <div class="limited down">
+        <div v-show="isOpen" class="limited down">
             <div v-for="(cards, cardType) in limitedEditionCards" :key="cardType" class="set">
                 <div class="set" style="padding: 0;">
                     <p> {{ cardType }} </p>
@@ -73,6 +74,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+        
+    </div>
+
+    <div class="container">
+        <div class="info">
+            Redeem your HealthCoins for exclusive digital collectibles and showcase them on your profile.
         </div>
     </div>
 
@@ -173,6 +181,7 @@ export default {
             collectionDataById: {},
 
             expiryDate: "",
+            isOpen: false,
         };
     },
     methods: {
@@ -609,6 +618,7 @@ button label {
 .limited {
     width: 100%;
     background-color: var(--default-white);
+    /* background: linear-gradient(180deg, #114ada, #097BEE); */
     padding: 16px;
 }
 
@@ -618,8 +628,10 @@ button label {
 }
 
 .up {
-    border-radius: 6px 6px 0 0;
-    background-color: var(--default-text);
+    /* border-radius: 6px 6px 0 0; */
+    border-radius: 6px;
+    /* background-color: var(--default-text); */
+    background: linear-gradient(180deg, #114ada, #097BEE);
     color: var(--default-white);
     margin-top: 16px;
 }
@@ -634,6 +646,22 @@ button label {
 
 .set {
     padding: 0;
+}
+
+.shopNowBtn {
+    background-color: var(--red);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.shopltd {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 3px 0;
 }
 
 </style>

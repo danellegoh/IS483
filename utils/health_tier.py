@@ -4,7 +4,6 @@ from flask_cors import CORS, cross_origin
 import pickle
 import numpy as np
 from datetime import datetime
-from sklearn.cluster import KMeans
 import pandas as pd
 import sklearn
 
@@ -88,136 +87,132 @@ class User(db.Model):
             "preferred_intensity": self.preferred_intensity,
             "goal_date": self.goal_date.isoformat()
         }
-        
-# Load the model
-file_path = 'health_tier_cluster_model.pkl'
-kmeans_model = None
-cluster_to_tier = None
 
-def load_model():
-    global kmeans_model, cluster_to_tier
+# Load the model and create the tier mapping
+with open('health_tier_cluster_model.pkl', 'rb') as model_file:
+    kmeans = pickle.load(model_file)
+
+# Sort clusters by centers and map to tiers
+sorted_clusters = sorted(
+    enumerate(kmeans.cluster_centers_), 
+    key=lambda x: (x[1][0], x[1][1]) 
+)
+cluster_to_tier = {cluster_idx: tier + 1 for tier, (cluster_idx, _) in enumerate(sorted_clusters)}
+
+def predict_health_tier(user_data):
     try:
-        with open(file_path, 'rb') as file:
-            kmeans_model = pickle.load(file)
-        print("Model loaded successfully.")
+        # Ensure user_data has required fields
+        required_fields = ['preferred_intensity', 'target_minutes']
+        missing_fields = [field for field in required_fields if field not in user_data]
+
+        if missing_fields:
+            raise ValueError(f"Input data is missing fields: {', '.join(missing_fields)}")
+
+        # Convert user_data to DataFrame and predict
+        filtered_data_df = pd.DataFrame([user_data], columns=required_fields)
+        cluster = kmeans.predict(filtered_data_df)[0]
         
-        # Map clusters to tiers based on target_minutes
-        cluster_centers = kmeans_model.cluster_centers_
-        sorted_clusters = sorted(enumerate(cluster_centers), key=lambda x: x[1][1])  # Sort by 'target_minutes'
-        cluster_to_tier = {cluster_idx: tier + 1 for tier, (cluster_idx, _) in enumerate(sorted_clusters)}
+        # Map cluster to health tier
+        return cluster_to_tier.get(cluster, None)
+
+    except ValueError as ve:
+        print(f"Input error: {str(ve)}")
+        return None
     except Exception as e:
-        print(f"An error occurred while loading the pickle file: {e}")
-
-# Load the model once when starting the server
-load_model()
-
-# Function to predict the tier for given user data
-def predict_tier(target_minutes=None, preferred_intensity=None):
-    try:
-        # Use sample data for testing if inputs are None
-        if target_minutes is None and preferred_intensity is None:
-            target_minutes = 250
-            preferred_intensity = 4
-            print("Using sample data for testing: target_minutes=250, preferred_intensity=4")
-
-        # Construct input DataFrame in the required feature order
-        input_data = pd.DataFrame({
-            'preferred_intensity': [preferred_intensity],
-            'target_minutes': [target_minutes]
-        })
-
-        # Print input data for debugging
-        print("Input data for prediction:", input_data)
-
-        # Ensure model is loaded and ready
-        if kmeans_model is None:
-            print("Error: kmeans_model is not loaded.")
-            return None
-
-        # Print model details for debugging
-        print("Model cluster centers:", kmeans_model.cluster_centers_)
-        if hasattr(kmeans_model, 'feature_names_in_'):
-            print("Expected feature names:", kmeans_model.feature_names_in_)
-        else:
-            print("No feature names attribute in the model.")
-
-        # Perform the prediction
-        predicted_cluster = kmeans_model.predict(input_data)[0]
-
-        # Map the predicted cluster to a tier
-        predicted_tier = cluster_to_tier.get(predicted_cluster)
-        print("Predicted cluster:", predicted_cluster)
-        print("Mapped tier:", predicted_tier)
-
-        return predicted_tier
-    except Exception as e:
-        print(f"Prediction error: {e}")
+        print(f"Prediction error: {str(e)}")
         return None
 
-# Check model loading
-@app.route('/check_model', methods=['GET'])
-def check_model():
-    if kmeans_model is not None and cluster_to_tier is not None:
-        sample_data = {
-            "cluster_centers": kmeans_model.cluster_centers_.tolist(),
-            "cluster_to_tier_mapping": cluster_to_tier
-        }
-        return jsonify({"message": "Model loaded successfully.", "sample_data": sample_data}), 200
+    
+# Update partial fields of user by user ID
+@app.route('/user/id/<int:user_id>', methods=['PATCH'])
+def partial_update_user_by_id(user_id):
+    user = User.query.get(user_id)
+    if user:
+        data = request.json
+
+        # Update fields only if they are provided in the request
+        if 'name' in data:
+            user.name = data['name']
+        if 'birthdate' in data:
+            user.birthdate = datetime.strptime(data['birthdate'], '%Y-%m-%d')
+        if 'gender' in data:
+            user.gender = data['gender']
+        if 'height' in data:
+            user.height = data['height']
+        if 'weight' in data:
+            user.weight = data['weight']
+        if 'contact_details' in data:
+            user.contact_details = data['contact_details']
+        if 'nationality' in data:
+            user.nationality = data['nationality']
+        if 'location_group' in data:
+            user.location_group = data['location_group']
+        if 'school' in data:
+            user.school = data['school']
+        if 'password' in data:
+            user.password = data['password']
+        if 'role' in data:
+            user.role = data['role']
+        if 'last_login' in data:
+            user.last_login = datetime.strptime(data['last_login'], '%Y-%m-%d %H:%M:%S')
+        if 'total_point' in data:
+            user.total_point = data['total_point']
+        if 'goal_date' in data:
+            user.goal_date = datetime.strptime(data['goal_date'], '%Y-%m-%d')
+
+        try:
+            # Update target_minutes and preferred_intensity if provided
+            if 'target_minutes' in data:
+                user.target_minutes = data['target_minutes']
+            if 'preferred_intensity' in data:
+                user.preferred_intensity = data['preferred_intensity']
+
+            # Prepare user data for prediction as a dictionary
+            user_data = {
+                'preferred_intensity': user.preferred_intensity,
+                'target_minutes': user.target_minutes
+            }
+
+            # Predict the new health tier and apply it
+            predicted_tier = predict_health_tier(user_data)
+            print(f"Predicted health tier for user {user_id}: {predicted_tier}")  # Debugging line
+
+            if predicted_tier is not None:
+                user.health_tier = predicted_tier
+            else:
+                return jsonify({"error": "Failed to predict health tier"}), 500
+
+            db.session.commit()
+            return jsonify({"code": 200, "data": user.json()}), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": str(e)}), 400
     else:
-        return jsonify({"error": "Model not loaded."}), 500
-
-# Predict tier for user data
-@app.route('/predict_tier', methods=['POST'])
-def predict():
-    data = request.get_json()
-    target_minutes = data.get("target_minutes")
-    preferred_intensity = data.get("preferred_intensity")
-    
-    if target_minutes is None or preferred_intensity is None:
-        return jsonify({"error": "Please provide 'target_minutes' and 'preferred_intensity'"}), 400
-
-    predicted_tier = predict_tier(target_minutes, preferred_intensity)
-    if predicted_tier is None:
-        return jsonify({"error": "Prediction failed."}), 500
-    
-    return jsonify({"predicted_tier": predicted_tier})
-
-# Update partial fields of user by email
-@app.route('/user/<string:email>', methods=['PATCH'])
-def partial_update_user(email):
-    user = User.query.filter_by(email=email).first()
-    if not user:
         return jsonify({"error": "User not found"}), 404
 
-    data = request.json
-    for key, value in data.items():
-        if hasattr(user, key):
-            setattr(user, key, value)
-        if key == "birthdate" or key == "goal_date":
-            setattr(user, key, datetime.strptime(value, '%Y-%m-%d'))
+    
+@app.route('/test_kmeans', methods=['GET'])
+def test_kmeans():
+    # Check if kmeans model is loaded and return its type
+    model_type = type(kmeans).__name__
+    return jsonify({"model_type": model_type}), 200
 
-    # Update target_minutes and preferred_intensity, and predict health tier if needed
-    if "target_minutes" in data or "preferred_intensity" in data:
-        target_minutes = data.get("target_minutes", user.target_minutes)
-        preferred_intensity = data.get("preferred_intensity", user.preferred_intensity)
-        predicted_tier = predict_tier(target_minutes, preferred_intensity)
-        if predicted_tier is not None:
-            user.health_tier = predicted_tier
-        else:
-            return jsonify({"error": "Failed to predict health tier"}), 500
-
-    db.session.commit()
-    return jsonify({"code": 200, "data": user.json()}), 200
-
-@app.route('/get_feature_names', methods=['GET'])
-def get_feature_names():
-    if hasattr(kmeans_model, 'feature_names_in_'):
-        # Return the feature names if available
-        return jsonify({"feature_names": kmeans_model.feature_names_in_.tolist()}), 200
-    else:
-        # Inform that feature names are not available in the model
-        return jsonify({"error": "Feature names not available in the model."}), 404
-
+@app.route('/test_kmeans_prediction', methods=['GET'])
+def test_kmeans_prediction():
+    # Sample input data to test if kmeans model works
+    test_data = {
+        "preferred_intensity": 4,
+        "target_minutes": 250
+    }
+    
+    try:
+        # Test prediction on sample data
+        cluster = predict_health_tier(test_data)
+        return jsonify({"status": "success", "predicted_cluster": cluster}), 200
+    except Exception as e:
+        print(f"Error during prediction: {str(e)}")
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(port=5041, debug=True)
