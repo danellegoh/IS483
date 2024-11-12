@@ -99,12 +99,12 @@ const routes = [
       meta: { hideNavBar: true }
     },
 
-    {
-      path: "/test",
-      name: "testTest",
-      component: () => import("@/components/testTest3.vue"),
-      meta: { hideNavBar: true }
-    },
+    // {
+    //   path: "/test",
+    //   name: "testTest",
+    //   component: () => import("@/components/testTest3.vue"),
+    //   meta: { hideNavBar: true }
+    // },
 
     {
       path: "/profile",

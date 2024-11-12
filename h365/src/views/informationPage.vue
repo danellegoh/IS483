@@ -48,12 +48,11 @@
                     <div class="compulsory">*</div>
                 </div>
 
-                <div class="input drop-shadow">
+                <div class="input drop-shadow" @click.stop="toggleSchoolDropdown">
                     <input
                         type="text"
                         v-model="searchSchool"
-                        @input="filterSchools"
-                        @focus="showSchoolDropdown = true"
+                        @input="handleSchoolInput"
                         placeholder="Select your school"
                         class="region-input"
                     />
@@ -73,12 +72,11 @@
                     <div class="compulsory">*</div>
                 </div>
 
-                <div class="input drop-shadow">
+                <div class="input drop-shadow" @click.stop="toggleRegionDropdown">
                     <input
                         type="text"
                         v-model="searchTerm"
-                        @input="filterRegions"
-                        @focus="showDropdown = true"
+                        @input="handleRegionInput"
                         placeholder="Select your region"
                         class="region-input"
                     />
@@ -556,6 +554,21 @@ export default {
         }
     },
     methods: {
+        toggleSchoolDropdown() {
+            this.showSchoolDropdown = !this.showSchoolDropdown;
+            this.showDropdown  = false;
+        },
+
+        toggleRegionDropdown() {
+            this.showDropdown = !this.showDropdown;
+            this.showSchoolDropdown  = false;
+        },
+
+        closeDropdowns() {
+            this.showSchoolDropdown  = false;
+            this.showDropdown  = false;
+        },
+
         filterRegions() {
             this.filteredRegions = this.regions.filter(region =>
             region.text.toLowerCase().includes(this.searchTerm.toLowerCase())
@@ -577,6 +590,31 @@ export default {
             this.selectedSchool = school.value;
             this.showSchoolDropdown = false;
         },
+
+        clearSelectedSchool() {
+            if (this.selectedSchool) {
+                this.selectedSchool = null;
+                this.searchSchool = '';
+            }
+        },
+
+        clearSelectedRegion() {
+            if (this.selectedRegion) {
+                this.selectedRegion = null;
+                this.searchTerm = '';
+            }
+        },
+
+        handleRegionInput() {
+            this.clearSelectedRegion();
+            this.filterRegions();
+        },
+
+        handleSchoolInput() {
+            this.clearSelectedSchool();
+            this.filterSchools();
+        },
+
         async submitProfileDetails() {
             console.log("Submission attempt");
             console.log("Height:", this.height);
@@ -603,9 +641,15 @@ export default {
             }
         }
     },
+
     mounted() {
         this.filteredRegions = this.regions;
         this.filteredSchools = this.schools;
+        document.addEventListener("click", this.closeDropdowns);
+    },
+
+    beforeUnmount() {
+        document.removeEventListener("click", this.closeDropdowns);
     }
 }
 </script>
