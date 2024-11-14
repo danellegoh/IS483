@@ -123,7 +123,7 @@
             </div>
         </div>
 
-        <div class="container">
+        <div class="container" v-if="recommendedEvents.length > 0">
             <div class="carousel">
                 
                 <div v-for="event in recommendedEvents" :key="event.event_id">
@@ -162,8 +162,25 @@
                 </div>
 
             </div>
-
         </div>
+
+        <div class="container" v-else>
+            <div class="basicCard">
+
+                <div class="pageHeading">
+                    <span style="font-family: text-medium; color: var(--text-highlight); 
+                    font-size: 13px; text-align: justify;"> 
+                        Looks like we don’t have any personalized events for you right 
+                        now, but check out the others – you might find something for you! ✨
+                    </span>
+                </div>
+
+                <router-link :to="{ name: 'eventsPage'}">
+                    <button class="syncButton" style="width: 90%"> View All Events </button>
+                </router-link>
+
+                </div>
+        </div> 
 
         <PopupGoal
             v-if="showPopup"
