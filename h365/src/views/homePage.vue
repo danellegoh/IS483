@@ -202,7 +202,16 @@ export default {
     },
     data() {
         return {
-            streakCount: 1,
+            streakCount: 0,
+            weekStarted: 0,
+            weekCurrent: 0,
+            goalId: 0,
+
+            goalMet: false,
+            toPrompt: false,
+            showPopup: false,
+            caseType: 1,
+            localGoalValue: 0,
 
             currentWeekly: 0,
             goalWeekly: 0,
@@ -295,6 +304,7 @@ export default {
                 const goalData = goalResponse.data;
                 // console.log(goalData)
                 const goal_id = goalData[0].goal_id;
+                this.goalId = goal_id;
 
                 const streakResponse = await this.$http.get("http://127.0.0.1:5010/streaks/" + goal_id)
                 const streakData = streakResponse.data;
@@ -311,6 +321,10 @@ export default {
                 });
                 console.log(response.data.data);
                 this.streakCount = response.data.data.streak_count;
+                this.weekStarted = response.data.data.week_started;
+                this.weekCurrent = response.data.data.week_current;
+                this.goalMet = response.data.data.goal_met;
+                this.toPrompt = response.data.data.to_prompt;
 
                 this.currentWeekly = response.data.data.weekly_time_lapse;
                 this.goalWeekly = goalData[0].target;
@@ -399,6 +413,8 @@ export default {
             this.fetchUserData();
             this.getPreviousMonth();
             await this.syncNow();
+            await this.checkForPopup();
+            this.fetchUserData(); // update reflected healthcoins
         } catch (error) {
             console.log("Error during component mount:", error);
         }

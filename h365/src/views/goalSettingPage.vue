@@ -187,7 +187,7 @@ export default {
                 const goalResponse = await this.$http.post("http://127.0.0.1:5011/goal", {
                     user_id: this.userId,
                     goal_description: "Hit MVPA goal",
-                    tier: 1,
+                    tier: 0,
                     completed: false,
                     target: this.goal
                 })
