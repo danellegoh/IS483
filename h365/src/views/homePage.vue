@@ -475,7 +475,7 @@ export default {
     background-color: var(--default-white);
     align-items: center;
     text-align: center;
-    padding: 10px;
+    padding-top: 15px;
     min-height: 70px;
 }
 
@@ -490,7 +490,7 @@ export default {
 
 .blockLeft p, .blockRight p {
     font-family: text-medium;
-    font-size: 13px;
+    font-size: 11px;
     color: var(--default-text);
     margin: 0;
 }

@@ -13,13 +13,15 @@
                 <p> My Healthcoins </p>
             </div>
 
-            <div class="blockRight">
-                <div class="blockText">
-                    <img src="../assets/icons/collection/lock.png" style="margin-right: 5px;">
-                    <p> <span> {{ numUnlocked }} </span> / {{ numCards }} </p>
+            <router-link :to="{ name: 'allCardsPage'}" class="router-link-custom">
+                <div class="blockRight">
+                    <div class="blockText">
+                        <img src="../assets/icons/collection/lock.png" style="margin-right: 5px;">
+                        <p> <span> {{ numUnlocked }} </span> / {{ numCards }} </p>
+                    </div>
+                    <p> Collectibles Unlocked ➔ </p>
                 </div>
-                <p> Collectibles Unlocked </p>
-            </div>
+            </router-link>
         </div>
     </div>
 
@@ -449,7 +451,7 @@ export default {
     background-color: var(--default-white);
     align-items: center;
     text-align: center;
-    padding: 10px;
+    padding-top: 15px;
     min-height: 70px;
 }
 
@@ -464,7 +466,7 @@ export default {
 
 .blockLeft p, .blockRight p {
     font-family: text-medium;
-    font-size: 13px;
+    font-size: 11px;
     color: var(--default-text);
     margin: 0;
 }
@@ -618,7 +620,6 @@ button label {
 .limited {
     width: 100%;
     background-color: var(--default-white);
-    /* background: linear-gradient(180deg, #114ada, #097BEE); */
     padding: 16px;
 }
 
@@ -628,9 +629,7 @@ button label {
 }
 
 .up {
-    /* border-radius: 6px 6px 0 0; */
     border-radius: 6px;
-    /* background-color: var(--default-text); */
     background: linear-gradient(180deg, #114ada, #097BEE);
     color: var(--default-white);
     margin-top: 16px;
@@ -662,6 +661,17 @@ button label {
     display: flex;
     justify-content: center;
     margin: 10px 0 3px 0;
+}
+
+.router-link-custom {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: var(--default-white);
+    border-radius: 0 6px 6px 0;
+    text-decoration: none;
 }
 
 </style>

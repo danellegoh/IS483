@@ -79,6 +79,13 @@ const routes = [
     },
 
     {
+      path: "/allCards",
+      name: "allCardsPage",
+      component: () => import("@/views/allCardsPage.vue"),
+      meta: { section: 'collection' }
+    },
+
+    {
       path: "/trade",
       name: "tradePage",
       component: () => import("@/views/tradePage.vue"),

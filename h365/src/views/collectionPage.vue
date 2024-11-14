@@ -13,13 +13,15 @@
                 <p> My Healthcoins </p>
             </div>
 
-            <div class="blockRight">
-                <div class="blockText">
-                    <img src="../assets/icons/collection/lock.png" style="margin-right: 5px;">
-                    <p> <span> {{ userCards.length }} </span> / {{ numCards }} </p>
+            <router-link :to="{ name: 'allCardsPage'}" class="router-link-custom">
+                <div class="blockRight">
+                    <div class="blockText">
+                        <img src="../assets/icons/collection/lock.png" style="margin-right: 5px;">
+                        <p> <span> {{ userCards.length }} </span> / {{ numCards }} </p>
+                    </div>
+                    <p> Collectibles Unlocked ➔ </p>
                 </div>
-                <p> Collectibles Unlocked </p>
-            </div>
+            </router-link>
         </div>
 
         <div class="buttonGroup">
@@ -227,7 +229,7 @@ export default {
     background-color: var(--default-white);
     align-items: center;
     text-align: center;
-    padding: 10px;
+    padding-top: 15px;  /* sherry's note */
     min-height: 70px;
 }
 
@@ -242,7 +244,7 @@ export default {
 
 .blockLeft p, .blockRight p {
     font-family: text-medium;
-    font-size: 13px;
+    font-size: 11px; /* sherry's note */
     color: var(--default-text);
     margin: 0;
 }
@@ -345,6 +347,17 @@ div .search-bar {
     gap: 16px;
     width: 100%;
     padding-top: 16px;
+}
+
+.router-link-custom {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: var(--default-white);
+    border-radius: 0 6px 6px 0;
+    text-decoration: none;
 }
 
 </style>
