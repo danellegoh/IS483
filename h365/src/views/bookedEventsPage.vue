@@ -15,7 +15,7 @@
     </div>
 
     <div class="pagePad">
-        <div class="searchAndFilter">
+        <div class="searchAndFilter" style="padding: 0;">
             <div class="search-bar">
                 <i class="uil uil-search"></i>
                 <input type="text" v-model="searchInput" @input="searchEvents" placeholder="Search by event or location" />
@@ -24,14 +24,14 @@
             <div class="filterButton">
                 <datePicker v-model="dateInput" @update:modelValue="searchEvents" />
             </div>
-        </div>        
+        </div>
 
         <!-- loop for each date -->
         <div v-for="date in sortedDates" :key="date">
             <div v-if="filteredEventsData[date] && filteredEventsData[date].length">
                 <!-- date header -->
                 <div class="basicHeader">
-                    <p>{{ formattedDateHeader(date) }}</p>
+                    <p style="margin-bottom: 10px; padding-top: 16px;"> {{ formattedDateHeader(date) }} </p>
                 </div>
 
                 <div class="divider"></div>
@@ -264,6 +264,7 @@ export default
     text-align: left;
     font-family: text-bold;
     border: 0;
+    padding: 10px 16px 0 16px;
 }
 
 .pageHeader {

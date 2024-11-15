@@ -692,4 +692,9 @@ button label {
     text-decoration: none;
 }
 
+.n-breadcrumb {
+    font-family: text-regular;
+    font-size: 10px;
+}
+
 </style>

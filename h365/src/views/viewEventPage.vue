@@ -5,7 +5,19 @@
             <p>Event details</p>
         </div>
 
-        <div class="eventDetails">
+        <n-breadcrumb style="padding: 32px; padding-bottom: 0;">
+            <n-breadcrumb-item>
+                <router-link :to="previousPageRoute"> 
+                    {{ previousPageLabel }} 
+                </router-link>
+            </n-breadcrumb-item>
+
+            <n-breadcrumb-item @click="goTo('viewEventPage')">
+                Event Details
+            </n-breadcrumb-item>
+        </n-breadcrumb>
+
+        <div class="eventDetails" style="padding-top: 0;">
             <div class="eventImage">
                 <img src="../assets/icons/events/event1.png">
             </div>
@@ -104,9 +116,11 @@ import { computed } from 'vue';
 
 export default {
     name: 'viewEventPage',
+
     components: {
         Popup
     },
+
     setup() {
         console.log("view event page");
         const store = useStore(); // Import useStore from vuex
@@ -118,6 +132,7 @@ export default {
             userEmail
         };
     },
+
     data() {
         return {
             eventId: null,
@@ -136,9 +151,13 @@ export default {
             eventName: '',
             popupType: 'event-code',
             userEntryCode: "",
-            errorMessage: '' 
+            errorMessage: '',
+
+            cameFromEventsPage: false,
+            cameFromBookedEventsPage: false,
         }
     },
+
     async mounted() {
         const eventId = this.$route.params.eventId;
         console.log("eventID:", eventId);
@@ -166,6 +185,7 @@ export default {
             console.log("error:", error);
         }
     },
+
     methods: {
         // Format date as '2 September 2024, Monday'
         formattedDate(dateStr) {
@@ -246,7 +266,37 @@ export default {
         },
         goBack() {
             this.$router.go(-1);
-        }
+        },
+        goTo(routeName) {
+            this.$router.push({ name: routeName });
+        },
+    },
+
+    computed: {
+        previousPageRoute() {
+            if (this.cameFromBookedEventsPage) {
+                return { name: 'bookedEventsPage' };
+            }
+            return { name: 'eventsPage' };
+        },
+        previousPageLabel() {
+            return this.cameFromBookedEventsPage ? 'Booked Events' : 'All Events';
+        },
+    },
+
+    beforeRouteEnter(to, from, next) {
+        next(vm => {
+            // Check where the user came from and set the appropriate flag
+            vm.cameFromEventsPage = from.name == 'eventsPage';
+            vm.cameFromBookedEventsPage = from.name == 'bookedEventsPage';
+        });
+    },
+
+    beforeRouteUpdate(to, from, next) {
+        // Update the flags if the route is updated
+        this.cameFromEventsPage = from.name == 'eventsPage';
+        this.cameFromBookedEventsPage = from.name == 'bookedEventsPage';
+        next();
     }
 }
 </script>
@@ -406,6 +456,15 @@ export default {
 .bookNowContainer {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
     z-index: 10;
+}
+
+nav.n-breadcrumb {
+    padding-bottom: 16px;
+}
+
+.n-breadcrumb {
+    font-family: text-regular;
+    font-size: 10px;
 }
 
 </style>
