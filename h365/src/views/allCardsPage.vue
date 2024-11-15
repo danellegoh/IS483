@@ -6,6 +6,16 @@
     </div>
 
     <div class="pagePad" style="margin-top: 32px;">
+        <n-breadcrumb>
+            <n-breadcrumb-item @click="goTo('collectionPage')">
+                My Collection
+            </n-breadcrumb-item>
+
+            <n-breadcrumb-item @click="goTo('allCardsPage')">
+                Overview
+            </n-breadcrumb-item>
+        </n-breadcrumb>
+
         <div class="search-bar">
             <i class="uil uil-search"></i>
             <input type="text" v-model="searchInput" @input="searchCards" placeholder="Search by card or set" />
@@ -67,6 +77,7 @@ export default {
                 console.error("Error fetching collections or cards:", error);
             }
         },
+
         getCardImage(card_title, card_collection_id) {
             const formattedTitle = card_title ? card_title.toLowerCase().replace(/\s+/g, "_") : "default";
 
@@ -80,7 +91,6 @@ export default {
                 console.warn(`Image not found for path.`);
             }
         },
-
 
         searchCards() {
             this.searchResults = {};
@@ -101,6 +111,10 @@ export default {
             } else {
                 this.searchResults = {};
             }
+        },
+
+        goTo(routeName) {
+            this.$router.push({ name: routeName });
         },
     },
 
@@ -241,6 +255,15 @@ button label {
     padding: 5px 10px;
     width: 85px;
     text-align: center;
+}
+
+nav.n-breadcrumb {
+    padding-bottom: 16px;
+}
+
+.n-breadcrumb {
+    font-family: text-regular;
+    font-size: 10px;
 }
 
 </style>

@@ -8,7 +8,7 @@ import Countdown from 'vue3-flip-countdown'
 
 import { create, NTabs, NTab, NTabPane, NProgress, NSpace, NSteps, NStep, 
     NButtonGroup, NButton, NRadioGroup, NRadioButton, NCheckbox, NDynamicInput, 
-    NInputNumber, NInput, NCollapse, NCollapseItem } from 'naive-ui'
+    NInputNumber, NInput, NCollapse, NCollapseItem, NBreadcrumb, NBreadcrumbItem } from 'naive-ui'
 
 const naive = create({
     components: [
@@ -29,11 +29,10 @@ const naive = create({
         NInput,
         NCollapse,
         NCollapseItem,
+        NBreadcrumb,
+        NBreadcrumbItem,
     ]
 })
-
-// const requireStyles = require.context('@/assets/styling', false, /\\.css$/);
-// requireStyles.keys().forEach(fileName => requireStyles(fileName));
 
 const app = createApp(App)
 

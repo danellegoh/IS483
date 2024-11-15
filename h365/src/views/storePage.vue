@@ -1,6 +1,7 @@
 <template>
     <div class="stickyHeader">
         <div class="pageHeader">
+            <i class="uil uil-angle-left" @click="goBack"></i>
             <p> Store </p>
         </div>
 
@@ -26,6 +27,16 @@
     </div>
 
     <div class="pagePad" style="padding-bottom: 5px;">
+        <n-breadcrumb>
+            <n-breadcrumb-item @click="goTo('collectionPage')">
+                My Collection
+            </n-breadcrumb-item>
+
+            <n-breadcrumb-item @click="goTo('storePage')">
+                Store
+            </n-breadcrumb-item>
+        </n-breadcrumb>
+
         <div class="limited up">
             <p> 🔥 GET IT BEFORE IT'S GONE 🔥 </p>
 
@@ -328,7 +339,6 @@ export default {
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         },
 
-
         getCardImage(card_title, card_collection_id) {
             // console.log("check collection id:", card_collection_id);
             if (!card_title || !card_collection_id) {
@@ -379,6 +389,14 @@ export default {
 
         getCountdownTarget(expiryDate) {
             return expiryDate ? new Date(expiryDate).getTime() : null;
+        },
+
+        goTo(routeName) {
+            this.$router.push({ name: routeName });
+        },
+
+        goBack() {
+            this.$router.go(-1);
         },
     },
     setup() {
