@@ -15,7 +15,7 @@
                 <p> My Healthcoins </p>
             </div>
 
-            <div class="blockRight">
+            <div class="blockRight" @click="openStreakPopup">
                 <div class="blockText">
                     <p> {{ streakCount }} </p>
                     <img src="../assets/icons/homepage/streak.png" style="width: 25px; height: auto; margin-right: 3px;">
@@ -26,6 +26,33 @@
                     <i class="uil uil-info-circle" style="display: flex; align-items: center;"></i>
                 </div>
             </div>
+
+            <div v-if="showStreakPopup" class="popupOverlay">
+                <div class="content">
+                    <p class="popupTitle">Earn HealthCoins with Streaks!</p>
+
+                    <div class="popupContent">
+                        <div class="left">
+                            <img src="../assets/icons/homepage/streak-popup.png">
+                        </div>
+
+                        <div class="right">
+                                <p class="popupBody" style="margin-top: 5px">
+                                    • Earn <span>10 coins</span> per week when you hit your goal.
+                                </p>
+                                <p class="popupBody" style="margin-bottom: 20px">
+                                    • Keep your streak going and earn an extra <span>5 coins</span> for each consecutive week you hit your goals!
+                                </p>
+                        </div>
+                    </div>
+
+                    <!-- • -->
+
+                    <button class="popupButton" @click="closeStreakPopup"> Got it! </button>
+
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -240,7 +267,8 @@ export default {
             lastMonth: "",
             numHealthCoins: 0,
             userName: "",
-            recommendedEvents: []
+            recommendedEvents: [],
+            showStreakPopup: false,
         };
     },
     computed: {
@@ -423,6 +451,14 @@ export default {
             const monthNames = ["January", "February", "March", "April", "May", "June", 
                                 "July", "August", "September", "October", "November", "December"];
             this.lastMonth = monthNames[month];
+        },
+
+        openStreakPopup() {
+            this.showStreakPopup = true;
+        },
+
+        closeStreakPopup() {
+            this.showStreakPopup = false;
         },
     },
     async mounted() {
@@ -621,6 +657,90 @@ export default {
     font-size: 10px;
     color: var(--text-highlight);
     margin: 0;
+}
+
+.popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 20000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 28px 20px;
+    border-radius: 8px;
+    width: 350px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.popupContent {
+    display: flex;
+    padding: 0 10px;
+}
+
+.popupButton {
+    font-family: text-medium;
+    color: var(--grey);
+    font-size: 10px;
+    background-color: var(--blue);
+    border-radius: 5px;
+    border: none;
+    padding: 5px 10px;
+    display: flex;
+    margin: auto;
+    text-align: center;
+}
+
+.popupTitle {
+    font-family: text-bold;
+    font-size: 16px;
+    color: var(--orange);
+    margin-bottom: 16px;
+    text-align: center;
+    line-height: 18px;
+}
+
+.popupBody {
+    font-family: text-medium;
+    font-size: 12px;
+    color: var(--text-highlight);
+    margin-bottom: 10px;
+    text-align: justify;
+    line-height: 13px;
+    margin-bottom: 10px;
+    padding: 0 8px;
+}
+
+.popupBody span {
+    font-family: text-bold;
+    color: var(--red);
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 15px;
+}
+
+.left img {
+    width: 100px;
+    height: auto;
+}
+
+.right {
+    display: flex;
+    flex-direction: column;
 }
 
 

@@ -44,6 +44,7 @@
                                 <p class="actual"> {{ mr_totalDistance }} KM </p>
                                 <p class="label"> Total Distance </p>
                                 <img src="../assets/icons/report/distance.png" class="cardimg">
+                                <!-- <p class="sublabel"> +13% </p> -->
                         </div>
 
                     </div>
@@ -55,6 +56,7 @@
                                 <p class="actual"> {{ mr_movingMinutes }} </p>
                                 <p class="label"> Moving Minutes </p>
                                 <img src="../assets/icons/report/time.png" class="cardimg">
+                                <!-- <p class="sublabel"> +10% </p> -->
                         </div>
 
                     </div>
@@ -109,7 +111,7 @@ export default {
                 }
             ]
         },
-        streakCount: this.$route.params.streakCount || 1,
+        streakCount: this.$route.params.streakCount || 0,
         mr_movingMinutes: this.$route.params.mr_movingMinutes || 154,
         mr_topActivity: this.$route.params.mr_topActivity || "Run",
         mr_totalDistance: Math.round((this.$route.params.mr_totalDistance / 1000), 2) || 31,
@@ -326,6 +328,19 @@ export default {
     color: var(--text-highlight);
     margin-bottom: 5px;
 }
+
+/* .sublabel {
+    display: inline-block;
+    font-family: text-regular;
+    font-size: 10px;
+    margin: 5px 0;
+    text-align: center;
+    background-color: var(--green);
+    color: var(--default-white);
+    border-radius: 6px;
+    padding: 3px 8px;
+    align-items: center;
+} */
 
 .cardimg {
     width: 50px;
