@@ -429,7 +429,7 @@ export default {
 
 .stickyHeader {
     background-color: var(--grey);
-    padding-bottom: 1px;
+    padding-bottom: 16px;
 }
 
 .stickyHeader .displayBlock {
