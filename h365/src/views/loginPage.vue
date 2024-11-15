@@ -136,12 +136,12 @@ export default {
                 this.$store.commit('setUserEmail', userEmail);
                 // this.$store.commit('setUserRole', userRole);
 
-                // for first-time users
+                // redirection to admin page
                 if (userRole == "Admin") {
                     this.$router.push('/admin');
                 } 
                 
-                // redirection to admin page
+                // for first-time users - redirection to info and goal setting
                 else if (userData["preferred_intensity"] == 0 || userData["target_minutes"] == 0 ) {
                     this.$router.push('/info');
                 }

@@ -66,7 +66,7 @@ def get_cards():
     cards = Card.query.all()
     return jsonify([card.json() for card in cards]), 200
 
-# Get all Cards grouped by title
+# Get all Cards grouped by collection ID
 @app.route('/cards/grouped', methods=['GET'])
 def get_cards_grouped():
     try:
@@ -74,7 +74,7 @@ def get_cards_grouped():
         grouped_cards = defaultdict(list)
 
         for card in cards:
-            grouped_cards[card.title].append(card.json())
+            grouped_cards[card.collection_id].append(card.json())
         
         return jsonify({"code": 200, "data": grouped_cards}), 200
     
@@ -96,6 +96,21 @@ def get_card(card_id):
     if card:
         return jsonify({"code": 200, "data": card.json()}), 200
     return jsonify({"error": "Card not found"}), 404
+
+# Get Card by Event ID
+@app.route('/card/event/<int:event_id>', methods=['GET'])
+def get_cards_by_event(event_id):
+    cards = Card.query.filter_by(event_id=event_id).all()
+    if cards:
+        return jsonify({
+            "code": 200, 
+            "data": [card.json() for card in cards]
+        }), 200
+    
+    return jsonify({
+        "code": 404,
+        "error": "Cards not found"
+    }), 404
 
 # Update a Card by ID
 @app.route('/card/<int:card_id>', methods=['PUT'])
