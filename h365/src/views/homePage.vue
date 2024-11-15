@@ -41,7 +41,7 @@
                                     + Earn <span>10 coins</span> per week when you hit your goal!
                                 </p>
                                 <p class="popupBody" style="margin-bottom: 20px">
-                                    + Extra <span>5 coins</span> for every consecutive week you hit your goals!
+                                    + Extra <span>5 coins</span> for every consecutive week you hit your goal!
                                 </p>
                         </div>
                     </div>
