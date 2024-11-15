@@ -38,10 +38,10 @@
 
                         <div class="right">
                                 <p class="popupBody" style="margin-top: 5px">
-                                    • Earn <span>10 coins</span> per week when you hit your goal.
+                                    + Earn <span>10 coins</span> per week when you hit your goal!
                                 </p>
                                 <p class="popupBody" style="margin-bottom: 20px">
-                                    • Keep your streak going and earn an extra <span>5 coins</span> for each consecutive week you hit your goals!
+                                    + Extra <span>5 coins</span> for every consecutive week you hit your goals!
                                 </p>
                         </div>
                     </div>
@@ -670,6 +670,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 0 16px;
 }
 
 .content {
@@ -705,7 +706,7 @@ export default {
     font-family: text-bold;
     font-size: 16px;
     color: var(--orange);
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     text-align: center;
     line-height: 18px;
 }
