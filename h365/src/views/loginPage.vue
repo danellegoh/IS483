@@ -97,6 +97,8 @@
 </style>
 
 <script>
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     data() {
         return {
@@ -111,14 +113,17 @@ export default {
             console.log("User login attempt");
             
             try {
-                const response = await this.$http.post("http://127.0.0.1:5009/user_login", {
+                // const loginURL = "http://127.0.0.1:5009/user_login";
+                const loginURL = `${apiBaseURL}/user_login`;
+                const response = await this.$http.post(loginURL, {
                         email: this.email,
                         password: this.password
                 })
                 this.loginError = "";
                 console.log("Login successful:", response.data);
 
-                const userResponse = await this.$http.get("http://127.0.0.1:5001/user/" + this.email);
+                // const userResponse = await this.$http.get("http://127.0.0.1:5001/user/" + this.email);
+                const userResponse = await this.$http.get(`${apiBaseURL}/user/${this.email}`);
                 console.log(userResponse);
                 const userData = userResponse["data"]["data"];
                 console.log(userData);

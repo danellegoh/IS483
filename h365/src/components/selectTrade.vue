@@ -24,6 +24,8 @@
 </template>
 
 <script>
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     data() {
         return {
@@ -38,10 +40,12 @@ export default {
     methods: {
         async fetchAllCards() {
             try {
-                const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
+                // const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
+                const cardReponse = await this.$http.get(`${apiBaseURL}/cards`);
                 const cardData = cardReponse.data;
 
-                const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+                // const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+                const collectionResponse = await this.$http.get(`${apiBaseURL}/collections`);
                 const collectionData = collectionResponse.data.data;
                 for (let i = 0; i < collectionData.length; i++) {
                     this.collectionDataById[collectionData[i]["collection_id"]] = {"card_type": collectionData[i]["collection_name"], "expired": collectionData[i]["expired"]}
@@ -65,7 +69,8 @@ export default {
 
         async fetchUserCards() {
             try {
-                const userResponse = await this.$http.get(`http://127.0.0.1:5006/usercard/user/${this.$store.state.userId}`);
+                // const userResponse = await this.$http.get(`http://127.0.0.1:5006/usercard/user/${this.$store.state.userId}`);
+                const userResponse = await this.$http.get(`${apiBaseURL}/usercard/user/${this.$store.state.userId}`);
                 this.userCards = userResponse.data.data.cards;
             } catch (error) {
                 console.error("Error fetching user cards:", error);

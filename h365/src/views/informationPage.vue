@@ -231,6 +231,8 @@ import { useStore } from 'vuex';
 import { computed } from 'vue';
 import store from '../store';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     setup() {
         console.log("information page");
@@ -626,7 +628,9 @@ export default {
                 console.log("Update information attempt");
                 console.log("Current Store State:", store.state);
                 console.log(this.userEmail);
-                const response = await this.$http.patch("http://127.0.0.1:5001/user/" + this.userEmail, {
+                // const userURL = "http://127.0.0.1:5001/user/" + this.userEmail;
+                const userURL = `${apiBaseURL}/user/${this.userEmail}`;
+                const response = await this.$http.patch(userURL, {
                         height: this.height,
                         weight: this.weight,
                         school: this.searchSchool,

@@ -1,9 +1,14 @@
+import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -120,5 +125,7 @@ def delete_collection(collection_id):
             return jsonify({"error": str(e)}), 400
     return jsonify({"error": "Collection not found"}), 404
 
+# if __name__ == '__main__':
+#     app.run(port=5022, debug=True)
 if __name__ == '__main__':
-    app.run(port=5022, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')

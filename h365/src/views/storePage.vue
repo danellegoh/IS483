@@ -166,6 +166,8 @@ import Popup from '@/components/popUp.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     components: {
         Popup,
@@ -223,7 +225,9 @@ export default {
             // console.log("unlocking card with ID:", cardId);
 
             try {
-                const response = await this.$http.post("http://127.0.0.1:5006/usercard/buy", {
+                // const buyURL = "http://127.0.0.1:5006/usercard/buy";
+                const buyURL = `${apiBaseURL}/usercard/buy`;
+                const response = await this.$http.post(buyURL, {
                     user_id: this.userId,
                     card_id: cardId
                 })
@@ -252,7 +256,8 @@ export default {
         // Fetch user data
         async fetchUserData() {
             try {
-                const userReponse = await this.$http.get("http://127.0.0.1:5001/user/" + this.userEmail);
+                // const userReponse = await this.$http.get("http://127.0.0.1:5001/user/" + this.userEmail);
+                const userReponse = await this.$http.get(`${apiBaseURL}/user/${this.userEmail}`);
                 const userData = userReponse.data.data;
                 this.numHealthCoins = userData["total_point"];
             } catch (error) {
@@ -263,7 +268,8 @@ export default {
         // Fetch user cards
         async fetchUserCards() {
             try {
-                const userCardResponse = await this.$http.get("http://127.0.0.1:5006/usercard/user/" + this.userId);
+                // const userCardResponse = await this.$http.get("http://127.0.0.1:5006/usercard/user/" + this.userId);
+                const userCardResponse = await this.$http.get(`${apiBaseURL}/usercard/user/${this.userId}`);
                 const userCardData = userCardResponse.data.data;
                 
                 this.userCards = userCardData["cards"].map(card => card["card_id"]);
@@ -275,7 +281,8 @@ export default {
 
         // fetch all cards for store and separate based on "limited edt" or "normal"
         async fetchAllCards() {
-            const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+            // const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+            const collectionResponse = await this.$http.get(`${apiBaseURL}/collections`);
             const collectionData = collectionResponse.data.data;
             for (let i = 0; i < collectionData.length; i++) {
                 this.collectionDataById[collectionData[i]["collection_id"]] = {
@@ -285,7 +292,8 @@ export default {
             }
             // console.log("haha", this.collectionDataById);
 
-            const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
+            // const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
+            const cardReponse = await this.$http.get(`${apiBaseURL}/cards`);
             const cardData = cardReponse.data;
             const now = new Date();
 

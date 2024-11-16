@@ -116,6 +116,9 @@
 import Popup from '@/components/popUp.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
+import { join } from 'core-js/core/array';
+
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
 
 export default {
     name: 'viewEventPage',
@@ -167,7 +170,8 @@ export default {
 
         try {
             // Fetch event details
-            const response = await this.$http.get("http://127.0.0.1:5002/event/" + eventId);
+            // const response = await this.$http.get("http://127.0.0.1:5002/event/" + eventId);
+            const response = await this.$http.get(`${apiBaseURL}/event/${eventId}`);
             const eventData = response.data.data;
             console.log(eventData);
 
@@ -185,7 +189,8 @@ export default {
             this.entryCode = eventData["entry_code"];
 
             // Check if user is already registered for the event
-            const registrationResponse = await this.$http.get(`http://127.0.0.1:5007/userevent/active/${this.userId}`);
+            // const registrationResponse = await this.$http.get(`http://127.0.0.1:5007/userevent/active/${this.userId}`);
+            const registrationResponse = await this.$http.get(`${apiBaseURL}/userevent/active/${this.userId}`);
             const registeredEvents = registrationResponse.data || [];
             console.log("haha", registeredEvents)
             this.isRegistered = registeredEvents.some(event => event.data.event_id == this.eventId);
@@ -224,7 +229,9 @@ export default {
             console.log("join event attempt");
 
             try {
-                const response = await this.$http.post("http://127.0.0.1:5007/userevent/enrol", {
+                // const joinEventURL = "http://127.0.0.1:5007/userevent/enrol";
+                const joinEventURL = `${apiBaseURL}/userevent/enrol`;
+                const response = await this.$http.post(joinEventURL, {
                     user_id: this.userId,
                     event_id: this.eventId,
                     entry_code: this.entryCode

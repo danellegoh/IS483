@@ -41,6 +41,8 @@
 </template>
 
 <script>
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     data() {
         return {
@@ -55,7 +57,8 @@ export default {
     methods: {
         async fetchAllCards() {
             try {
-                const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+                // const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+                const collectionResponse = await this.$http.get(`${apiBaseURL}/collections`);
                 const collections = collectionResponse.data.data;
 
                 this.allCards = {};
@@ -67,7 +70,8 @@ export default {
 
                     this.collectionDataById[collection_id] = { card_type: collection_name };
 
-                    const cardResponse = await this.$http.get(`http://127.0.0.1:5003/cards/collection/${collection_id}`);
+                    // const cardResponse = await this.$http.get(`http://127.0.0.1:5003/cards/collection/${collection_id}`);
+                    const cardResponse = await this.$http.get(`${apiBaseURL}/cards/collection/${collection_id}`);
                     const cards = cardResponse.data.data;
 
                     this.allCards[collection_name] = { data: cards };

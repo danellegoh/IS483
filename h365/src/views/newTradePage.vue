@@ -79,6 +79,8 @@ import { defineComponent, reactive } from "vue";
 import selectTrade from '../components/selectTrade.vue';
 import selectYours from '../components/selectYours.vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default defineComponent({
     components: {
         selectTrade,
@@ -187,7 +189,9 @@ export default defineComponent({
                         card_two_id: this.cardWant.card_id
                     };
 
-                    const response = await fetch("http://127.0.0.1:5014/create_trade", {
+                    // const newTradeURL = "http://127.0.0.1:5014/create_trade";
+                    const newTradeURL = `${apiBaseURL}/create_trade`;
+                    const response = await fetch(newTradeURL, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -221,8 +225,10 @@ export default defineComponent({
         async fetchCardTitles() {
             if (this.cardWant && this.cardGive) {
                 try {
-                    const wantResponse = await this.$http.get(`http://127.0.0.1:5003/card/${this.cardWant.card_id}`);
-                    const giveResponse = await this.$http.get(`http://127.0.0.1:5003/card/${this.cardGive.card_id}`);
+                    // const wantResponse = await this.$http.get(`http://127.0.0.1:5003/card/${this.cardWant.card_id}`);
+                    // const giveResponse = await this.$http.get(`http://127.0.0.1:5003/card/${this.cardGive.card_id}`);
+                    const wantResponse = await this.$http.get(`${apiBaseURL}/card/${this.cardWant.card_id}`);
+                    const giveResponse = await this.$http.get(`${apiBaseURL}/card/${this.cardGive.card_id}`);
                     
                     this.cardWantTitle = wantResponse.data.data.title;
                     this.cardGiveTitle = giveResponse.data.data.title;
@@ -250,7 +256,8 @@ export default defineComponent({
     },
 
     async mounted() {
-        const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+        // const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+        const collectionResponse = await this.$http.get(`${apiBaseURL}/collections`);
         const collectionData = collectionResponse.data.data;
         for (let i = 0; i < collectionData.length; i++) {
             this.collectionDataById[collectionData[i]["collection_id"]] = {"card_type": collectionData[i]["collection_name"], "expired": collectionData[i]["expired"]}

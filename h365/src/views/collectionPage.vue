@@ -78,6 +78,8 @@ import Popup from '@/components/popUp.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     components: {
         Popup
@@ -101,7 +103,8 @@ export default {
     methods: {
         async fetchUserCards() {
             try {
-                const response = await fetch("http://127.0.0.1:5006/usercard/user/" + this.userId);
+                // const response = await fetch("http://127.0.0.1:5006/usercard/user/" + this.userId);
+                const response = await fetch(`${apiBaseURL}/usercard/user/${this.userId}`);
                 const data = await response.json();
                 // console.log(data);
 
@@ -117,7 +120,8 @@ export default {
         },
         async fetchAllCards() {
             try {
-                const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
+                // const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
+                const cardReponse = await this.$http.get(`${apiBaseURL}/cards`);
                 const cardData = cardReponse.data;
                 this.numCards = cardData.length;
             } catch (error) {
@@ -126,7 +130,8 @@ export default {
         },
         async fetchUserData() {
             try {
-                const userReponse = await this.$http.get("http://127.0.0.1:5001/user/" + this.userEmail);
+                // const userReponse = await this.$http.get("http://127.0.0.1:5001/user/" + this.userEmail);
+                const userReponse = await this.$http.get(`${apiBaseURL}/user/${this.userEmail}`);
                 const userData = userReponse.data.data;
                 this.numHealthCoins = userData["total_point"];
             } catch (error) {

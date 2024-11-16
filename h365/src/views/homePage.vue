@@ -230,6 +230,8 @@ import { computed } from 'vue';
 import axios from 'axios';
 import PopupGoal from '@/components/editGoalPopup.vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     components: {
         PopupGoal
@@ -279,7 +281,8 @@ export default {
     methods: {
         async fetchUserData() {
             try {
-                const userResponse = await axios.get(`http://127.0.0.1:5001/user/${this.userEmail}`);
+                // const userResponse = await axios.get(`http://127.0.0.1:5001/user/${this.userEmail}`);
+                const userResponse = await axios.get(`${apiBaseURL}/user/${this.userEmail}`);
                 const userData = userResponse.data.data;
                 this.numHealthCoins = userData.total_point;
                 this.userName = userData.name;
@@ -293,11 +296,15 @@ export default {
                 return;
             }
             try {
-                const response = await axios.get(`http://localhost:5042/user/${this.userId}/eligible-events`);
+                // const response = await axios.get(`http://localhost:5042/user/${this.userId}/eligible-events`);
+                const response = await axios.get(`${apiBaseURL}/user/${this.userId}/eligible-events`);
                 if (response.data.code === 200) {
                     const eventIds = response.data.data;
+                    // const eventDetailsPromises = eventIds.map(id => 
+                    //     axios.get(`http://localhost:5002/event/${id}`)
+                    // );
                     const eventDetailsPromises = eventIds.map(id => 
-                        axios.get(`http://localhost:5002/event/${id}`)
+                        axios.get(`${apiBaseURL}/event/${id}`)
                     );
                     const eventDetailsResponses = await Promise.all(eventDetailsPromises);
 
@@ -340,18 +347,21 @@ export default {
             return `${formatTime(startDate)} - ${formatTime(endDate)}`;
         },
         async stravaLogin() {
-            window.location.href = "http://localhost:5020/connect";
+            // window.location.href = "http://localhost:5020/connect";
+            window.location.href = `${apiBaseURL}/connect`;
             await this.syncNow();
         },
         async syncNow() {
             try {
-                const goalResponse = await axios.get(`http://127.0.0.1:5011/goals/${this.userId}`);
+                // const goalResponse = await axios.get(`http://127.0.0.1:5011/goals/${this.userId}`);
+                const goalResponse = await axios.get(`${apiBaseURL}/goals/${this.userId}`);
                 const goalData = goalResponse.data;
                 // console.log(goalData)
                 const goal_id = goalData[0].goal_id;
                 this.goalId = goal_id;
 
-                const streakResponse = await this.$http.get("http://127.0.0.1:5010/streaks/" + goal_id)
+                // const streakResponse = await this.$http.get("http://127.0.0.1:5010/streaks/" + goal_id)
+                const streakResponse = await this.$http.get(`${apiBaseURL}/streaks/${goal_id}`)
                 const streakData = streakResponse.data;
                 // console.log(streakData)
                 const streak_id = streakData["data"][0].streak_id;
@@ -361,7 +371,10 @@ export default {
                     user_id: this.userId,
                     streak_id: streak_id,
                 };
-                const response = await axios.post('http://localhost:5030/update_streak', payload, {
+                // const response = await axios.post('http://localhost:5030/update_streak', payload, {
+                //     headers: { 'Content-Type': 'application/json' }
+                // });
+                const response = await axios.post(`${apiBaseURL}/update_streak`, payload, {
                     headers: { 'Content-Type': 'application/json' }
                 });
                 console.log(response.data.data);
@@ -421,12 +434,19 @@ export default {
         async handleGoalChange(localGoalValue) {
             try {
                 console.log("goal change received on home page", localGoalValue);
-                const goalResponse = await this.$http.patch("http://127.0.0.1:5011/goal/" + this.goalId, {
+                // const goalResponse = await this.$http.patch("http://127.0.0.1:5011/goal/" + this.goalId, {
+                //     target: localGoalValue
+                // })
+                const goalResponse = await this.$http.patch(`${apiBaseURL}/goal/${this.goalId}`, {
                     target: localGoalValue
                 })
                 console.log(goalResponse);
 
-                const userResponse = await this.$http.patch("http://127.0.0.1:5001/user/id/" + this.userId, {
+                // const userResponse = await this.$http.patch("http://127.0.0.1:5001/user/id/" + this.userId, {
+                //     target_minutes: localGoalValue,
+                //     goal_date: new Date().toISOString().split('T')[0]
+                // })
+                const userResponse = await this.$http.patch(`${apiBaseURL}/user/id/${this.userId}`, {
                     target_minutes: localGoalValue,
                     goal_date: new Date().toISOString().split('T')[0]
                 })

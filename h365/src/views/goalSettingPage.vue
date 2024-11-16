@@ -138,6 +138,8 @@
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default {
     setup() {
         console.log("goal setting page");
@@ -176,7 +178,9 @@ export default {
                 console.log("Submit goal attempt");
                 console.log("User email:", this.userEmail);
 
-                const userResponse = await this.$http.patch(`http://127.0.0.1:5041/user/id/${this.userId}`, {
+                // const userURL = `http://127.0.0.1:5041/user/tier/id/${this.userId}`
+                const userURL = `${apiBaseURL}/user/tier/id/${this.userId}`
+                const userResponse = await this.$http.patch(userURL, {
                     target_minutes: this.goal,
                     preferred_intensity: this.selectedIntensity,
                     goal_date: new Date().toISOString().split('T')[0]
@@ -184,7 +188,9 @@ export default {
 
                 console.log(userResponse);
 
-                const goalResponse = await this.$http.post("http://127.0.0.1:5011/goal", {
+                // const goalURL = "http://127.0.0.1:5011/goal"
+                const goalURL = `${apiBaseURL}/goal`
+                const goalResponse = await this.$http.post(goalURL, {
                     user_id: this.userId,
                     goal_description: "Hit MVPA goal",
                     tier: 0,
@@ -194,7 +200,9 @@ export default {
                 console.log(goalResponse);
                 const goal_id = goalResponse.data.data.goal_id;
 
-                const streakResponse = await this.$http.post("http://127.0.0.1:5010/streak", {
+                // const streakURL = "http://127.0.0.1:5010/streak"
+                const streakURL = `${apiBaseURL}/streak`
+                const streakResponse = await this.$http.post(streakURL, {
                     goal_id: goal_id,
                 })
                 console.log(streakResponse);

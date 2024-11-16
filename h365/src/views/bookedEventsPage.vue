@@ -99,6 +99,8 @@ import datePicker from '../components/datePicker.vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default 
     defineComponent({
         components: {
@@ -145,7 +147,8 @@ export default
         },
 
         async mounted() {
-            this.$http.get("http://127.0.0.1:5007/userevent/active/" + this.userId)
+            // this.$http.get("http://127.0.0.1:5007/userevent/active/" + this.userId)
+            this.$http.get(`${apiBaseURL}/userevent/active/${this.userId}`)
             .then(response => {
                 var eventDataResponse = response.data;
                 console.log(eventDataResponse);

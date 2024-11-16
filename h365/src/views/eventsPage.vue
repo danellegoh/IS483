@@ -344,6 +344,8 @@ import datePicker from '../components/datePicker.vue';
 import { useStore } from 'vuex';
 import axios from 'axios';
 
+const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
+
 export default defineComponent({
     components: {
         datePicker
@@ -388,7 +390,8 @@ export default defineComponent({
     methods: {
         async fetchEvents() {
             try {
-                const response = await axios.get("http://127.0.0.1:5002/event/available");
+                // const response = await axios.get("http://127.0.0.1:5002/event/available");
+                const response = await axios.get(`${apiBaseURL}/event/available`);
                 const eventDataResponse = response.data.data;
                 this.eventData = {};
                 this.sortedDates = [];
@@ -408,11 +411,15 @@ export default defineComponent({
         },
         async fetchRecommendedEvents() {
             try {
-                const response = await axios.get(`http://localhost:5042/user/${this.userId}/eligible-events`);
+                // const response = await axios.get(`http://localhost:5042/user/${this.userId}/eligible-events`)
+                const response = await axios.get(`${apiBaseURL}/user/${this.userId}/eligible-events`);
                 if (response.data.code === 200) {
                     const eventIds = response.data.data;
+                    // const eventDetailsPromises = eventIds.map(id =>
+                    //     axios.get(`http://localhost:5002/event/${id}`)
+                    // );
                     const eventDetailsPromises = eventIds.map(id =>
-                        axios.get(`http://localhost:5002/event/${id}`)
+                        axios.get(`${apiBaseURL}/event/${id}`)
                     );
                     const eventDetailsResponses = await Promise.all(eventDetailsPromises);
                     
@@ -460,7 +467,8 @@ export default defineComponent({
             return `${formatTime(startDate)} - ${formatTime(endDate)}`;
         },
         async searchEvents() {
-            const url = "http://127.0.0.1:5002/event/search";
+            // const url = "http://127.0.0.1:5002/event/search";
+            const url = `${apiBaseURL}/event/search`;
             const params = {};
             if (this.searchInput) params.search_input = this.searchInput;
             if (this.dateInput) params.date_input = this.dateInput.split("T")[0];

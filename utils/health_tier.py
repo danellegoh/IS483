@@ -6,9 +6,14 @@ import numpy as np
 from datetime import datetime
 import pandas as pd
 import sklearn
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/healthpal'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS' ] = False
 
 db = SQLAlchemy(app)
@@ -124,7 +129,7 @@ def predict_health_tier(user_data):
 
     
 # Update partial fields of user by user ID
-@app.route('/user/id/<int:user_id>', methods=['PATCH'])
+@app.route('/user/tier/id/<int:user_id>', methods=['PATCH'])
 def partial_update_user_by_id(user_id):
     user = User.query.get(user_id)
     if user:
@@ -214,5 +219,7 @@ def test_kmeans_prediction():
         print(f"Error during prediction: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
+# if __name__ == '__main__':
+#     app.run(port=5041, debug=True)
 if __name__ == '__main__':
-    app.run(port=5041, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')

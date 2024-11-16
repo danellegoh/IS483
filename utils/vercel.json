@@ -2,14 +2,18 @@
     "version": 2,
     "builds": [
         { "src": "card.py", "use": "@vercel/python" },
+        { "src": "collection.py", "use": "@vercel/python" },
         { "src": "completeEvent.py", "use": "@vercel/python"}, 
         { "src": "create_account.py", "use": "@vercel/python"}, 
         { "src": "create_trade.py", "use": "@vercel/python"}, 
         { "src": "event.py", "use": "@vercel/python"}, 
-        { "src": "goal.py", "use": "@vercel/python"}, 
+        { "src": "eventRecommendation.py", "use": "@vercel/python"}, 
+        { "src": "goal.py", "use": "@vercel/python"},
+        { "src": "health_tier.py", "use": "@vercel/python"}, 
         { "src": "healthCoin.py", "use": "@vercel/python"}, 
         { "src": "healthRecommendation.py", "use": "@vercel/python"}, 
         { "src": "login_account.py", "use": "@vercel/python"}, 
+        { "src": "marketplaceCard.py", "use": "@vercel/python"},
         { "src": "mvpaEstimation.py", "use": "@vercel/python"}, 
         { "src": "strava.py", "use": "@vercel/python"}, 
         { "src": "streak.py", "use": "@vercel/python"}, 
@@ -23,9 +27,14 @@
     "routes": [
         { "src": "/api/card", "dest": "card.py" },
         { "src": "/api/cards", "dest": "card.py" },
-        { "src": "/api/card/grouped", "dest": "card.py" },
+        { "src": "/api/cards/grouped", "dest": "card.py" },
+        { "src": "/api/cards/collection/(?<collection_id>\\d+)", "dest": "card.py" },
         { "src": "/api/card/(?<card_id>\\d+)", "dest": "card.py" },
         { "src": "/api/card/event/(?<event_id>\\d+)", "dest": "card.py" },
+
+        { "src": "/api/collection", "dest": "collection.py" },
+        { "src": "/api/collections", "dest": "collection.py" },
+        { "src": "/api/collection/(?<collection_id>\\d+)", "dest": "collection.py" },
 
         { "src": "/api/attendance/(?<event_id>\\d+)", "dest": "completeEvent.py" },
 
@@ -39,9 +48,15 @@
         { "src": "/api/event/available", "dest": "event.py" },
         { "src": "/api/event/search", "dest": "event.py" },
 
+        { "src": "/api/user/(?<user_id>\\d+)/eligible-events", "dest": "eventRecommendation.py" },
+
         { "src": "/api/goal", "dest": "goal.py" },
         { "src": "/api/goals/(?<user_id>\\d+)", "dest": "goal.py" },
         { "src": "/api/goal/(?<goal_id>\\d+)", "dest": "goal.py" },
+
+        { "src": "/api/user/tier/id/(?<user_id>\\d+)", "dest": "health_tier.py" },
+        { "src": "/api/test_kmeans", "dest": "health_tier.py" },
+        { "src": "/api/test_kmeans_prediction", "dest": "health_tier.py" },
 
         { "src": "/api/healthcoins", "dest": "healthCoin.py" },
         { "src": "/api/healthcoins/(?<points_id>\\d+)", "dest": "healthCoin.py" },
@@ -50,6 +65,8 @@
         { "src": "/api/healthrecommendation/(?<recommendation_id>\\d+)", "dest": "healthRecommendation.py" },
 
         { "src": "/api/user_login", "dest": "login_account.py" },
+
+        { "src": "/api/available_cards", "dest": "marketplaceCard.py" },
 
         { "src": "/api/check_activities_access", "dest": "mvpaEstimation.py" },
         { "src": "/api/estimate_mvpa", "dest": "mvpaEstimation.py" },

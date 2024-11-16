@@ -7,11 +7,18 @@ from os import environ
 import hashlib
 from datetime import datetime
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
 CORS(app)
 
-collection_URL = "http://localhost:5022/collection"
-card_URL = "http://localhost:5003/card"
+VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
+
+# collection_URL = "http://localhost:5022/collection"
+# card_URL = "http://localhost:5003/card"
+collection_URL = f"{VERCEL_BASE_URL}/api/collection"
+card_URL = f"{VERCEL_BASE_URL}/api/card"
 
 @app.route("/available_cards", methods=['GET'])
 def trade_card():
@@ -190,5 +197,7 @@ def processAvailableCards():
     }
 '''
         
+# if __name__ == '__main__':
+#     app.run(port=5023, debug=True)
 if __name__ == '__main__':
-    app.run(port=5023, debug=True)
+    app.run(debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')
