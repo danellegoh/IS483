@@ -15,7 +15,7 @@
     </div>
 
     <div class="pagePad">
-        <div class="searchAndFilter">
+        <div class="searchAndFilter" style="padding: 0;">
             <div class="search-bar">
                 <i class="uil uil-search"></i>
                 <input type="text" v-model="searchInput" @input="searchEvents" placeholder="Search by event or location" />
@@ -24,14 +24,19 @@
             <div class="filterButton">
                 <datePicker v-model="dateInput" @update:modelValue="searchEvents" />
             </div>
-        </div>        
+        </div>
+
+        <!-- Check if there are no filtered events or eventData -->
+        <div v-if="isEmpty(filteredEventsData)">
+            <p class="no-events-found">No matching events found</p>
+        </div>
 
         <!-- loop for each date -->
         <div v-for="date in sortedDates" :key="date">
             <div v-if="filteredEventsData[date] && filteredEventsData[date].length">
                 <!-- date header -->
                 <div class="basicHeader">
-                    <p>{{ formattedDateHeader(date) }}</p>
+                    <p style="margin-bottom: 10px; padding-top: 16px;"> {{ formattedDateHeader(date) }} </p>
                 </div>
 
                 <div class="divider"></div>
@@ -40,7 +45,9 @@
                     <router-link :to="{ name: 'viewEventPage', params: { eventId: event.event_id } }">
                         <div class="basicCard">
                             <div class="cardImage">
-                                <img src="../assets/icons/events/event1.png">
+                                <img 
+                                    :src="getEventImage(eventTitle)" 
+                                >
                             </div>
                             <div class="cardText">
                                 <!-- v-if few slots left -->
@@ -52,7 +59,7 @@
                                 <!-- activity name -->
                                 <p class="eventName">{{ event.title }}</p>
                                 <!-- date, day, and time  -->
-                                <div class="eventInfo">
+                                <div class="eventInfo1">
                                     <i class="uil uil-schedule eventIcon"></i>
                                     <div class=eventDetails>
                                         <p>{{ formattedDate(event.start_date) }}</p>
@@ -60,16 +67,14 @@
                                     </div>
                                 </div>
                                 <!-- location -->
-                                <div class="eventInfo">
+                                <div class="eventInfo2">
                                     <i class="uil uil-map-pin eventIcon"></i>
                                     <div class=eventDetails>
                                         <p>{{ event.location }}</p>
                                     </div>
                                 </div>
-                                <div class="eventBtnIntensity">
-                                    <form action="">
-                                        <button class="bookEventBtn">Book Now</button>
-                                    </form>
+                                <!-- <div class="eventBtnIntensity"> -->
+
                                     <!-- intensity -->
                                     <div class="intensity">
                                         <p>Intensity: </p>
@@ -77,7 +82,7 @@
                                         <img v-else-if="event.tier === 2" src="../assets/icons/events/intensity2.png">
                                         <img v-else-if="event.tier === 3" src="../assets/icons/events/intensity3.png">
                                     </div>
-                                </div>
+                                <!-- </div> -->
                             </div>
                         </div>
                     </router-link>
@@ -97,8 +102,9 @@ import { useStore } from 'vuex';
 export default 
     defineComponent({
         components: {
-            datePicker
+            datePicker,
         },
+
         setup() {
             console.log("booked events page");
             const selectedTab = ref('bookedEvents');
@@ -123,15 +129,21 @@ export default
                 userEmail
             };
         },
+
         data() {
             return {
                 sortedDates: [],
                 eventData: {},
                 searchInput: '',
                 dateInput: null,
-                filteredEvents: {}
+                filteredEvents: {},
+                isPopupVisible: false,
+                popupType: 'general',
+                errorMessage: '',
+                popupContent: '',
             }
         },
+
         async mounted() {
             this.$http.get("http://127.0.0.1:5007/userevent/active/" + this.userId)
             .then(response => {
@@ -183,16 +195,15 @@ export default
                 console.log("error:", error);
             });
         },
+
         methods: {
-            // Format date as '2 September 2024, Monday'
             formattedDate(dateStr) {
                 const date = new Date(dateStr);
 
-                // Get the formatted day, month, and year
                 const day = date.getDate(); // 1
-                const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date); // August
+                const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date); // August
                 const year = date.getFullYear(); // 2024
-                const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date); // e.g., Wednesday
+                const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date); // e.g., Wednesday
 
                 return `${day} ${month} ${year}, ${weekday}`;
             },
@@ -204,7 +215,6 @@ export default
                     year: 'numeric'
                 })
             },
-            // Format time as '10.00am - 11.00am'
             formattedTime(startDateStr, endDateStr) {
                 const startDate = new Date(startDateStr);
                 const endDate = new Date(endDateStr);
@@ -239,8 +249,28 @@ export default
                         this.filteredEvents[date] = eventsForDate;
                     }
                 }
+            },
+            getEventImage(programName) {
+                switch (programName) {
+                    case 'Move It':
+                        return require('../assets/icons/events/event1.png');
+                    case 'Family Fitness':
+                        return require('../assets/icons/events/event2.png');
+                    case 'Shop, Cook, Eat Healthy':
+                        return require('../assets/icons/events/event3.png');
+                    case 'Mall Workouts':
+                        return require('../assets/icons/events/event4.png');
+                    case 'Step Up Challenge':
+                        return require('../assets/icons/events/event5.png');
+                    default:
+                        return require('../assets/icons/events/event1.png');
+                }
+            },
+            isEmpty(eventsData) {
+                return !eventsData || Object.keys(eventsData).length === 0;
             }
         },
+
         computed: {
             filteredEventsData() {
                 if (this.searchInput || this.dateInput) {
@@ -264,6 +294,7 @@ export default
     text-align: left;
     font-family: text-bold;
     border: 0;
+    padding: 10px 16px 0 16px;
 }
 
 .pageHeader {
@@ -308,6 +339,7 @@ export default
     width: 100%;
     object-fit: contain;
     margin: 0px;
+    border-radius: 5px 0 0 5px;
 }
 
 .basicCard .cardText {
@@ -322,20 +354,25 @@ export default
     font-size: 8px;
     color: var(--default-white);
     background-color: var(--red);
+    margin-bottom: 4px;
 }
 
 .programmeName {
     font-family: text-medium;
     font-size: 10px;
     color: var(--text-highlight);
-    margin-bottom: 0px;
+    margin-bottom: 4px;
+}
+
+.cardText {
+    max-height: 199px;
 }
 
 .eventName {
     font-family: text-bold;
     font-size: 16px;
     color: var(--default-text);
-    margin-bottom: 0px;
+    margin-bottom: 10px;
     line-height: 16px;
 }
 
@@ -343,9 +380,18 @@ export default
     color: var(--text-highlight);
 }
 
-.eventInfo {
+.eventInfo1 {
     display: flex;
     padding: 0px;
+    margin-bottom: 0px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.eventInfo2 {
+    display: flex;
+    padding: 0px;
+    margin-bottom: 30px;
     align-items: center;
     justify-content: flex-start;
 }
@@ -355,6 +401,7 @@ export default
     color: var(--text-highlight);
     font-size: 9px;
     padding-left: 10px;
+    line-height: 10px;
 }
 
 .eventDetails p {
@@ -371,25 +418,40 @@ export default
     padding-top: 2px 10px;
 }
 
-.eventBtnIntensity {
+.intensity {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end; 
     align-items: center;
-}
-
-.eventBtnIntensity .intensity {
-    display: flex;
-    align-items: center;
-}
-
-.eventBtnIntensity .intensity img {
-    margin-left: 3px;
+    gap: 5px;
 }
 
 .intensity p {
     font-family: text-semibold;
-    font-size: 10px;
+    font-size: 9px;
     color: var(--text-highlight);
     margin: 5px 5px 0 0;
 }
+
+/* .intensity {
+    display: flex;
+    align-items: right;
+    justify-content: space-between;
+
+}
+
+.intensity p {
+    font-family: text-semibold;
+    font-size: 9px;
+    color: var(--text-highlight);
+    margin: 5px 5px 0 0;
+} */
+
+.no-events-found {
+    text-align: center;
+    font-family: text-semibold;
+    color: var(--text-highlight);
+    font-size: 14px;
+    margin-top: 20px;
+}
+
 </style>

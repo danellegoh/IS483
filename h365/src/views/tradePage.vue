@@ -16,6 +16,21 @@
     </div>
 
     <div class="pagePad">
+        <n-breadcrumb>
+            <n-breadcrumb-item>
+                <router-link :to="{ name: 'collectionPage' }"> My Collection </router-link>
+            </n-breadcrumb-item>
+
+            <n-breadcrumb-item v-if="cameFromStore">
+                <router-link :to="{ name: 'storePage' }"> Store </router-link>
+            </n-breadcrumb-item>
+
+            <n-breadcrumb-item>
+                <router-link :to="{ name: 'tradePage' }"> Trades </router-link>
+            </n-breadcrumb-item>
+        </n-breadcrumb>
+
+
         <div class="search-bar">
             <i class="uil uil-search"></i>
             <input type="text" v-model="searchInput" @input="searchTrades" placeholder="Search by card, set, or user" />
@@ -90,6 +105,7 @@ export default {
     components: {
         Popup
     },
+    
     setup() {
         console.log("all trades page");
         const selectedTab = ref('allTrades');
@@ -112,8 +128,10 @@ export default {
             userEmail
         };
     },
+
     data() {
         return {
+            cameFromStore: false,
             isPopupVisible: false,
             tradeCardName: '',
             receiveCardName: '',
@@ -129,9 +147,22 @@ export default {
             userCards: null,
             userActiveTrade: null,
             popupType: '',
-            popupContent: ''
+            popupContent: '',
+            collectionDataById: {}
         };
     },
+
+    beforeRouteEnter(to, from, next) {
+        next(vm => {
+            vm.cameFromStore = from.name === 'storePage';
+        });
+    },
+
+    beforeRouteUpdate(to, from, next) {
+        this.cameFromStore = from.name === 'storePage';
+        next();
+    },
+
     methods: {
         openInfoPopup(cardDescription, cardRecommendation) {
             this.selectedCardDescription = cardDescription;
@@ -139,6 +170,7 @@ export default {
             this.popupType = 'info';
             this.isPopupVisible = true;
         },
+
         async openTradePopup(tradeCardName, receiveCardName, tradeWith, tradeId) {
             try {
                 // FETCH REQUIRED INFORMATION
@@ -196,12 +228,14 @@ export default {
             this.popupType = 'trade';
             this.isPopupVisible = true;
         },
+
         closePopup() {
             this.isPopupVisible = false;
             this.errorMessage = '';
             this.concurrentTradeFound = false;
             this.errorFound = false;
         },
+
         getCardImage(card_title, card_set) {
             if (!card_title || !card_set) {
                 console.error("Invalid card_title or card_set:", card_title, card_set);
@@ -213,18 +247,28 @@ export default {
             const formattedSetName = card_set.toLowerCase().replace(/\s+/g, "_");
             return require(`@/assets/icons/collection/${formattedSetName}/${formattedTitle}.png`);
         },
+
         goBack() {
             this.$router.go(-1);
         },
+
         async fetchAllTrades() {
             try {
-                const response = await this.$http.get("http://127.0.0.1:5013/active_trades");
-                console.log(response.data.data);
-                this.trades = response.data.data;
+                const tradeResponse = await this.$http.get("http://127.0.0.1:5013/active_trades");
+                console.log(tradeResponse.data.data);
+                this.trades = tradeResponse.data.data;
+
+                const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+                const collectionData = collectionResponse.data.data;
+                for (let i = 0; i < collectionData.length; i++) {
+                    this.collectionDataById[collectionData[i]["collection_id"]] = {"card_type": collectionData[i]["collection_name"], "expired": collectionData[i]["expired"]}
+                }
+                console.log(this.collectionDataById);
             } catch (error) {
                 console.log("Error fetching trades:" + error);
             }
         },
+
         async searchTrades() {
             console.log("checking search input:", this.searchInput);
             try {
@@ -244,6 +288,7 @@ export default {
                 console.log("Error in searching for trades:" + error);
             }
         },
+
         async acceptTrade(tradeId) {
             console.log("trade id accepted:", tradeId);
             try {
@@ -329,9 +374,11 @@ export default {
             this.isPopupVisible = true;
         }
     },
+
     mounted() {
         this.fetchAllTrades();
     },
+
     computed: {
         filteredTradesData() {
             if (this.searchInput) {
@@ -341,7 +388,7 @@ export default {
             } else {
                 return this.trades;
             }
-        }
+        },
     }
 };
 </script>
@@ -510,6 +557,15 @@ div .search-bar {
 .bookNowContainer {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
     z-index: 10;
+}
+
+nav.n-breadcrumb {
+    padding-bottom: 16px;
+}
+
+.n-breadcrumb {
+    font-family: text-regular;
+    font-size: 10px;
 }
 
 </style>

@@ -1,11 +1,17 @@
 <template>
-    <div class="stickyHeader">
-        <div class="pageHeader">
-            <i class="uil uil-angle-left" @click="goBack"></i>
-            <p> Your Monthly Report </p>
+    <div>
+        <div class="stickyHeader">
+            <div class="pageHeader">
+                <i class="uil uil-angle-left" @click="goBack"></i>
+                <p> Your Monthly Report </p>
+            </div>
         </div>
 
-        <div class="pagePad">
+        <div class="pagePad" id="results">
+            <div class="reportHeader">
+                <p class="actual">{{ lastMonth }} Report</p>
+            </div>
+
             <div class="colDisplay">
                 <div>
                     <div class="card drop-shadow">
@@ -38,6 +44,7 @@
                                 <p class="actual"> {{ mr_totalDistance }} KM </p>
                                 <p class="label"> Total Distance </p>
                                 <img src="../assets/icons/report/distance.png" class="cardimg">
+                                <!-- <p class="sublabel"> +13% </p> -->
                         </div>
 
                     </div>
@@ -49,6 +56,7 @@
                                 <p class="actual"> {{ mr_movingMinutes }} </p>
                                 <p class="label"> Moving Minutes </p>
                                 <img src="../assets/icons/report/time.png" class="cardimg">
+                                <!-- <p class="sublabel"> +10% </p> -->
                         </div>
 
                     </div>
@@ -56,7 +64,7 @@
             </div>
 
 
-            <div class="card drop-shadow">
+            <div class="card drop-shadow chartContainer">
                 <div class="content">
                     <p class="actual" style="font-size: 15px; margin-bottom: 5px;"> Activity Recorded </p>
                     <div class="chart">
@@ -65,17 +73,21 @@
                 </div>
             </div>
 
-        </div>
+        </div>  
         
+        <div class="bookNowContainer">
+            <button class="bookButton" @click="generatePDF"> 
+            Save Report </button>
+        </div>
     </div>
-
-
 
 </template>
 
 <script>
 import ChartComponent from '@/components/chartComponent.vue';
-import { markRaw } from 'vue';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+// import { markRaw } from 'vue';
 
 export default {
   components: {
@@ -89,8 +101,8 @@ export default {
             // labels: [],
             datasets: [
                 {
-                    // data: [],
-                    data: [0, 0, 0, 0, 0, 0, 6001.5, 0, 0, 0, 0, 0, 0, 5708.5, 0, 0, 0, 0, 0, 0, 7104.9, 0, 0, 0, 0, 0, 0, 6006.2, 0, 0],
+                    data: [],
+                    // data: [0, 0, 0, 0, 0, 0, 6001.5, 0, 0, 0, 0, 0, 0, 5708.5, 0, 0, 0, 0, 0, 0, 7104.9, 0, 0, 0, 0, 0, 0, 6006.2, 0, 0],
                     fill: false,
                     borderColor: 'rgb(28, 131, 225)',
                     tension: 0.1,
@@ -99,13 +111,13 @@ export default {
                 }
             ]
         },
-        streakCount: this.$route.params.streakCount || 1,
+        streakCount: this.$route.params.streakCount || 0,
         mr_movingMinutes: this.$route.params.mr_movingMinutes || 154,
         mr_topActivity: this.$route.params.mr_topActivity || "Run",
         mr_totalDistance: Math.round((this.$route.params.mr_totalDistance / 1000), 2) || 31,
         mr_allActivitites: {},
         mr_month: this.$route.params.mr_month || 0,
-
+        lastMonth: "",
         temp: []
     };
   },
@@ -124,231 +136,140 @@ export default {
     } else {
         console.error("mr_allActivitites is undefined.");
     }
+
+    this.getPreviousMonth();
   },
 
   methods: {
-    // populateChartData() {
-    //     const totalDaysInMonth = new Date(2024, this.mr_month, 0).getDate();
-
-    //     // Update labels (use Vue.set to ensure reactivity)
-    //     this.$set(this.chartData, 'labels', Array.from({ length: totalDaysInMonth }, (_, i) => i + 1));
-    //     console.log(this.chartData.labels);
-
-    //     const activities = this.mr_allActivitites;
-    //     this.temp = [];
-
-    //     // Populate temp array
-    //     for (let i = 1; i <= totalDaysInMonth; i++) {
-    //         if (activities[i]) {
-    //             this.temp.push(activities[i]);
-    //         } else {
-    //             this.temp.push(0);
-    //         }
-    //     }
-
-    //     console.log("haha", this.temp);
-
-    //     // Ensure reactivity for datasets[0].data
-    //     this.$set(this.chartData.datasets[0], 'data', [...this.temp]);
-
-    //     console.log("Populated Chart Data:", this.chartData.datasets[0].data);
-    // }
-
     populateChartData() {
         const totalDaysInMonth = new Date(2024, this.mr_month, 0).getDate();
 
-        // Create a shallow copy of chartData to avoid triggering unnecessary reactivity loops
-        const newChartData = { ...this.chartData };
+        // // Create a shallow copy of chartData to avoid triggering unnecessary reactivity loops
+        // const newChartData = { ...this.chartData };
 
-        // Update labels with a shallow copy
-        newChartData.labels = Array.from({ length: totalDaysInMonth }, (_, i) => i + 1);
-        console.log(newChartData.labels);
+        // // Update labels with a shallow copy
+        // newChartData.labels = Array.from({ length: totalDaysInMonth }, (_, i) => i + 1);
+        // console.log(newChartData.labels);
 
-        const activities = this.mr_allActivitites;
-        this.temp = [];
+        // const activities = this.mr_allActivitites;
+        // this.temp = [];
 
-        // Populate temp array with activity data
-        for (let i = 1; i <= totalDaysInMonth; i++) {
-            if (activities[i]) {
-                this.temp.push(activities[i]);
-            } else {
-                this.temp.push(0);
+        // // Populate temp array with activity data
+        // for (let i = 1; i <= totalDaysInMonth; i++) {
+        //     if (activities[i]) {
+        //         this.temp.push(activities[i]);
+        //     } else {
+        //         this.temp.push(0);
+        //     }
+        // }
+
+        // console.log("haha", this.temp);
+
+        // // Update datasets[0].data with a shallow copy
+        // newChartData.datasets = [...this.chartData.datasets];
+        // newChartData.datasets[0] = { ...this.chartData.datasets[0], data: [...this.temp] };
+
+        // // Replace the entire chartData object with the updated copy
+        // // this.chartData = newChartData;
+
+        // this.chartData = markRaw(newChartData);
+
+        // console.log("Populated Chart Data:", this.chartData.datasets[0].data);
+        // Generate labels for each day in the month
+        const labels = Array.from({ length: totalDaysInMonth }, (_, i) => i + 1);
+
+        // Populate data for each day from `mr_allActivitites`
+        const data = labels.map(day => this.mr_allActivitites[day] || 0);
+
+        // Update chartData by creating a new object to trigger reactivity
+        this.chartData = {
+        labels,
+        datasets: [
+            {
+            data,
+            fill: false,
+            borderColor: 'rgb(28, 131, 225)',
+            tension: 0.1,
+            pointBackgroundColor: 'white',
+            pointRadius: 3
             }
-        }
+        ]
+        };
 
-        console.log("haha", this.temp);
+        console.log("Updated Chart Data:", this.chartData.datasets[0].data);
+        console.log("chartData before passing to ChartComponent:", this.chartData);
 
-        // Update datasets[0].data with a shallow copy
-        newChartData.datasets = [...this.chartData.datasets];
-        newChartData.datasets[0] = { ...this.chartData.datasets[0], data: [...this.temp] };
-
-        // Replace the entire chartData object with the updated copy
-        // this.chartData = newChartData;
-
-        this.chartData = markRaw(newChartData);
-
-        console.log("Populated Chart Data:", this.chartData.datasets[0].data);
     },
     goBack() {
         this.$router.go(-1);
+    },
+    getPreviousMonth() {
+        const currentDate = new Date();
+        let month = currentDate.getMonth();
+
+        if (month === 0) {
+            month = 11;
+        } else {
+            month -= 1;
+        }
+
+        // Get the month name from the month index
+        const monthNames = ["January", "February", "March", "April", "May", "June", 
+                            "July", "August", "September", "October", "November", "December"];
+        this.lastMonth = monthNames[month];
+    },
+    generatePDF() {
+        const toPrint = document.getElementById('results');
+        
+        // Hide sticky header during export
+        const stickyHeader = document.querySelector('.stickyHeader');
+        stickyHeader.style.display = 'none'; 
+
+        // Ensure that the entire area to be captured is visible
+        window.scrollTo(0, 0);
+
+        html2canvas(toPrint, {
+            scale: 2, // Adjust scale for better resolution if needed
+            backgroundColor: '#F5F4F1',
+            useCORS: true, // If you're using external resources like images
+            x: toPrint.offsetLeft,
+            y: toPrint.offsetTop,
+            width: toPrint.scrollWidth, // Ensure entire width is captured
+            height: toPrint.scrollHeight, // Ensure entire height is captured
+            scrollX: 0,
+            scrollY: 0,
+        }).then((canvas) => {
+            // Get the canvas and convert it to an image data URL
+            const imgData = canvas.toDataURL('image/png');
+
+            // Calculate the correct width and height for the PDF
+            const pdfWidth = 210; // A4 width in mm
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [pdfWidth, pdfHeight],
+                margins: { top: 10, left: 10, right: 10, bottom: 10 }
+            });
+
+            // Add image to the PDF
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+            // Save the PDF
+            pdf.save('Monthly_Report.pdf');
+
+            // Restore the sticky header after the export
+            stickyHeader.style.display = 'block'; 
+        });
     }
-
-
-    // populateChartData() {
-    //     const totalDaysInMonth = new Date(2024, this.mr_month, 0).getDate();
-
-    //     this.chartData.labels = Array.from({ length: totalDaysInMonth }, (_, i) => i + 1);
-    //     console.log(this.chartData.labels);
-
-    //     const activities = this.mr_allActivitites;
-    //     this.temp = [];
-
-    //     for (let i = 1; i <= totalDaysInMonth; i++) {
-    //         if (activities[i]) {
-    //             this.temp.push(activities[i]);
-    //         } else {
-    //             this.temp.push(0);
-    //         }
-    //     }
-
-    //     console.log("haha", this.temp);
-    //     // this.chartData.datasets[0].data = this.temp;
-    //     this.chartData.datasets[0].data = [...this.temp];
-    //     console.log("Populated Chart Data:", this.chartData.datasets[0].data);
-    // }
-  }
+    }
 };
 </script>
 
-
-<!-- <script>
-import ChartComponent from '@/components/chartComponent.vue';
-
-export default {
-  components: {
-    ChartComponent
-  },
-
-  data() {
-    return {
-        // activities: JSON.parse(this.mr_allActivitites),
-        chartData: {
-            labels: [],
-            datasets: [
-                {
-                    data: [],
-                    fill: false,
-                    borderColor: 'rgb(28, 131, 225)',
-                    tension: 0.1,
-                    pointBackgroundColor: 'white',
-                    pointRadius: 3
-                }
-            ]
-        },
-
-        streakCount: this.$route.params.streakCount || 0,
-        mr_movingMinutes: this.$route.params.mr_movingMinutes || 0,
-        mr_topActivity: this.$route.params.mr_topActivity || "",
-        mr_totalDistance: this.$route.params.mr_totalDistance || 0,
-        mr_allActivitites: this.$route.params.mr_allActivitites || {},
-        };
-    },
-
-    // props: ['streakCount', 'mr_movingMinutes', 'mr_topActivity', 'mr_totalDistance', 'mr_allActivitites', 'mr_month'],
-
-    // props: {
-    //     streakCount: {
-    //         type: Number,
-    //         default: 0
-    //     },
-    //     mr_movingMinutes: {
-    //         type: Number,
-    //         default: 0
-    //     },
-    //     mr_topActivity: {
-    //         type: String,
-    //         default: ""
-    //     },
-    //     mr_totalDistance: {
-    //         type: Number,
-    //         default: 0
-    //     },
-    //     mr_allActivitites: {
-    //         type: Object,
-    //         default: () => ({})
-    //     },
-    //     mr_month: {
-    //         type: Number,
-    //         default: 0
-    //     }
-    // },
-
-    mounted() {
-        console.log('Route params:', this.$route.params); // Log all params
-        
-        if (this.$route.params.mr_allActivitites) {
-            console.log('Activities:', this.$route.params.mr_allActivitites); // Log mr_allActivitites
-            try {
-                this.mr_allActivitites = this.$route.params.mr_allActivitites;
-            } catch (error) {
-                console.error("Error parsing mr_allActivitites:", error);
-            }
-        } else {
-            console.error("mr_allActivitites is undefined.");
-        }
-    },
-
-    // mounted() {
-    //     console.log("Streak Count:", this.streakCount);
-    //     console.log("Moving Minutes:", this.mr_movingMinutes);
-    //     console.log("Top Activity:", this.mr_topActivity);
-    //     console.log("Total Distance:", this.mr_totalDistance);
-    //     console.log("All Activities:", this.mr_allActivitites);
-
-    //     this.currentStreak = this.streakCount;
-    //     this.totalDistance = Math.round(this.mr_totalDistance / 1000);
-    //     this.topActivity = this.mr_topActivity;
-    //     this.allActivies = this.mr_allActivitites;
-    //     this.totalTime = this.mr_movingMinutes;
-
-    //     this.populateChartData();
-    // },
-
-    // methods: {
-    //     populateChartData() {
-    //         const totalDaysInMonth = new Date(2024, this.mr_month, 0).getDate();
-
-    //         this.chartData.labels = Array.from({ length: totalDaysInMonth }, (_, i) => i + 1);
-
-    //         this.chartData.datasets[0].data = this.chartData.labels.map(day => {
-    //             return this.activities.hasOwnProperty(day) ? this.activities[day] : 0;
-    //         });
-
-    //         console.log("Populated Chart Data:", this.chartData.datasets[0].data);
-    //     }
-    // },
-//     methods: {
-//     populateChartData() {
-//       const totalDaysInMonth = new Date(2024, this.mr_month, 0).getDate(); // Get the number of days in the month
-
-//       // Generate labels for each day of the month
-//       this.chartData.labels = Array.from({ length: totalDaysInMonth }, (_, i) => i + 1);
-
-//       // Populate data for each day by referencing `mr_allActivitites`
-//       this.chartData.datasets[0].data = this.chartData.labels.map(day => {
-//         // Check if the day exists in `mr_allActivitites` and return the value, or return 0
-//         return this.mr_allActivitites.hasOwnProperty(day) ? this.mr_allActivitites[day] : 0;
-//       });
-
-//       console.log("Chart Data:", this.chartData); // Log the final chart data for verification
-//     }
-//   }
-};
-</script> -->
-
 <style scoped>
 .pagePad {
-    padding: 32px;
+    padding: 20px 32px 32px 32px;
 }
 
 .pageHeader {
@@ -408,11 +329,57 @@ export default {
     margin-bottom: 5px;
 }
 
+/* .sublabel {
+    display: inline-block;
+    font-family: text-regular;
+    font-size: 10px;
+    margin: 5px 0;
+    text-align: center;
+    background-color: var(--green);
+    color: var(--default-white);
+    border-radius: 6px;
+    padding: 3px 8px;
+    align-items: center;
+} */
+
 .cardimg {
     width: 50px;
     height: auto;
     display: flex;
     margin: auto;
+}
+
+.reportHeader {
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.chartContainer {
+    margin-bottom: 16px;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bookButton {
+    background-color: var(--blue);
+    color: var(--grey);
+    font-family: text-medium;
+    font-size: 13px;
+    border: none;
+    width: 100%;
+    padding: 16px 0px;
+    position: fixed;
+    bottom: 81.75px;
+}
+
+.bookNowContainer {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    z-index: 10;
 }
 
 </style>

@@ -5,9 +5,23 @@
             <p>Event details</p>
         </div>
 
-        <div class="eventDetails">
+        <n-breadcrumb style="padding: 32px; padding-bottom: 0;">
+            <n-breadcrumb-item>
+                <router-link :to="previousPageRoute"> 
+                    {{ previousPageLabel }} 
+                </router-link>
+            </n-breadcrumb-item>
+
+            <n-breadcrumb-item @click="goTo('viewEventPage')">
+                Event Details
+            </n-breadcrumb-item>
+        </n-breadcrumb>
+
+        <div class="eventDetails" style="padding-top: 0;">
             <div class="eventImage">
-                <img src="../assets/icons/events/event1.png">
+                <img 
+                    :src="getEventImage(eventTitle)" 
+                >
             </div>
 
             <div class="eventText">
@@ -80,9 +94,10 @@
             </div>
         </div>
 
-        <div class="bookNowContainer">
+        <div class="bookNowContainer" v-if="!isRegistered">
             <button class="bookButton" @click="openCodePopup"> Book Now </button>
         </div>
+
     </div>
 
     <Popup
@@ -104,9 +119,11 @@ import { computed } from 'vue';
 
 export default {
     name: 'viewEventPage',
+
     components: {
         Popup
     },
+
     setup() {
         console.log("view event page");
         const store = useStore(); // Import useStore from vuex
@@ -118,6 +135,7 @@ export default {
             userEmail
         };
     },
+
     data() {
         return {
             eventId: null,
@@ -136,14 +154,19 @@ export default {
             eventName: '',
             popupType: 'event-code',
             userEntryCode: "",
-            errorMessage: '' 
-        }
+            errorMessage: '',
+            isRegistered: false, // New flag
+            cameFromEventsPage: false,
+            cameFromBookedEventsPage: false,
+        };
     },
+
     async mounted() {
         const eventId = this.$route.params.eventId;
         console.log("eventID:", eventId);
 
         try {
+            // Fetch event details
             const response = await this.$http.get("http://127.0.0.1:5002/event/" + eventId);
             const eventData = response.data.data;
             console.log(eventData);
@@ -161,17 +184,20 @@ export default {
             this.eventOrganiserPhone = eventData["organiser_phone"];
             this.entryCode = eventData["entry_code"];
 
-        }
-        catch (error) {
-            console.log("error:", error);
+            // Check if user is already registered for the event
+            const registrationResponse = await this.$http.get(`http://127.0.0.1:5007/userevent/active/${this.userId}`);
+            const registeredEvents = registrationResponse.data || [];
+            console.log("haha", registeredEvents)
+            this.isRegistered = registeredEvents.some(event => event.data.event_id == this.eventId);
+            console.log("Is user registered:", this.isRegistered);
+        } catch (error) {
+            console.log("Error:", error);
         }
     },
+
     methods: {
-        // Format date as '2 September 2024, Monday'
         formattedDate(dateStr) {
             const date = new Date(dateStr);
-
-            // Get the formatted day, month, and year
             const day = date.getDate(); // 1
             const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date); // August
             const year = date.getFullYear(); // 2024
@@ -179,7 +205,7 @@ export default {
 
             return `${day} ${month} ${year}, ${weekday}`;
         },
-        // Format time as '10.00am - 11.00am'
+
         formattedTime(startDateStr, endDateStr) {
             const startDate = new Date(startDateStr);
             const endDate = new Date(endDateStr);
@@ -246,7 +272,53 @@ export default {
         },
         goBack() {
             this.$router.go(-1);
+        },
+        goTo(routeName) {
+            this.$router.push({ name: routeName });
+        },
+        getEventImage(programName) {
+            switch (programName) {
+                case 'Move It':
+                    return require('../assets/icons/events/event1.png');
+                case 'Family Fitness':
+                    return require('../assets/icons/events/event2.png');
+                case 'Shop, Cook, Eat Healthy':
+                    return require('../assets/icons/events/event3.png');
+                case 'Mall Workouts':
+                    return require('../assets/icons/events/event4.png');
+                case 'Step Up Challenge':
+                    return require('../assets/icons/events/event5.png');
+                default:
+                    return require('../assets/icons/events/event1.png');
+            }
         }
+    },
+
+    computed: {
+        previousPageRoute() {
+            if (this.cameFromBookedEventsPage) {
+                return { name: 'bookedEventsPage' };
+            }
+            return { name: 'eventsPage' };
+        },
+        previousPageLabel() {
+            return this.cameFromBookedEventsPage ? 'Booked Events' : 'All Events';
+        },
+    },
+
+    beforeRouteEnter(to, from, next) {
+        next(vm => {
+            // Check where the user came from and set the appropriate flag
+            vm.cameFromEventsPage = from.name == 'eventsPage';
+            vm.cameFromBookedEventsPage = from.name == 'bookedEventsPage';
+        });
+    },
+
+    beforeRouteUpdate(to, from, next) {
+        // Update the flags if the route is updated
+        this.cameFromEventsPage = from.name == 'eventsPage';
+        this.cameFromBookedEventsPage = from.name == 'bookedEventsPage';
+        next();
     }
 }
 </script>
@@ -406,6 +478,15 @@ export default {
 .bookNowContainer {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
     z-index: 10;
+}
+
+nav.n-breadcrumb {
+    padding-bottom: 16px;
+}
+
+.n-breadcrumb {
+    font-family: text-regular;
+    font-size: 10px;
 }
 
 </style>

@@ -59,7 +59,9 @@ def processStreakInformation(streak_information):
         # Get Estimated MET
         met_result = invoke_http(f"{mvp_URL}")
         print("mvpaEstimation", met_result)
-        estimated_met = met_result["weekly_met"]
+        # estimated_met = met_result["weekly_met"]
+        weekly_time_lapse = met_result["weekly_time_lapse"]
+        # weekly_time_lapse = 180 # EDIT HERE FOR DEMO
         
         # Get Streak 
         streak_check_result = invoke_http(f"{streak_URL}/{streak_id}", method='GET')
@@ -84,7 +86,7 @@ def processStreakInformation(streak_information):
         if streak_week_current + 1 == iso_current_week:
             # moderate activity threshold - MET level = 3
             # if goal is met upon refresh
-            if (estimated_met >= 3) and (goal_result["target"]):
+            if weekly_time_lapse > goal_result["target"]:
                 streak_count = streak_result["streak_count"] + 1
                 streak_json = {
                     "streak_id": streak_result["streak_id"],
@@ -109,7 +111,7 @@ def processStreakInformation(streak_information):
                     
         # when goal is first set by user
         elif streak_week_current == 0:
-            if (estimated_met >= 3) and (goal_result["target"]):
+            if weekly_time_lapse > goal_result["target"]:
                 streak_json = {
                     "streak_id": streak_result["streak_id"],
                     "goal_id": streak_result["goal_id"],
@@ -117,7 +119,7 @@ def processStreakInformation(streak_information):
                     "week_current": iso_current_week,
                     "streak_count": 1
                     }
-                coinEarned = 10 + streak_count * 5
+                coinEarned = 10 + 1 * 5 # streak count is 1
                 goal_met = True
                 to_prompt = True
             else:
@@ -190,7 +192,7 @@ def processStreakInformation(streak_information):
                 "daily_time_lapse": met_result['daily_time_lapse'],
                 "monthly_top_activity": met_result['monthly_top_activity'],
                 "monthly_time_lapse": met_result['monthly_time_lapse'],
-                "weekly_time_lapse": met_result['weekly_time_lapse'],
+                "weekly_time_lapse": weekly_time_lapse,
                 "streak_count": streak_update_result["data"]['streak_count'],
                 "week_started": streak_update_result["data"]['week_started'],
                 "week_current": streak_update_result["data"]['week_current'],
