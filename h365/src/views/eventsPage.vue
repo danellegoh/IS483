@@ -80,7 +80,9 @@
                                 </div>
 
                                 <!-- location -->
-                                <div class="eventInfo2">
+                                <div class="eventInfo2"
+                                    :style="{ marginBottom: recommendedEvents[date] && recommendedEvents[date].length ? '10px' : '30px' }"
+                                >
                                     <i class="uil uil-map-pin eventIcon"></i>
                                     <div class=eventDetails>
                                         <p>{{ event.location }}</p>
@@ -149,7 +151,9 @@
                                 </div>
 
                                 <!-- location -->
-                                <div class="eventInfo2">
+                                <div class="eventInfo2" 
+                                    :style="{ marginBottom: recommendedEvents[date] && recommendedEvents[date].length ? '10px' : '30px' }"
+                                >
                                     <i class="uil uil-map-pin eventIcon"></i>
                                     <div class=eventDetails>
                                         <p>{{ event.location }}</p>
@@ -274,7 +278,7 @@
 .eventInfo2 {
     display: flex;
     padding: 0px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     align-items: center;
     justify-content: flex-start;
 }
