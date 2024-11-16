@@ -25,16 +25,16 @@
         { "src": "userEvent.py", "use": "@vercel/python"}
     ],
     "routes": [
-        { "src": "/api/card", "dest": "card.py" },
-        { "src": "/api/cards", "dest": "card.py" },
-        { "src": "/api/cards/grouped", "dest": "card.py" },
-        { "src": "/api/cards/collection/(?<collection_id>\\d+)", "dest": "card.py" },
-        { "src": "/api/card/(?<card_id>\\d+)", "dest": "card.py" },
-        { "src": "/api/card/event/(?<event_id>\\d+)", "dest": "card.py" },
+        { "src": "/card", "dest": "card.py" },
+        { "src": "/cards", "dest": "card.py" },
+        { "src": "/cards/grouped", "dest": "card.py" },
+        { "src": "/cards/collection/(?<collection_id>\\d+)", "dest": "card.py" },
+        { "src": "/card/(?<card_id>\\d+)", "dest": "card.py" },
+        { "src": "/card/event/(?<event_id>\\d+)", "dest": "card.py" },
 
-        { "src": "/api/collection", "dest": "collection.py" },
-        { "src": "/api/collections", "dest": "collection.py" },
-        { "src": "/api/collection/(?<collection_id>\\d+)", "dest": "collection.py" },
+        { "src": "/collection", "dest": "collection.py" },
+        { "src": "/collections", "dest": "collection.py" },
+        { "src": "/collection/(?<collection_id>\\d+)", "dest": "collection.py" },
 
         { "src": "/attendance/(?<event_id>\\d+)", "dest": "completeEvent.py" },
 
@@ -42,21 +42,21 @@
 
         { "src": "/create_trade", "dest": "create_trade.py" },
 
-        { "src": "/api/event", "dest": "event.py" },
-        { "src": "/api/events", "dest": "event.py" },
-        { "src": "/api/event/(?<event_id>\\d+)", "dest": "event.py" },
-        { "src": "/api/event/available", "dest": "event.py" },
-        { "src": "/api/event/search", "dest": "event.py" },
+        { "src": "/event", "dest": "event.py" },
+        { "src": "/events", "dest": "event.py" },
+        { "src": "/event/(?<event_id>\\d+)", "dest": "event.py" },
+        { "src": "/event/available", "dest": "event.py" },
+        { "src": "/event/search", "dest": "event.py" },
 
-        { "src": "/api/user/(?<user_id>\\d+)/eligible-events", "dest": "eventRecommendation.py" },
+        { "src": "/user/(?<user_id>\\d+)/eligible-events", "dest": "eventRecommendation.py" },
 
-        { "src": "/api/goal", "dest": "goal.py" },
-        { "src": "/api/goals/(?<user_id>\\d+)", "dest": "goal.py" },
-        { "src": "/api/goal/(?<goal_id>\\d+)", "dest": "goal.py" },
+        { "src": "/goal", "dest": "goal.py" },
+        { "src": "/goals/(?<user_id>\\d+)", "dest": "goal.py" },
+        { "src": "/goal/(?<goal_id>\\d+)", "dest": "goal.py" },
 
-        { "src": "/api/user/tier/id/(?<user_id>\\d+)", "dest": "health_tier.py" },
-        { "src": "/api/test_kmeans", "dest": "health_tier.py" },
-        { "src": "/api/test_kmeans_prediction", "dest": "health_tier.py" },
+        { "src": "/user/tier/id/(?<user_id>\\d+)", "dest": "health_tier.py" },
+        { "src": "/test_kmeans", "dest": "health_tier.py" },
+        { "src": "/test_kmeans_prediction", "dest": "health_tier.py" },
 
         { "src": "/healthcoins", "dest": "healthCoin.py" },
         { "src": "/healthcoins/(?<points_id>\\d+)", "dest": "healthCoin.py" },
@@ -64,9 +64,9 @@
         { "src": "/healthrecommendation", "dest": "healthRecommendation.py" },
         { "src": "/healthrecommendation/(?<recommendation_id>\\d+)", "dest": "healthRecommendation.py" },
 
-        { "src": "/api/user_login", "dest": "login_account.py" },
+        { "src": "/user_login", "dest": "login_account.py" },
 
-        { "src": "/api/available_cards", "dest": "marketplaceCard.py" },
+        { "src": "/available_cards", "dest": "marketplaceCard.py" },
 
         { "src": "/check_activities_access", "dest": "mvpaEstimation.py" },
         { "src": "/estimate_mvpa", "dest": "mvpaEstimation.py" },
