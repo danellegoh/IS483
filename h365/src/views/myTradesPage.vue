@@ -173,7 +173,6 @@ export default {
             try {
                 // const response = await this.$http.get("http://127.0.0.1:5013/trade/user/" + this.userId);
                 const response = await this.$http.get(`${apiBaseURL}/trade/user/${this.userId}`);
-                // console.log('haha', response.data.data);
                 this.myTrades = response.data.data;
 
                 const tradeDate = response.data.data[0].trade_date;

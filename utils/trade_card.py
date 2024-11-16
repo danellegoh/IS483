@@ -94,12 +94,6 @@ def processCardTrade(trade_details):
         
     else:
         print("failed to add card 2 to user 1")
-
-    # # if card_add_result['code'] == 404:
-    # #     print("failed to add card to user 1")
-        
-    # # else:
-    # print(card_add_result)
     
     # 5. Change traded to True
     trade_result = invoke_http(f"{trade_URL}/{trade_id}", method='DELETE')

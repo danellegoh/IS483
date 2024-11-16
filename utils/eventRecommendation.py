@@ -158,23 +158,6 @@ class Event(db.Model):
             "organiser_phone": self.organiser_phone,
             "organiser_email": self.organiser_email
         }
-        
-# Flask route to get user information by ID
-@app.route('/user/id/<int:user_id>', methods=['GET'])
-def get_user_by_id(user_id):
-    user = User.query.get(user_id)
-    if user:
-        user_data = {
-            "user_id": user.user_id,
-            "name": user.name,
-            "email": user.email,
-            "location_group": user.location_group,
-            "school": user.school,
-            "health_tier": user.health_tier
-        }
-        return jsonify({"code": 200, "data": user_data}), 200
-    return jsonify({"code": 404, "error": "User not found"}), 404
-
 
 def map_location_to_group(location):
     location_map = {
@@ -217,8 +200,6 @@ def map_location_to_group(location):
         if location in locations:
             return group
     return None 
-
-
 
 @app.route('/user/<int:user_id>/eligible-events', methods=['GET'])
 def get_eligible_events(user_id):

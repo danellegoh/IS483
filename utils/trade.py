@@ -21,9 +21,9 @@ VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 # userURL = "http://localhost:5001/user"
 # cardURL = "http://localhost:5003/card"
 # collectionURL = "http://localhost:5022/collections"
-userURL = f"{VERCEL_BASE_URL}/api/user"
-cardURL = f"{VERCEL_BASE_URL}/api/card"
-collectionURL = f"{VERCEL_BASE_URL}/api/collections"
+userURL = f"{VERCEL_BASE_URL}/user"
+cardURL = f"{VERCEL_BASE_URL}/card"
+collectionURL = f"{VERCEL_BASE_URL}/collections"
 class Trade(db.Model):
     __tablename__ = 'trade'
     

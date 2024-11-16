@@ -144,37 +144,6 @@ export default {
     populateChartData() {
         const totalDaysInMonth = new Date(2024, this.mr_month, 0).getDate();
 
-        // // Create a shallow copy of chartData to avoid triggering unnecessary reactivity loops
-        // const newChartData = { ...this.chartData };
-
-        // // Update labels with a shallow copy
-        // newChartData.labels = Array.from({ length: totalDaysInMonth }, (_, i) => i + 1);
-        // console.log(newChartData.labels);
-
-        // const activities = this.mr_allActivitites;
-        // this.temp = [];
-
-        // // Populate temp array with activity data
-        // for (let i = 1; i <= totalDaysInMonth; i++) {
-        //     if (activities[i]) {
-        //         this.temp.push(activities[i]);
-        //     } else {
-        //         this.temp.push(0);
-        //     }
-        // }
-
-        // console.log("haha", this.temp);
-
-        // // Update datasets[0].data with a shallow copy
-        // newChartData.datasets = [...this.chartData.datasets];
-        // newChartData.datasets[0] = { ...this.chartData.datasets[0], data: [...this.temp] };
-
-        // // Replace the entire chartData object with the updated copy
-        // // this.chartData = newChartData;
-
-        // this.chartData = markRaw(newChartData);
-
-        // console.log("Populated Chart Data:", this.chartData.datasets[0].data);
         // Generate labels for each day in the month
         const labels = Array.from({ length: totalDaysInMonth }, (_, i) => i + 1);
 

@@ -191,7 +191,7 @@ export default {
             // const registrationResponse = await this.$http.get(`http://127.0.0.1:5007/userevent/active/${this.userId}`);
             const registrationResponse = await this.$http.get(`${apiBaseURL}/userevent/active/${this.userId}`);
             const registeredEvents = registrationResponse.data || [];
-            console.log("haha", registeredEvents)
+            console.log("registered events", registeredEvents)
             this.isRegistered = registeredEvents.some(event => event.data.event_id == this.eventId);
             console.log("Is user registered:", this.isRegistered);
         } catch (error) {

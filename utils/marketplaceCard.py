@@ -17,8 +17,8 @@ VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 
 # collection_URL = "http://localhost:5022/collection"
 # card_URL = "http://localhost:5003/card"
-collection_URL = f"{VERCEL_BASE_URL}/api/collection"
-card_URL = f"{VERCEL_BASE_URL}/api/card"
+collection_URL = f"{VERCEL_BASE_URL}/collection"
+card_URL = f"{VERCEL_BASE_URL}/card"
 
 @app.route("/available_cards", methods=['GET'])
 def trade_card():
@@ -41,25 +41,6 @@ def trade_card():
 def processAvailableCards():
 
     collection_result = invoke_http(f"{collection_URL}s", method='GET')
-    '''
-    Example of collection_result 
-    - Returns all collection information 
-    {
-        "code": 200,
-        "data": [
-            {
-                "collection_id": 1,
-                "collection_name": "Fruit Basket",
-                "expired": true
-            },
-            {
-                "collection_id": 2,
-                "collection_name": "Weekend Action",
-                "expired": false
-            }
-        ]
-    }
-    '''
     
     available_collections = []
     if collection_result['code'] == 200:
@@ -78,61 +59,6 @@ def processAvailableCards():
     for collection_id in available_collections:
         # If collection can be purchased, we will get all the cards in it to display in the marketplace
         card_result = invoke_http(f"{card_URL}s/collection/{collection_id}", method='GET')
-        
-        '''
-        Example of card_result
-        - Returns all cards that are available for purchase
-        {
-            "code": 200,
-            "data": [
-                {
-                    "card_id": 1,
-                    "collection_id": 1,
-                    "description": "Oranges are actually a type of berry! They’re one of the most popular fruits in the world.",
-                    "event_id": 1,
-                    "points_required": 500,
-                    "recommendation": "1-2 oranges per day provides a good dose of vitamin C, which boosts your immune system.",
-                    "title": "Oliver"
-                },
-                {
-                    "card_id": 2,
-                    "collection_id": 1,
-                    "description": "Strawberries aren't true berries by botanical definition, they are part of the rose family.",
-                    "event_id": null,
-                    "points_required": 500,
-                    "recommendation": "The daily fruit intake recommendation is 1.5-2cups of fruit per day. Munch on 12-16 strawberries as part of your healthy diet with this rich source of vitamin C, fibre and antioxident",
-                    "title": "Selena"
-                },
-                {
-                    "card_id": 3,
-                    "collection_id": 1,
-                    "description": "Pineapple is not a single fruit, but a cluster of hundreds of tiny fruitlets fused together!",
-                    "event_id": null,
-                    "points_required": 500,
-                    "recommendation": "Eating 1-2 slices a day aids digestion and provides a good dose of vitamin C and manganese.",
-                    "title": "Penny"
-                },
-                {
-                    "card_id": 4,
-                    "collection_id": 1,
-                    "description": "There are over 8,000 varieties of grapes around the world! Some types have been around for over 6,000 years.",
-                    "event_id": null,
-                    "points_required": 500,
-                    "recommendation": "A small bunch (about 1 cup) of grapes is a refreshing, heart-healthy snack full of antioxidants.",
-                    "title": "Gracia"
-                },
-                {
-                    "card_id": 5,
-                    "collection_id": 1,
-                    "description": "Bananas are technically berries too, and they can float in water!",
-                    "event_id": null,
-                    "points_required": 500,
-                    "recommendation": "1-2 bananas a day helps provide potassium for muscle function and maintaining healthy blood pressure.",
-                    "title": "Benny"
-                }
-            ]
-        }
-    '''
     
         if card_result['code'] == 200: 
             available_cards= available_cards+card_result["data"]
@@ -142,60 +68,6 @@ def processAvailableCards():
             print(f"failed to get cards from {collection_name}")
     
     return {"code": 200, "data": available_cards}
-
-    '''
-    To be Returned
-    {
-        "code": 200,
-        "data": [
-            {
-                "card_id": 1,
-                "collection_id": 1,
-                "description": "Oranges are actually a type of berry! They’re one of the most popular fruits in the world.",
-                "event_id": 1,
-                "points_required": 500,
-                "recommendation": "1-2 oranges per day provides a good dose of vitamin C, which boosts your immune system.",
-                "title": "Oliver"
-            },
-            {
-                "card_id": 2,
-                "collection_id": 1,
-                "description": "Strawberries aren't true berries by botanical definition, they are part of the rose family.",
-                "event_id": null,
-                "points_required": 500,
-                "recommendation": "The daily fruit intake recommendation is 1.5-2cups of fruit per day. Munch on 12-16 strawberries as part of your healthy diet with this rich source of vitamin C, fibre and antioxident",
-                "title": "Selena"
-            },
-            {
-                "card_id": 3,
-                "collection_id": 1,
-                "description": "Pineapple is not a single fruit, but a cluster of hundreds of tiny fruitlets fused together!",
-                "event_id": null,
-                "points_required": 500,
-                "recommendation": "Eating 1-2 slices a day aids digestion and provides a good dose of vitamin C and manganese.",
-                "title": "Penny"
-            },
-            {
-                "card_id": 4,
-                "collection_id": 1,
-                "description": "There are over 8,000 varieties of grapes around the world! Some types have been around for over 6,000 years.",
-                "event_id": null,
-                "points_required": 500,
-                "recommendation": "A small bunch (about 1 cup) of grapes is a refreshing, heart-healthy snack full of antioxidants.",
-                "title": "Gracia"
-            },
-            {
-                "card_id": 5,
-                "collection_id": 1,
-                "description": "Bananas are technically berries too, and they can float in water!",
-                "event_id": null,
-                "points_required": 500,
-                "recommendation": "1-2 bananas a day helps provide potassium for muscle function and maintaining healthy blood pressure.",
-                "title": "Benny"
-            }
-        ]
-    }
-'''
         
 # if __name__ == '__main__':
 #     app.run(port=5023, debug=True)

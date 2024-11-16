@@ -290,7 +290,6 @@ export default {
                     "expired": collectionData[i]["expired"] // datetime
                 }
             }
-            // console.log("haha", this.collectionDataById);
 
             // const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
             const cardReponse = await this.$http.get(`${apiBaseURL}/cards`);
@@ -303,7 +302,6 @@ export default {
                     let card_type = this.collectionDataById[collection_id]["card_type"];
                     let expired = this.collectionDataById[collection_id]["expired"];
                     const expiredDate = expired ? new Date(expired) : null;
-                    // console.log("haha", card_type, expired);
 
                     if (expiredDate == null) {
                         if (!this.allCards[card_type]) {
