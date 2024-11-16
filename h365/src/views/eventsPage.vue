@@ -25,6 +25,11 @@
                 </div>
             </div>
 
+            <!-- Check if there are no filtered events or eventData -->
+            <div v-if="isEmpty(filteredEventsData)">
+                <p class="no-events-found">No matching events found</p>
+            </div>
+
             <!-- loop for each date -->
             <div v-for="date in sortedDates" :key="date">
 
@@ -55,7 +60,7 @@
                             <div class="cardText">
 
                                 <!-- v-if few slots left -->
-                                <div class="lowSlotAlert" v-if="event.slots_left <= 5">
+                                <div class="lowSlotAlert" v-if="event.max_signups - event.current_signups <= 5">
                                     Few Slots Left
                                 </div>
 
@@ -120,7 +125,7 @@
 
                             <div class="cardText">
                                 <!-- v-if few slots left -->
-                                <div class="lowSlotAlert" v-if="event.slots_left <= 5">
+                                <div class="lowSlotAlert" v-if="event.max_signups - event.current_signups <= 5">
                                     Few Slots Left
                                 </div>
 
@@ -236,6 +241,7 @@
     font-size: 8px;
     color: var(--default-white);
     background-color: var(--red);
+    margin-bottom: 4px;
 }
 
 .programmeName {
@@ -395,6 +401,7 @@ export default defineComponent({
                     this.eventData[date_key].push(event);
                 }
                 this.sortedDates.sort();
+                console.log(this.eventData);
             } catch (error) {
                 console.error("Error fetching events:", error);
             }
@@ -495,6 +502,9 @@ export default defineComponent({
                     return require('../assets/icons/events/event1.png');
             }
         },
+        isEmpty(eventsData) {
+            return !eventsData || Object.keys(eventsData).length === 0;
+        }
     },
 
     computed: {

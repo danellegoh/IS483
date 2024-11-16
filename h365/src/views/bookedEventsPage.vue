@@ -26,6 +26,11 @@
             </div>
         </div>
 
+        <!-- Check if there are no filtered events or eventData -->
+        <div v-if="isEmpty(filteredEventsData)">
+            <p class="no-events-found">No matching events found</p>
+        </div>
+
         <!-- loop for each date -->
         <div v-for="date in sortedDates" :key="date">
             <div v-if="filteredEventsData[date] && filteredEventsData[date].length">
@@ -261,6 +266,9 @@ export default
                         return require('../assets/icons/events/event1.png');
                 }
             },
+            isEmpty(eventsData) {
+                return !eventsData || Object.keys(eventsData).length === 0;
+            }
         },
 
         computed: {
@@ -346,6 +354,7 @@ export default
     font-size: 8px;
     color: var(--default-white);
     background-color: var(--red);
+    margin-bottom: 4px;
 }
 
 .programmeName {
@@ -436,5 +445,13 @@ export default
     color: var(--text-highlight);
     margin: 5px 5px 0 0;
 } */
+
+.no-events-found {
+    text-align: center;
+    font-family: text-semibold;
+    color: var(--text-highlight);
+    font-size: 14px;
+    margin-top: 20px;
+}
 
 </style>
