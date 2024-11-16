@@ -116,7 +116,6 @@
 import Popup from '@/components/popUp.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
-import { join } from 'core-js/core/array';
 
 const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
 
