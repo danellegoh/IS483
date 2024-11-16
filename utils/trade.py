@@ -20,9 +20,10 @@ VERCEL_BASE_URL = os.getenv('VERCEL_BASE_URL')
 
 # userURL = "http://localhost:5001/user"
 # cardURL = "http://localhost:5003/card"
-userURL = f"{VERCEL_BASE_URL}/user"
-cardURL = f"{VERCEL_BASE_URL}/card"
-
+# collectionURL = "http://localhost:5022/collections"
+userURL = f"{VERCEL_BASE_URL}/api/user"
+cardURL = f"{VERCEL_BASE_URL}/api/card"
+collectionURL = f"{VERCEL_BASE_URL}/api/collections"
 class Trade(db.Model):
     __tablename__ = 'trade'
     
@@ -149,17 +150,24 @@ def get_trades():
             user_response = invoke_http(userURL+f"/id/{user_id}")
             card_one_response = invoke_http(cardURL+f"/{card_one_id}")
             card_two_response = invoke_http(cardURL+f"/{card_two_id}")
+            collection_response = invoke_http(collectionURL)
             # print(user_response)
             # print(card_one_response)
             # print(card_two_response)
 
-            if user_response["code"] == 200 and card_one_response["code"] == 200 and card_two_response["code"] == 200:
+            if user_response["code"] == 200 and card_one_response["code"] == 200 and card_two_response["code"] == 200 and collection_response["code"] == 200:
+                collection_info = {}
+                for collection in collection_response['data']:
+                    collection_info[collection['collection_id']] = {'collection_name': collection['collection_name'], 'expired': collection['expired']}
+
                 # print("check 1")
                 name = user_response["data"]["name"]
                 card_one_title = card_one_response["data"]["title"]
-                card_one_type = card_one_response["data"]["card_type"]
+                card_one_collection = card_one_response["data"]["collection_id"]
+                card_one_type = collection_info[card_one_collection]['collection_name']
                 card_two_title = card_two_response["data"]["title"]
-                card_two_type = card_two_response["data"]["card_type"]
+                card_two_collection = card_two_response["data"]["collection_id"]
+                card_two_type = collection_info[card_two_collection]['collection_name']
                 output.append({"trade_id": trade_id, "trade_date": trade_date.isoformat(), "user_id": user_id, "name": name, 
                             "card_one_id": card_one_id, "card_one_title": card_one_title, "card_one_type": card_one_type, 
                             "card_two_id": card_two_id, "card_two_title": card_two_title, "card_two_type": card_two_type})
@@ -239,15 +247,22 @@ def get_trades_by_user(user_id):
             user_response = invoke_http(userURL+f"/id/{user_id}")
             card_one_response = invoke_http(cardURL+f"/{card_one_id}")
             card_two_response = invoke_http(cardURL+f"/{card_two_id}")
+            collection_response = invoke_http(collectionURL)
             # print(card_one_response)
             # print(card_two_response)
 
-            if user_response["code"] == 200 and card_one_response["code"] == 200 and card_two_response["code"] == 200:
+            if user_response["code"] == 200 and card_one_response["code"] == 200 and card_two_response["code"] == 200 and collection_response["code"] == 200:
+                collection_info = {}
+                for collection in collection_response['data']:
+                    collection_info[collection['collection_id']] = {'collection_name': collection['collection_name'], 'expired': collection['expired']}
+
                 name = user_response["data"]["name"]
                 card_one_title = card_one_response["data"]["title"]
-                card_one_type = card_one_response["data"]["card_type"]
+                card_one_collection = card_one_response["data"]["collection_id"]
+                card_one_type = collection_info[card_one_collection]['collection_name']
                 card_two_title = card_two_response["data"]["title"]
-                card_two_type = card_two_response["data"]["card_type"]
+                card_two_collection = card_two_response["data"]["collection_id"]
+                card_two_type = collection_info[card_two_collection]['collection_name']
                 output.append({"trade_id": trade_id, "trade_date": trade_date, "user_id": user_id, "name": name,
                             "card_one_id": card_one_id, "card_one_title": card_one_title, "card_one_type": card_one_type, 
                             "card_two_id": card_two_id, "card_two_title": card_two_title, "card_two_type": card_two_type})

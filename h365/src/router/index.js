@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
     {
@@ -79,6 +79,13 @@ const routes = [
     },
 
     {
+      path: "/allCards",
+      name: "allCardsPage",
+      component: () => import("@/views/allCardsPage.vue"),
+      meta: { section: 'collection' }
+    },
+
+    {
       path: "/trade",
       name: "tradePage",
       component: () => import("@/views/tradePage.vue"),
@@ -102,7 +109,7 @@ const routes = [
     // {
     //   path: "/test",
     //   name: "testTest",
-    //   component: () => import("@/components/testTest2.vue"),
+    //   component: () => import("@/components/testTest3.vue"),
     //   meta: { hideNavBar: true }
     // },
 
@@ -112,12 +119,33 @@ const routes = [
       component: () => import("@/views/profilePage.vue"),
       meta: { section: 'profile' }
     },
+
+    {
+      path: "/admin",
+      name: "adminPage",
+      component: () => import("@/views/adminPage.vue"),
+      meta: { 
+        requiresAdmin: true,
+        hideNavBar: true 
+      }
+    }
 ]
 
 const router = createRouter({
-    history: createWebHistory(process.env.BASE_URL),
-    mode: "history",
-    routes,
-  });
+  history: createWebHistory(process.env.BASE_URL),
+  // mode: "history",
+  routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const userRole = sessionStorage.getItem('userRole');
+
+  if (to.meta.requiresAdmin && userRole != 'Admin') {
+    next({ name: 'loginPage' });
+  } else {
+    next();
+  }
+  
+})
   
 export default router;

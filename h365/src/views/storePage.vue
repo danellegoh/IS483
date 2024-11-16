@@ -1,6 +1,7 @@
 <template>
     <div class="stickyHeader">
         <div class="pageHeader">
+            <i class="uil uil-angle-left" @click="goBack"></i>
             <p> Store </p>
         </div>
 
@@ -13,14 +14,81 @@
                 <p> My Healthcoins </p>
             </div>
 
-            <div class="blockRight">
-                <div class="blockText">
-                    <img src="../assets/icons/collection/lock.png" style="margin-right: 5px;">
-                    <p> <span> {{ numUnlocked }} </span> / {{ numCards }} </p>
+            <router-link :to="{ name: 'allCardsPage'}" class="router-link-custom">
+                <div class="blockRight">
+                    <div class="blockText">
+                        <img src="../assets/icons/collection/lock.png" style="margin-right: 5px;">
+                        <p> <span> {{ numUnlocked }} </span> / {{ numCards }} </p>
+                    </div>
+                    <p> Collectibles Unlocked ➔ </p>
                 </div>
-                <p> Collectibles Unlocked </p>
+            </router-link>
+        </div>
+    </div>
+
+    <div class="pagePad" style="padding-bottom: 5px;">
+        <n-breadcrumb>
+            <n-breadcrumb-item @click="goTo('collectionPage')">
+                My Collection
+            </n-breadcrumb-item>
+
+            <n-breadcrumb-item @click="goTo('storePage')">
+                Store
+            </n-breadcrumb-item>
+        </n-breadcrumb>
+
+        <div class="limited up">
+            <p> 🔥 GET IT BEFORE IT'S GONE 🔥 </p>
+
+            <div class="countdown">
+                <vue3-flip-countdown
+                    v-if="formattedDeadline"
+                    :deadline="formattedDeadline"
+                    mainColor="#ff774d"
+                    mainFlipBackgroundColor="#F5F4F1"
+                    secondFlipBackgroundColor="#F5F4F1"
+                    labelColor="#F5F4F1"
+                    countdownSize="2.0rem"
+                    labelSize="0.8rem"
+                />
+            </div>
+
+            <div class="shopltd">
+                <button @click="isOpen = !isOpen" class="shopNowBtn"> 
+                    Shop Now!
+                </button>
+            </div>
+
+        </div>
+
+        <div v-show="isOpen" class="limited down">
+            <div v-for="(cards, cardType) in limitedEditionCards" :key="cardType" class="set">
+                <div class="set" style="padding: 0;">
+                    <p> {{ cardType }} </p>
+                    <div class="carousel">
+                        <div v-for="card in cards" :key="card.card_id">
+                            <div :class="['card', 'drop-shadow', { 'card-owned': userCards.includes(card.card_id) }]">
+                                <p class="cardName"> {{ card.title }} </p>
+                                <img :src="getCardImage(card.title, card.collection_id)" />
+                                <div class="price">
+                                    <img src="../assets/icons/collection/coin.png" style="margin-right: 5px;">
+                                    <p> {{ card.points_required }} </p>
+                                </div>
+                                <button
+                                    v-if="userCards.includes(card.card_id)"
+                                    class="viewCardBtn" @click="openInfoPopup(card.card_id, card.description, card.recommendation)"> View 
+                                </button>
+                                <button
+                                    v-else
+                                    class="bookEventBtn" @click="openUnlockPopup(card.title, card.points_required, card.card_id)"> Unlock 
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        
     </div>
 
     <div class="container">
@@ -53,7 +121,7 @@
                         <div :class="['card', { 'card-owned': userCards.includes(card.card_id) }]">
                             <p class="cardName"> {{ card.title }} </p>
 
-                            <img :src="getCardImage(card.title, card.card_type)" />
+                            <img :src="getCardImage(card.title, card.collection_id)" />
 
                             <div class="price">
                                 <img src="../assets/icons/collection/coin.png" style="margin-right: 5px;">
@@ -102,13 +170,14 @@ const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
 
 export default {
     components: {
-        Popup
+        Popup,
     },
+
     data() {
         return {
-            isPopupVisible: false,  // Controls popup visibility
-            cardName: 'Strawberry Card',  // Example data
-            cardPrice: 100,  // Example price
+            isPopupVisible: false,
+            cardName: '',
+            cardPrice: 0,
             cardId: '',
             cardDesc: '',
             cardRec: '',
@@ -116,11 +185,18 @@ export default {
             numHealthCoins: 0,
             numUnlocked: 0,
             numCards: 0,
+
             allCards: {},
+            limitedEditionCards: {},
             userCards: [],
+
             errorMessage: '',
             searchInput: '',
-            searchResults: {}
+            searchResults: {},
+            collectionDataById: {},
+
+            expiryDate: "",
+            isOpen: false,
         };
     },
     methods: {
@@ -131,10 +207,12 @@ export default {
             this.popupType = 'unlock';
             this.isPopupVisible = true;
         },
+
         closePopup() {
             this.isPopupVisible = false;
             this.errorMessage = ''; 
         },
+
         openInfoPopup(cardId, cardDesc, cardRec) {
             this.cardId = cardId;
             this.cardDesc = cardDesc;
@@ -142,20 +220,19 @@ export default {
             this.popupType = 'info';
             this.isPopupVisible = true;
         },
+
         async unlockCard(cardId) {
-            console.log("unlocking card with ID:", cardId);
+            // console.log("unlocking card with ID:", cardId);
 
             try {
-                // const response = await this.$http.post("http://127.0.0.1:5006/usercard/buy", {
-                //     user_id: this.userId,
-                //     card_id: cardId
-                // })
-                const response = await this.$http.post(`${apiBaseURL}/usercard/buy`, {
+                // const buyURL = "http://127.0.0.1:5006/usercard/buy";
+                const buyURL = `${apiBaseURL}/usercard/buy`;
+                const response = await this.$http.post(buyURL, {
                     user_id: this.userId,
                     card_id: cardId
                 })
                 console.log(response);
-                console.log("unlock card successful");
+                // console.log("unlock card successful");
 
                 // refresh user cards and points
                 await this.fetchUserData();
@@ -164,9 +241,9 @@ export default {
                 this.isPopupVisible = false;
             }
             catch (error) {
-                console.log("Unlock Card:", error);
+                // console.log("Unlock Card:", error);
                 let responseError = error.response.data.error;
-                console.log(responseError);
+                // console.log(responseError);
                 if (responseError == "Insufficient HealthCoins to buy this card") {
                     this.errorMessage = "Insufficient HealthCoins to buy this card";
                 }
@@ -175,6 +252,7 @@ export default {
                 }  
             }
         },
+
         // Fetch user data
         async fetchUserData() {
             try {
@@ -186,6 +264,7 @@ export default {
                 console.error("Error fetching user data:", error);
             }
         },
+
         // Fetch user cards
         async fetchUserCards() {
             try {
@@ -199,30 +278,89 @@ export default {
                 console.error("Error fetching user cards:", error);
             }
         },
+
+        // fetch all cards for store and separate based on "limited edt" or "normal"
         async fetchAllCards() {
+            // const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+            const collectionResponse = await this.$http.get(`${apiBaseURL}/collections`);
+            const collectionData = collectionResponse.data.data;
+            for (let i = 0; i < collectionData.length; i++) {
+                this.collectionDataById[collectionData[i]["collection_id"]] = {
+                    "card_type": collectionData[i]["collection_name"], 
+                    "expired": collectionData[i]["expired"] // datetime
+                }
+            }
+            // console.log("haha", this.collectionDataById);
+
             // const cardReponse = await this.$http.get("http://127.0.0.1:5003/cards");
             const cardReponse = await this.$http.get(`${apiBaseURL}/cards`);
             const cardData = cardReponse.data;
+            const now = new Date();
+
             for (let i = 0; i < cardData.length; i++) {
-                let card_type = cardData[i]["card_type"];
-                if (!this.allCards[card_type]) {
-                    this.allCards[card_type] = [];
+                if (cardData[i]["event_id"] == null) {
+                    let collection_id = cardData[i]["collection_id"];
+                    let card_type = this.collectionDataById[collection_id]["card_type"];
+                    let expired = this.collectionDataById[collection_id]["expired"];
+                    const expiredDate = expired ? new Date(expired) : null;
+                    // console.log("haha", card_type, expired);
+
+                    if (expiredDate == null) {
+                        if (!this.allCards[card_type]) {
+                            this.allCards[card_type] = [];
+                        }
+                        this.allCards[card_type].push(cardData[i]);
+                    } else if (expiredDate >= now) {
+                        if (!this.limitedEditionCards[card_type]) {
+                            this.limitedEditionCards[card_type] = [];
+                        }
+                        this.limitedEditionCards[card_type].push(cardData[i]);
+                        
+                        if (expiredDate > now && (!this.expiryDate || expiredDate < new Date(this.expiryDate))) {
+                            this.expiryDate = this.formatDateToString(expiredDate);
+                        }
+                    }
                 }
-                this.allCards[card_type].push(cardData[i]);
             }
+            console.log(this.expiryDate);
+            // console.log(typeof this.expiryDate)
+            // console.log("normal cards", this.allCards);
+            // console.log("limited edition cards", this.limitedEditionCards);
+            // console.log("checking all cards from fetch all", this.allCards);
             this.numCards = cardData.length;
         },
-        getCardImage(card_title, card_set) {
-            if (!card_title || !card_set) {
-                console.error("Invalid card_title or card_set:", card_title, card_set);
+
+        formatDateToString(dateString) {
+            const date = new Date(dateString);
+
+            if (isNaN(date.getTime())) {
+                console.error(`Invalid date format: ${dateString}`);
+                return '';
+            }
+
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(date.getUTCDate()).padStart(2, '0');
+            const hours = String(date.getUTCHours()).padStart(2, '0');
+            const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        },
+
+        getCardImage(card_title, card_collection_id) {
+            // console.log("check collection id:", card_collection_id);
+            if (!card_title || !card_collection_id) {
+                console.error("Invalid card_title or card_collection_id:", card_title, card_collection_id);
                 return ;
             }
 
             const formattedTitle = card_title.toLowerCase().replace(/\s+/g, "_");
             // console.log(formattedTitle);
+            const card_set = this.collectionDataById[card_collection_id]["card_type"]
             const formattedSetName = card_set.toLowerCase().replace(/\s+/g, "_");
             return require(`@/assets/icons/collection/${formattedSetName}/${formattedTitle}.png`);
         },
+
         searchCards() {
             this.searchResults = {};
 
@@ -230,7 +368,7 @@ export default {
                 var lowerCaseInput = this.searchInput.toLowerCase();
 
                 for (let type in this.allCards) {
-                    console.log(type);
+                    console.log("checking type in search", type);
                     if (type.toLowerCase().includes(lowerCaseInput)) {
                         this.searchResults[type] = this.allCards[type];
                     } else {
@@ -239,9 +377,9 @@ export default {
                         // console.log("card set check", card_set);
                         for (let i = 0; i < card_set.length; i++) {
                             let card = card_set[i];
-                            console.log("card", card);
+                            // console.log("card", card);
                             if (card.title.toLowerCase().includes(lowerCaseInput)) {
-                                console.log("title check pass", card.title);
+                                // console.log("title check pass", card.title);
                                 if (!this.searchResults[type]) {
                                     this.searchResults[type] = [];
                                 }
@@ -250,19 +388,30 @@ export default {
                         }
                     }
                 }
-
-                console.log("search results check", this.searchResults);
+                // console.log("search results check", this.searchResults);
                 
             } else {
                 this.searchResults = {};
             }
-        }
+        },
+
+        getCountdownTarget(expiryDate) {
+            return expiryDate ? new Date(expiryDate).getTime() : null;
+        },
+
+        goTo(routeName) {
+            this.$router.push({ name: routeName });
+        },
+
+        goBack() {
+            this.$router.go(-1);
+        },
     },
     setup() {
-        console.log("store page");
-        const store = useStore(); // Import useStore from vuex
-        const userId = computed(() => store.state.userId); // Access userId from the store
-        const userEmail = computed(() => store.state.userEmail) // Access userEmail from the store
+        // console.log("store page");
+        const store = useStore();
+        const userId = computed(() => store.state.userId);
+        const userEmail = computed(() => store.state.userEmail)
         
         console.log(userEmail.value);
         
@@ -276,12 +425,10 @@ export default {
             this.fetchUserData();
             this.fetchAllCards();
             this.fetchUserCards(); 
-
             console.log(this.allCards);
         }
         catch (error) {
             console.log("error:", error);
-
             this.numUnlocked = 0;
             
         }
@@ -291,6 +438,10 @@ export default {
             return Object.keys(this.searchResults).length > 0 && this.searchInput
             ? this.searchResults
             : this.allCards;
+        },
+
+        formattedDeadline() {
+            return this.expiryDate ? this.expiryDate : null;
         }
     }
 };
@@ -304,7 +455,7 @@ export default {
 
 .stickyHeader {
     background-color: var(--grey);
-    padding-bottom: 1px;
+    padding-bottom: 16px;
 }
 
 .stickyHeader .displayBlock {
@@ -326,7 +477,7 @@ export default {
     background-color: var(--default-white);
     align-items: center;
     text-align: center;
-    padding: 10px;
+    padding-top: 15px;
     min-height: 70px;
 }
 
@@ -341,7 +492,7 @@ export default {
 
 .blockLeft p, .blockRight p {
     font-family: text-medium;
-    font-size: 13px;
+    font-size: 11px;
     color: var(--default-text);
     margin: 0;
 }
@@ -490,6 +641,68 @@ button label {
 
 .card-owned {
     background-color: #D8D8D5;
+}
+
+.limited {
+    width: 100%;
+    background-color: var(--default-white);
+    padding: 16px;
+}
+
+.limited p {
+    font-family: text-bold;
+    text-align: center;
+}
+
+.up {
+    border-radius: 6px;
+    background: linear-gradient(180deg, #114ada, #097BEE);
+    color: var(--default-white);
+    margin-top: 16px;
+}
+
+.down {
+    border-radius: 0 0 6px 6px;
+}
+
+.countdown {
+    width: 100%
+}
+
+.set {
+    padding: 0;
+}
+
+.shopNowBtn {
+    background-color: var(--red);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.shopltd {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 3px 0;
+}
+
+.router-link-custom {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: var(--default-white);
+    border-radius: 0 6px 6px 0;
+    text-decoration: none;
+}
+
+.n-breadcrumb {
+    font-family: text-regular;
+    font-size: 10px;
 }
 
 </style>

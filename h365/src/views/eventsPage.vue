@@ -13,6 +13,7 @@
                 </n-tab>
             </n-tabs>
         </div>
+
         <div class="pagePad">
             <div class="searchAndFilter" style="padding: 0;">
                 <div class="search-bar">
@@ -22,6 +23,11 @@
                 <div class="filterButton">
                     <datePicker v-model="dateInput" @update:modelValue="searchEvents"/>
                 </div>
+            </div>
+
+            <!-- Check if there are no filtered events or eventData -->
+            <div v-if="isEmpty(filteredEventsData)">
+                <p class="no-events-found">No matching events found</p>
             </div>
 
             <!-- loop for each date -->
@@ -35,68 +41,70 @@
                 <!-- recommended events -->
                 <div v-if="recommendedEvents[date] && recommendedEvents[date].length">
 
-                    <!-- recommended header -->
-                    <div class="pageHeading">
-                        <img src="../assets/icons/events/star.png">
-                        <p style="font-family: text-semibold; font-size: 16px;"> Recommended for you </p>
-                    </div>
+                <!-- recommended header -->
+                <div class="pageHeading">
+                    <img src="../assets/icons/events/star.png">
+                    <p style="font-family: text-semibold; font-size: 16px;"> Recommended for you </p>
+                </div>
 
-                    <!-- recommended events cards -->
-                    <div v-for="event in recommendedEvents[date]" :key="event.event_id">
-                        <router-link :to="{ name: 'viewEventPage', params: { eventId: event.event_id } }">
-                            <div class="basicCard">
-                                <div class="cardImage">
-                                    <img src="../assets/icons/events/event1.png">
+                <!-- recommended events cards -->
+                <div v-for="event in recommendedEvents[date]" :key="event.event_id">
+                    <router-link :to="{ name: 'viewEventPage', params: { eventId: event.event_id } }">
+                        <div class="basicCard">
+                            <div class="cardImage">
+                                <img class="eventImage" 
+                                    :src="getEventImage(event.title)" 
+                                >
+                            </div>
+
+                            <div class="cardText">
+
+                                <!-- v-if few slots left -->
+                                <div class="lowSlotAlert" v-if="event.max_signups - event.current_signups <= 5">
+                                    Few Slots Left
                                 </div>
 
-                                <div class="cardText">
+                                <!-- programme name -->
+                                <p class="programmeName" v-if="event.event_program != 'Null'"> {{ event.event_program }} </p>
 
-                                    <!-- v-if few slots left -->
-                                    <div class="lowSlotAlert" v-if="event.slots_left <= 5">
-                                        Few Slots Left
+                                <!-- activity name -->
+                                <p class="eventName">{{ event.title }}</p>
+
+                                <!-- date, day, and time  -->
+                                <div class="eventInfo1">
+                                    <i class="uil uil-schedule eventIcon"></i>
+                                    <div class=eventDetails>
+                                        <p>{{ formattedDate(event.start_date) }}</p>
+                                        <p>{{ formattedTime(event.start_date, event.end_date) }}</p>
                                     </div>
+                                </div>
 
-                                    <!-- programme name -->
-                                    <p class="programmeName" v-if="event.event_program != 'Null'"> {{ event.event_program }} </p>
-
-                                    <!-- activity name -->
-                                    <p class="eventName">{{ event.title }}</p>
-
-                                    <!-- date, day, and time  -->
-                                    <div class="eventInfo">
-                                        <i class="uil uil-schedule eventIcon"></i>
-                                        <div class=eventDetails>
-                                            <p>{{ formattedDate(event.start_date) }}</p>
-                                            <p>{{ formattedTime(event.start_date, event.end_date) }}</p>
-                                        </div>
+                                <!-- location -->
+                                <div class="eventInfo2">
+                                    <i class="uil uil-map-pin eventIcon"></i>
+                                    <div class=eventDetails>
+                                        <p>{{ event.location }}</p>
                                     </div>
+                                </div>
+                                <div class="eventBtnIntensity">
+                                    <form action="">
+                                        <button class="bookEventBtn">Book Now</button>
+                                    </form>
 
-                                    <!-- location -->
-                                    <div class="eventInfo">
-                                        <i class="uil uil-map-pin eventIcon"></i>
-                                        <div class=eventDetails>
-                                            <p>{{ event.location }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="eventBtnIntensity">
-                                        <form action="">
-                                            <button class="bookEventBtn">Book Now</button>
-                                        </form>
-
-                                        <!-- intensity -->
-                                        <div class="intensity">
-                                            <p>Intensity: </p>
-                                            <img v-if="event.tier === 1" src="../assets/icons/events/intensity1.png">
-                                            <img v-else-if="event.tier === 2" src="../assets/icons/events/intensity2.png">
-                                            <img v-else-if="event.tier === 3" src="../assets/icons/events/intensity3.png">
-                                        </div>
+                                    <!-- intensity -->
+                                    <div class="intensity">
+                                        <p>Intensity: </p>
+                                        <img v-if="event.tier === 1" src="../assets/icons/events/intensity1.png">
+                                        <img v-else-if="event.tier === 2" src="../assets/icons/events/intensity2.png">
+                                        <img v-else-if="event.tier === 3" src="../assets/icons/events/intensity3.png">
                                     </div>
                                 </div>
                             </div>
-                        </router-link>
-                    </div>
+                        </div>
+                    </router-link>
+                </div>
 
-                    <br>
+                <br>
                 </div>
                 
                 <!-- all events header -->
@@ -110,23 +118,29 @@
                     <router-link :to="{ name: 'viewEventPage', params: { eventId: event.event_id } }">
                         <div class="basicCard">
                             <div class="cardImage">
-                                <img src="../assets/icons/events/event1.png">
+                                <img class="eventImage"
+                                    :src="getEventImage(event.title)" 
+                                >
                             </div>
 
                             <div class="cardText">
                                 <!-- v-if few slots left -->
-                                <div class="lowSlotAlert" v-if="event.slots_left <= 5">
+                                <div class="lowSlotAlert" v-if="event.max_signups - event.current_signups <= 5">
                                     Few Slots Left
                                 </div>
 
                                 <!-- programme name -->
-                                <p class="programmeName" v-if="event.event_program != 'Null'">{{ event.event_program }}</p>
+                                <p class="programmeName" v-if="event.event_program != 'Null'">
+                                    {{ event.event_program }}
+                                </p>
 
                                 <!-- activity name -->
-                                <p class="eventName">{{ event.title }}</p>
+                                <p class="eventName">
+                                    {{ event.title }}
+                                </p>
 
                                 <!-- date, day, and time  -->
-                                <div class="eventInfo">
+                                <div class="eventInfo1">
                                     <i class="uil uil-schedule eventIcon"></i>
                                     <div class=eventDetails>
                                         <p>{{ formattedDate(event.start_date) }}</p>
@@ -135,7 +149,7 @@
                                 </div>
 
                                 <!-- location -->
-                                <div class="eventInfo">
+                                <div class="eventInfo2">
                                     <i class="uil uil-map-pin eventIcon"></i>
                                     <div class=eventDetails>
                                         <p>{{ event.location }}</p>
@@ -143,9 +157,7 @@
                                 </div>
 
                                 <div class="eventBtnIntensity">
-                                    <form action="">
-                                        <button class="bookEventBtn">Book Now</button>
-                                    </form>
+                                    <button class="bookEventBtn">Book Now</button>
 
                                     <!-- intensity -->
                                     <div class="intensity">
@@ -220,25 +232,30 @@
     justify-content: space-between;
 }
 
+.cardText {
+    max-height: 199px;
+}
+
 .lowSlotAlert {
     font-family: text-medium;
     font-size: 8px;
     color: var(--default-white);
     background-color: var(--red);
+    margin-bottom: 4px;
 }
 
 .programmeName {
     font-family: text-medium;
     font-size: 10px;
     color: var(--text-highlight);
-    margin-bottom: 0px;
+    margin-bottom: 4px;
 }
 
 .eventName {
     font-family: text-bold;
     font-size: 16px;
     color: var(--default-text);
-    margin-bottom: 0px;
+    margin-bottom: 10px;
     line-height: 16px;
 }
 
@@ -246,9 +263,18 @@
     color: var(--text-highlight);
 }
 
-.eventInfo {
+.eventInfo1 {
     display: flex;
     padding: 0px;
+    margin-bottom: 0px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.eventInfo2 {
+    display: flex;
+    padding: 0px;
+    margin-bottom: 30px;
     align-items: center;
     justify-content: flex-start;
 }
@@ -258,6 +284,7 @@
     color: var(--text-highlight);
     font-size: 9px;
     padding-left: 10px;
+    line-height: 10px;
 }
 
 .eventDetails p {
@@ -271,7 +298,7 @@
     background-color: var(--blue);
     border-radius: 5px;
     border: none;
-    padding-top: 2px 10px;
+    padding: 4px 8px;
 }
 
 .eventBtnIntensity {
@@ -291,7 +318,7 @@
 
 .intensity p {
     font-family: text-semibold;
-    font-size: 10px;
+    font-size: 9px;
     color: var(--text-highlight);
     margin: 5px 5px 0 0;
 }
@@ -304,13 +331,18 @@
     margin-top: 20px;
 }
 
+.eventImage {
+    border-radius: 5px 0 0 5px;
+}
+
 </style>
 
-
 <script>
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, computed } from "vue";
 import { useRouter } from 'vue-router';
 import datePicker from '../components/datePicker.vue';
+import { useStore } from 'vuex';
+import axios from 'axios';
 
 const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
 
@@ -323,170 +355,97 @@ export default defineComponent({
         const selectedTab = ref('allEvents');
         const router = useRouter();
 
+        const store = useStore();
+        const userId = computed(() => store.state.userId);
+
         watch(selectedTab, (newTab) => {
             if (newTab === 'allEvents') {
-                // Navigate to /events route
                 router.push({ path: '/events' });
             } else if (newTab === 'bookedEvents') {
-                // Navigate to /booked route
                 router.push({ path: '/booked' });
             }
         });
 
         return {
-            selectedTab
+            selectedTab,
+            userId
         };
     },
     async mounted() {
-        // to update eventData
-        // this.$http.get("http://127.0.0.1:5002/event/available")
-        this.$http.get(`${apiBaseURL}/event/available`)
-        .then(response => {
-            var eventDataResponse = response.data.data;
-            // console.log(eventDataResponse);
-            this.eventData = {};
-            this.sortedDates = [];
-            for (var i = 0; i < eventDataResponse.length; i++) {
-                // console.log(eventDataResponse[i]);
-                let event_id = eventDataResponse[i]["event_id"];
-                let current_signups = eventDataResponse[i]["current_signups"];
-                let max_signups = eventDataResponse[i]["max_signups"];
-                let slots_left = max_signups - current_signups;
-                let event_program = eventDataResponse[i]["event_program"];
-                let title = eventDataResponse[i]["title"];
-                let start_date = eventDataResponse[i]["start_date"];
-                let end_date = eventDataResponse[i]["end_date"];
-                let location = eventDataResponse[i]["location"];
-                let tier = eventDataResponse[i]["tier"];
-
-                let date_key = start_date.split("T")[0];
-
-                if (!this.eventData[date_key]) {
-                    this.eventData[date_key] = [];
-                    this.sortedDates.push(date_key);
-                }
-
-                this.eventData[date_key].push({
-                    "event_id": event_id,
-                    "current_signups": current_signups,
-                    "max_signups": max_signups,
-                    "slots_left": slots_left,
-                    "event_program": event_program,
-                    "title": title,
-                    "start_date": start_date,
-                    "end_date": end_date,
-                    "location": location,
-                    "tier": tier
-                })
-
-            }
-            this.sortedDates.sort();
-            console.log("event data:", this.eventData);
-            console.log("sorted dates:", this.sortedDates);
-        })
-        .catch(error => {
-            console.log("error:", error);
-        });
+        this.fetchEvents();
+        if (this.userId) {
+            await this.fetchRecommendedEvents();
+        }
     },
     data() {
         return {
             searchInput: "",
             dateInput: null,
             sortedDates: [],
-            // mock data for displaying
-            eventData: {
-                "2024-12-01": [
-                    {
-                        "event_id": 1,
-                        "current_signups": 6,
-                        "max_signups": 10,
-                        "event_program": "Active Family Program",
-                        "title": "Mindfulness Week",
-                        "start_date": "2024-12-01T12:00:00",
-                        "end_date": "2024-12-01T14:00:00",
-                        "location": "Bendemeer",
-                        "tier": 2
-                    },
-                    {
-                        "event_id": 2,
-                        "current_signups": 6,
-                        "max_signups": 10,
-                        "event_program": "Active Family Program",
-                        "title": "Gratefulness Week",
-                        "start_date": "2024-12-01T12:00:00",
-                        "end_date": "2024-12-01T14:00:00",
-                        "location": "Bendemeer",
-                        "tier": 2
-                    },
-                    {
-                        "event_id": 3,
-                        "current_signups": 6,
-                        "max_signups": 10,
-                        "event_program": "Active Family Program",
-                        "title": "Thankfulness Week",
-                        "start_date": "2024-12-01T12:00:00",
-                        "end_date": "2024-12-01T14:00:00",
-                        "location": "Bendemeer",
-                        "tier": 2
-                    }
-                ] // end of 2024-12-01
-            }, // end of eventData dict
-            recommendedEvents: {
-                "2024-10-11": [
-                    {
-                        "event_id": 5,
-                        "current_signups": 8,
-                        "max_signups": 10,
-                        "slots_left": 2,
-                        "event_program": "Active Family Program",
-                        "title": "Yoga Challenge",
-                        "start_date": "2024-10-11T12:00:00",
-                        "end_date": "2024-10-11T14:00:00",
-                        "location": "Paya Lebar",
-                        "tier": 2
-                    },
-                    {
-                        "event_id": 6,
-                        "current_signups": 5,
-                        "max_signups": 10,
-                        "slots_left": 5,
-                        "event_program": "Active Family Program",
-                        "title": "Plank Challenge",
-                        "start_date": "2024-10-11T14:00:00",
-                        "end_date": "2024-10-11T16:00:00",
-                        "location": "Tampines",
-                        "tier": 1
-                    }
-                ]
-                // ,
-                // "2024-10-04": [
-                //     {
-                //         "event_id": 6,
-                //         "current_signups": 6,
-                //         "max_signups": 10,
-                //         "event_program": "Active Family Program",
-                //         "title": "Test Week",
-                //         "start_date": "2024-10-04T19:00:00",
-                //         "end_date": "2024-10-04T20:00:00",
-                //         "location": "Bendemeer",
-                //         "tier": 2
-                //     }
-                // ]
-            },
+            eventData: {},
+            recommendedEvents: {},
             filteredEvents: null
-        }
+        };
     },
     methods: {
-        // Format date as '2 September 2024, Monday'
+        async fetchEvents() {
+            try {
+                // const response = await axios.get("http://127.0.0.1:5002/event/available");
+                const response = await axios.get(`${apiBaseURL}/event/available`);
+                const eventDataResponse = response.data.data;
+                this.eventData = {};
+                this.sortedDates = [];
+                for (const event of eventDataResponse) {
+                    const date_key = event.start_date.split("T")[0];
+                    if (!this.eventData[date_key]) {
+                        this.eventData[date_key] = [];
+                        this.sortedDates.push(date_key);
+                    }
+                    this.eventData[date_key].push(event);
+                }
+                this.sortedDates.sort();
+                console.log(this.eventData);
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        },
+        async fetchRecommendedEvents() {
+            try {
+                // const response = await axios.get(`http://localhost:5042/user/${this.userId}/eligible-events`)
+                const response = await axios.get(`${apiBaseURL}/user/${this.userId}/eligible-events`);
+                if (response.data.code === 200) {
+                    const eventIds = response.data.data;
+                    // const eventDetailsPromises = eventIds.map(id =>
+                    //     axios.get(`http://localhost:5002/event/${id}`)
+                    // );
+                    const eventDetailsPromises = eventIds.map(id =>
+                        axios.get(`${apiBaseURL}/event/${id}`)
+                    );
+                    const eventDetailsResponses = await Promise.all(eventDetailsPromises);
+                    
+                    this.recommendedEvents = {};
+
+                    for (const res of eventDetailsResponses) {
+                        const event = res.data.data;
+                        const date_key = event.start_date.split("T")[0];
+                        if (!this.recommendedEvents[date_key]) {
+                            this.recommendedEvents[date_key] = [];
+                        }
+                        this.recommendedEvents[date_key].push(event);
+                    }
+                } else {
+                    console.error("Failed to fetch recommended events:", response.data.error);
+                }
+            } catch (error) {
+                console.error("Error fetching recommended events:", error);
+            }
+        },
         formattedDate(dateStr) {
             const date = new Date(dateStr);
-
-            // Get the formatted day, month, and year
-            const day = date.getDate(); // 1
-            const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date); // August
-            const year = date.getFullYear(); // 2024
-            const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date); // e.g., Wednesday
-
+            const day = date.getDate();
+            const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
+            const year = date.getFullYear();
+            const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date);
             return `${day} ${month} ${year}, ${weekday}`;
         },
         formattedDateHeader(dateStr) {
@@ -495,106 +454,70 @@ export default defineComponent({
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric'
-            })
+            });
         },
-        // Format time as '10.00am - 11.00am'
         formattedTime(startDateStr, endDateStr) {
             const startDate = new Date(startDateStr);
             const endDate = new Date(endDateStr);
-
-            const formatTime = date => {
-                return new Intl.DateTimeFormat('en-US', {
+            const formatTime = date => new Intl.DateTimeFormat('en-US', {
                 hour: 'numeric',
                 minute: 'numeric',
                 hour12: true
-                }).format(date);
-            };
-
+            }).format(date);
             return `${formatTime(startDate)} - ${formatTime(endDate)}`;
         },
         async searchEvents() {
-            console.log("checking search input:", this.searchInput);
-            console.log("checking date input:", this.dateInput);
+            // const url = "http://127.0.0.1:5002/event/search";
+            const url = `${apiBaseURL}/event/search`;
+            const params = {};
+            if (this.searchInput) params.search_input = this.searchInput;
+            if (this.dateInput) params.date_input = this.dateInput.split("T")[0];
+
             try {
-                // const url = "http://127.0.0.1:5002/event/search";
-                const url = `${apiBaseURL}/event/search`;
-                const params = {};
-
-                // add search_input if provided
-                if (this.searchInput) {
-                    params.search_input = this.searchInput;
-                }
-
-                // add date_input if provided
-                if (this.dateInput) {
-                    const dateValue = this.dateInput.split("T")[0];
-                    if (dateValue) {
-                        params.date_input = dateValue;
-                    }
-                }
-                
-                // GET request
-                const response = await this.$http.get(url, { params });
-                console.log("response", response);
-                console.log("response data", response.data.data);
-
+                const response = await axios.get(url, { params });
                 if (response.status === 200) {
-                    console.log("testing search/filtered response");
-                    var responseData = response.data.data;
+                    const responseData = response.data.data;
                     this.filteredEvents = {};
                     this.sortedDates = [];
-                    for (var i = 0; i < responseData.length; i++) {
-                        let event_id = responseData[i]["event_id"];
-                        let current_signups = responseData[i]["current_signups"];
-                        let max_signups = responseData[i]["max_signups"];
-                        let slots_left = max_signups - current_signups;
-                        let event_program = responseData[i]["event_program"];
-                        let title = responseData[i]["title"];
-                        let start_date = responseData[i]["start_date"];
-                        let end_date = responseData[i]["end_date"];
-                        let location = responseData[i]["location"];
-                        let tier = responseData[i]["tier"];
-
-                        let date_key = start_date.split("T")[0];
-
+                    for (const event of responseData) {
+                        const date_key = event.start_date.split("T")[0];
                         if (!this.filteredEvents[date_key]) {
                             this.filteredEvents[date_key] = [];
                             this.sortedDates.push(date_key);
                         }
-
-                        this.filteredEvents[date_key].push({
-                            "event_id": event_id,
-                            "current_signups": current_signups,
-                            "max_signups": max_signups,
-                            "slots_left": slots_left,
-                            "event_program": event_program,
-                            "title": title,
-                            "start_date": start_date,
-                            "end_date": end_date,
-                            "location": location,
-                            "tier": tier
-                        })
+                        this.filteredEvents[date_key].push(event);
                     }
                 }
-                console.log("sorted dates:", this.sortedDates);
-                console.log("filtered events:", this.filteredEvents);
-            }
-            catch (error) {
-                console.log(error);
+            } catch (error) {
+                console.log("Error during search:", error);
                 this.filteredEvents = null;
                 this.sortedDates = [];
             }
+        },
+        getEventImage(programName) {
+            switch (programName) {
+                case 'Move It':
+                    return require('../assets/icons/events/event1.png');
+                case 'Family Fitness':
+                    return require('../assets/icons/events/event2.png');
+                case 'Shop, Cook, Eat Healthy':
+                    return require('../assets/icons/events/event3.png');
+                case 'Mall Workouts':
+                    return require('../assets/icons/events/event4.png');
+                case 'Step Up Challenge':
+                    return require('../assets/icons/events/event5.png');
+                default:
+                    return require('../assets/icons/events/event1.png');
+            }
+        },
+        isEmpty(eventsData) {
+            return !eventsData || Object.keys(eventsData).length === 0;
         }
     },
+
     computed: {
         filteredEventsData() {
-            if (this.searchInput || this.dateInput) {
-                console.log("returning filtered data");
-                console.log("filtered events:", this.filteredEvents);
-                return this.filteredEvents || {};
-            } else {
-                return this.eventData;
-            }
+            return this.searchInput || this.dateInput ? this.filteredEvents || {} : this.eventData;
         }
     }
 });

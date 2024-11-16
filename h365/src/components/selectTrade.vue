@@ -11,7 +11,7 @@
                         @click="selectCard(card)"
                         >
                         <p class="cardName"> {{ card.title }} </p>
-                        <img :src="getCardImage(card.title, card.card_type)" />
+                        <img :src="getCardImage(card.title, card.collection_id)" />
                     </div>
                 </div>
             </div>
@@ -33,6 +33,7 @@ export default {
             userCards: [],
             availableCards: {},
             selectedCard: null,
+            collectionDataById: {}
         }
     },
 
@@ -43,8 +44,16 @@ export default {
                 const cardReponse = await this.$http.get(`${apiBaseURL}/cards`);
                 const cardData = cardReponse.data;
 
+                // const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+                const collectionResponse = await this.$http.get(`${apiBaseURL}/collections`);
+                const collectionData = collectionResponse.data.data;
+                for (let i = 0; i < collectionData.length; i++) {
+                    this.collectionDataById[collectionData[i]["collection_id"]] = {"card_type": collectionData[i]["collection_name"], "expired": collectionData[i]["expired"]}
+                }
+
                 const groupedCards = cardData.reduce((acc, card) => {
-                    const cardType = card.card_type;
+                    const cardCollectionId = card.collection_id;
+                    const cardType = this.collectionDataById[cardCollectionId]["card_type"];
                     if (!acc[cardType]) {
                         acc[cardType] = [];
                     }
@@ -78,15 +87,17 @@ export default {
                 return acc;
             }, {});
             this.availableCards = filteredCards;
+            console.log("Filtered available cards:", this.availableCards);
         },
 
-        getCardImage(card_title, card_set) {
-            if (!card_title || !card_set) {
-                console.error("Invalid card_title or card_set:", card_title, card_set);
+        getCardImage(card_title, card_collection_id) {
+            if (!card_title || !card_collection_id) {
+                console.error("Invalid card_title or card_collection_id:", card_title, card_collection_id);
                 return;
             }
 
             const formattedTitle = card_title.toLowerCase().replace(/\s+/g, "_");
+            const card_set = this.collectionDataById[card_collection_id]["card_type"]
             const formattedSetName = card_set.toLowerCase().replace(/\s+/g, "_");
 
             console.log(`Fetching image for: ${formattedSetName}/${formattedTitle}.png`);
@@ -100,6 +111,7 @@ export default {
 
 
         selectCard(card) {
+            console.log(card);
             this.selectedCard = card;
             this.$emit('card-selected', card);
             // this.$emit('tradeCardSelected', card)

@@ -98,6 +98,7 @@ export default defineComponent({
             cardGiveTitle: '',
             cardWantSet: '',
             cardGiveSet: '',
+            collectionDataById: {}
         };
     },
 
@@ -157,7 +158,8 @@ export default defineComponent({
         handleCardWant(card) {
             this.cardWant = card;
             this.cardWantTitle = card.title;
-            this.cardWantSet = card.card_type;
+            let cardWantCollectionId = card.collection_id;
+            this.cardWantSet = this.collectionDataById[cardWantCollectionId]["card_type"];
         },
 
         handleCardGive(card) {
@@ -187,14 +189,9 @@ export default defineComponent({
                         card_two_id: this.cardWant.card_id
                     };
 
-                    // const response = await fetch("http://127.0.0.1:5014/create_trade", {
-                    //     method: "POST",
-                    //     headers: {
-                    //         "Content-Type": "application/json"
-                    //     },
-                    //     body: JSON.stringify(tradeData)
-                    // });
-                    const response = await fetch(`${apiBaseURL}/create_trade`, {
+                    // const newTradeURL = "http://127.0.0.1:5014/create_trade";
+                    const newTradeURL = `${apiBaseURL}/create_trade`;
+                    const response = await fetch(newTradeURL, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -232,11 +229,13 @@ export default defineComponent({
                     // const giveResponse = await this.$http.get(`http://127.0.0.1:5003/card/${this.cardGive.card_id}`);
                     const wantResponse = await this.$http.get(`${apiBaseURL}/card/${this.cardWant.card_id}`);
                     const giveResponse = await this.$http.get(`${apiBaseURL}/card/${this.cardGive.card_id}`);
-
+                    
                     this.cardWantTitle = wantResponse.data.data.title;
                     this.cardGiveTitle = giveResponse.data.data.title;
-                    this.cardWantSet = wantResponse.data.data.card_type;
-                    this.cardGiveSet = giveResponse.data.data.card_type;
+                    let cardWantCollectionId = wantResponse.data.data.collecion_id;
+                    let cardGiveCollectionId = giveResponse.data.data.collecion_id;
+                    this.cardWantSet = this.collectionDataById[cardWantCollectionId]["card_type"];
+                    this.cardGiveSet = this.collectionDataById[cardGiveCollectionId]["card_type"];
                 } catch (error) {
                     console.error("Error fetching card titles:", error);
                 }
@@ -253,6 +252,15 @@ export default defineComponent({
             return Object.keys(this.searchResults).length > 0 && this.searchInput
                 ? this.searchResults
                 : this.allCards;
+        }
+    },
+
+    async mounted() {
+        // const collectionResponse = await this.$http.get("http://127.0.0.1:5022/collections");
+        const collectionResponse = await this.$http.get(`${apiBaseURL}/collections`);
+        const collectionData = collectionResponse.data.data;
+        for (let i = 0; i < collectionData.length; i++) {
+            this.collectionDataById[collectionData[i]["collection_id"]] = {"card_type": collectionData[i]["collection_name"], "expired": collectionData[i]["expired"]}
         }
     }
 });

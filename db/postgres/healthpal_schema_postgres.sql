@@ -1,11 +1,3 @@
--- Drop healthpal database if it exists (not supported in Supabase; drop tables individually if needed)
--- CREATE DATABASE healthpal;
-
--- Using Supabase, the database is already created. Start with the schema creation.
--- Change schema to `public` if Supabase requires it, otherwise, continue with default schema.
-
--- Creating tables with modifications for PostgreSQL
-
 CREATE TABLE IF NOT EXISTS "user" (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(40) NOT NULL,
@@ -64,7 +56,7 @@ CREATE TABLE user_events (
 CREATE TABLE cards (
     card_id SERIAL PRIMARY KEY,
     title VARCHAR(40) NOT NULL,
-    card_type VARCHAR(40) NOT NULL,
+    collection_id INT NOT NULL,
     points_required INT NOT NULL,
     event_id INT REFERENCES events (event_id) ON DELETE SET NULL,
     description VARCHAR(200) NOT NULL,
@@ -144,4 +136,10 @@ CREATE TABLE strava_users (
     access_token VARCHAR(200) NOT NULL,
     refresh_token VARCHAR(200) NOT NULL,
     expires_at INT NOT NULL
+);
+
+CREATE TABLE collection (
+    collection_id SERIAL PRIMARY KEY,
+    collection_name VARCHAR(50) NOT NULL,
+    expired TIMESTAMP
 );

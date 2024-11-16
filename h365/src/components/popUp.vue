@@ -58,7 +58,7 @@
         <div v-if="type === 'info'">
             <div class="head">
                 <img src="../assets/icons/collection/lightbulb.png">
-                <p> Did you know </p>
+                <p style="margin: 0"> Did you know </p>
             </div>
 
             <p class="cbody">
@@ -67,10 +67,10 @@
 
             <div class="head">
                 <img src="../assets/icons/collection/recommendation.png">
-                <p> Recommendation </p>
+                <p style="margin: 0"> Recommendation </p>
             </div>
 
-            <p class="cbody">
+            <p class="cbody" style="margin-bottom: 10px">
                {{ cardRecommendation }}
             </p>
 

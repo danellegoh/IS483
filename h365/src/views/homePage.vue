@@ -15,7 +15,7 @@
                 <p> My Healthcoins </p>
             </div>
 
-            <div class="blockRight">
+            <div class="blockRight" @click="openStreakPopup">
                 <div class="blockText">
                     <p> {{ streakCount }} </p>
                     <img src="../assets/icons/homepage/streak.png" style="width: 25px; height: auto; margin-right: 3px;">
@@ -26,6 +26,33 @@
                     <i class="uil uil-info-circle" style="display: flex; align-items: center;"></i>
                 </div>
             </div>
+
+            <div v-if="showStreakPopup" class="popupOverlay">
+                <div class="content">
+                    <p class="popupTitle">Earn HealthCoins with Streaks!</p>
+
+                    <div class="popupContent">
+                        <div class="left">
+                            <img src="../assets/icons/homepage/streak-popup.png">
+                        </div>
+
+                        <div class="right">
+                                <p class="popupBody" style="margin-top: 5px">
+                                    + Earn <span>10 coins</span> per week when you hit your goal!
+                                </p>
+                                <p class="popupBody" style="margin-bottom: 20px">
+                                    + Extra <span>5 coins</span> for every consecutive week you hit your goal!
+                                </p>
+                        </div>
+                    </div>
+
+                    <!-- • -->
+
+                    <button class="popupButton" @click="closeStreakPopup"> Got it! </button>
+
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -123,7 +150,7 @@
             </div>
         </div>
 
-        <div class="container">
+        <div class="container" v-if="recommendedEvents.length > 0">
             <div class="carousel">
                 
                 <div v-for="event in recommendedEvents" :key="event.event_id">
@@ -133,12 +160,15 @@
                                 <img src="../assets/icons/homepage/nextSteps.png">
                             </div>
                             <div class="cardText">
+
                                 <!-- v-if few slots left -->
-                                <div class="lowSlotAlert">
+                                <div v-if="event.is_near" class="lowSlotAlert">
                                     Event near you
                                 </div>
+
                                 <!-- activity name -->
                                 <p class="eventName"> {{ event.title }} </p>
+
                                 <!-- date, day, and time  -->
                                 <div class="eventInfo">
                                     <div class=eventDetails>
@@ -146,6 +176,7 @@
                                         <p> {{ formattedTime(event.start_date, event.end_date) }} </p>
                                     </div>
                                 </div>
+
                                 <!-- location -->
                                 <div class="eventInfo">
                                     <div class=eventDetails>
@@ -158,8 +189,25 @@
                 </div>
 
             </div>
-
         </div>
+
+        <div class="container" v-else>
+            <div class="basicCard">
+
+                <div class="pageHeading">
+                    <span style="font-family: text-medium; color: var(--text-highlight); 
+                    font-size: 13px; text-align: justify;"> 
+                        Looks like we don’t have any personalized events for you right 
+                        now, but check out the others – you might find something for you! ✨
+                    </span>
+                </div>
+
+                <router-link :to="{ name: 'eventsPage'}">
+                    <button class="syncButton" style="width: 90%"> View All Events </button>
+                </router-link>
+
+                </div>
+        </div> 
 
         <PopupGoal
             v-if="showPopup"
@@ -179,6 +227,7 @@
 <script>
 import { useStore } from 'vuex';
 import { computed } from 'vue';
+import axios from 'axios';
 import PopupGoal from '@/components/editGoalPopup.vue';
 
 const apiBaseURL = process.env.VUE_APP_API_BASE_URL;
@@ -188,12 +237,10 @@ export default {
         PopupGoal
     },
     setup() {
-        // console.log("home page");
         const store = useStore();
         const userId = computed(() => store.state.userId);
         const userEmail = computed(() => store.state.userEmail);
-        // console.log(userId.value);
-        // console.log(userEmail.value);
+        
         return {
             userId,
             userEmail
@@ -201,7 +248,7 @@ export default {
     },
     data() {
         return {
-            streakCount: 1,
+            streakCount: 0,
             weekStarted: 0,
             weekCurrent: 0,
             goalId: 0,
@@ -215,148 +262,122 @@ export default {
             currentWeekly: 0,
             goalWeekly: 0,
             minutesToday: 0,
-
             mr_movingMinutes: 0,
             mr_topActivity: "",
             mr_totalDistance: 0,
             mr_allActivitites: {},
-
             lastMonth: "",
             numHealthCoins: 0,
             userName: "",
-            recommendedEvents: [
-                {
-                    "event_id": 5,
-                    "current_signups": 8,
-                    "max_signups": 10,
-                    "slots_left": 2,
-                    "event_program": "Active Family Program",
-                    "title": "Yoga Challenge",
-                    "start_date": "2024-10-11T12:00:00",
-                    "end_date": "2024-10-11T14:00:00",
-                    "location": "Paya Lebar",
-                    "tier": 2
-                },
-                {
-                    "event_id": 6,
-                    "current_signups": 5,
-                    "max_signups": 10,
-                    "slots_left": 5,
-                    "event_program": "Active Family Program",
-                    "title": "Plank Challenge",
-                    "start_date": "2024-10-11T14:00:00",
-                    "end_date": "2024-10-11T16:00:00",
-                    "location": "Tampines",
-                    "tier": 1
-                }
-            ]
-        }
+            recommendedEvents: [],
+            showStreakPopup: false,
+        };
     },
-
     computed: {
         progressPercentage() {
-            if (this.goalWeekly > 0) {
-                return (this.currentWeekly / this.goalWeekly) * 100;
-            }
-            return 0;
+            return this.goalWeekly > 0 ? (this.currentWeekly / this.goalWeekly) * 100 : 0;
         }
     },
-
     methods: {
-        getPreviousMonth() {
-            const currentDate = new Date();
-            let month = currentDate.getMonth();
-
-            if (month === 0) {
-                month = 11;
-            } else {
-                month -= 1;
-            }
-
-            // Get the month name from the month index
-            const monthNames = ["January", "February", "March", "April", "May", "June", 
-                                "July", "August", "September", "October", "November", "December"];
-            this.lastMonth = monthNames[month];
-        },
-
         async fetchUserData() {
             try {
-                // const userReponse = await this.$http.get("http://127.0.0.1:5001/user/" + this.userEmail);
-                const userReponse = await this.$http.get(`${apiBaseURL}/user/${this.userEmail}`);
-                const userData = userReponse.data.data;
-                this.numHealthCoins = userData["total_point"];
-                this.userName = userData["name"];
+                // const userResponse = await axios.get(`http://127.0.0.1:5001/user/${this.userEmail}`);
+                const userResponse = await axios.get(`${apiBaseURL}/user/${this.userEmail}`);
+                const userData = userResponse.data.data;
+                this.numHealthCoins = userData.total_point;
+                this.userName = userData.name;
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
         },
+        async fetchRecommendedEvents() {
+            if (!this.userId) {
+                console.error("User ID is not available");
+                return;
+            }
+            try {
+                // const response = await axios.get(`http://localhost:5042/user/${this.userId}/eligible-events`);
+                const response = await axios.get(`${apiBaseURL}/user/${this.userId}/eligible-events`);
+                if (response.data.code === 200) {
+                    const eventIds = response.data.data;
+                    // const eventDetailsPromises = eventIds.map(id => 
+                    //     axios.get(`http://localhost:5002/event/${id}`)
+                    // );
+                    const eventDetailsPromises = eventIds.map(id => 
+                        axios.get(`${apiBaseURL}/event/${id}`)
+                    );
+                    const eventDetailsResponses = await Promise.all(eventDetailsPromises);
+
+                    // Get current date and time, and calculate "tomorrow"
+                    const currentDate = new Date();
+                    const tomorrowDate = new Date();
+                    tomorrowDate.setDate(currentDate.getDate() + 1);
+                    tomorrowDate.setHours(23, 59, 59, 999); // End of tomorrow
+
+                    // Filter events to only include those happening later today or tomorrow
+                    this.recommendedEvents = eventDetailsResponses
+                        .map(res => res.data.data)
+                        .filter(event => {
+                            const eventDate = new Date(event.start_date);
+                            return eventDate >= currentDate && eventDate <= tomorrowDate;
+                        });
+                } else {
+                    console.error("Failed to fetch eligible events:", response.data.error);
+                }
+            } catch (error) {
+                console.error("Error fetching recommended events:", error);
+            }
+        },
         formattedDate(dateStr) {
             const date = new Date(dateStr);
-
-            // Get the formatted day, month, and year
-            const day = date.getDate(); // 1
-            const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date); // August
-            const year = date.getFullYear(); // 2024
-            const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date); // e.g., Wednesday
-
+            const day = date.getDate();
+            const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
+            const year = date.getFullYear();
+            const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
             return `${day} ${month} ${year}, ${weekday}`;
         },
         formattedTime(startDateStr, endDateStr) {
             const startDate = new Date(startDateStr);
             const endDate = new Date(endDateStr);
-
-            const formatTime = date => {
-                return new Intl.DateTimeFormat('en-US', {
+            const formatTime = date => new Intl.DateTimeFormat('en-US', {
                 hour: 'numeric',
                 minute: 'numeric',
                 hour12: true
-                }).format(date);
-            };
-
+            }).format(date);
             return `${formatTime(startDate)} - ${formatTime(endDate)}`;
         },
-
         async stravaLogin() {
-            // window.open("http://localhost:5020/connect", "_blank");
             // window.location.href = "http://localhost:5020/connect";
             window.location.href = `${apiBaseURL}/connect`;
-            // await this.handleStravaCallback();
             await this.syncNow();
         },
-
         async syncNow() {
             try {
-                // const goalResponse = await this.$http.get("http://127.0.0.1:5011/goals/" + this.userId)
-                const goalResponse = await this.$http.get(`${apiBaseURL}/goals/${this.userId}`)
+                // const goalResponse = await axios.get(`http://127.0.0.1:5011/goals/${this.userId}`);
+                const goalResponse = await axios.get(`${apiBaseURL}/goals/${this.userId}`);
                 const goalData = goalResponse.data;
-                console.log(goalData)
+                // console.log(goalData)
                 const goal_id = goalData[0].goal_id;
                 this.goalId = goal_id;
 
                 // const streakResponse = await this.$http.get("http://127.0.0.1:5010/streaks/" + goal_id)
                 const streakResponse = await this.$http.get(`${apiBaseURL}/streaks/${goal_id}`)
                 const streakData = streakResponse.data;
-                console.log(streakData)
-                const streak_id = streakData['data'][0].streak_id;
-                // console.log("streak id:", streak_id);
+                // console.log(streakData)
+                const streak_id = streakData["data"][0].streak_id;
 
                 const payload = {
                     goal_id: goal_id,
                     user_id: this.userId,
                     streak_id: streak_id,
                 };
-
-                // const response = await this.$http.post('http://localhost:5030/update_streak', payload, {
+                // const response = await axios.post('http://localhost:5030/update_streak', payload, {
                 //     headers: { 'Content-Type': 'application/json' }
                 // });
-                const response = await this.$http.post(`${apiBaseURL}/update_streak`, payload, {
+                const response = await axios.post(`${apiBaseURL}/update_streak`, payload, {
                     headers: { 'Content-Type': 'application/json' }
                 });
-
-                // console.log("haha")
-                // console.log(response)
-
-                // console.log(response.data.data.streak_count)
+                console.log(response.data.data);
                 this.streakCount = response.data.data.streak_count;
                 this.weekStarted = response.data.data.week_started;
                 this.weekCurrent = response.data.data.week_current;
@@ -366,44 +387,14 @@ export default {
                 this.currentWeekly = response.data.data.weekly_time_lapse;
                 this.goalWeekly = goalData[0].target;
                 this.minutesToday = response.data.data.daily_time_lapse;
-
                 this.mr_movingMinutes = response.data.data.monthly_time_lapse;
                 this.mr_topActivity = response.data.data.monthly_top_activity;
                 this.mr_totalDistance = response.data.data.monthly_distance;
                 this.mr_allActivitites = response.data.data.activities_in_month;
-
-                // console.log("haha", this.mr_allActivitites)
-
-                if (response.status === 200) {
-                    console.log('Streak update successful', response.data);
-                } else {
-                    console.error('Error syncing streak:', response.data);
-                }
             } catch (error) {
                 console.error('Sync failed:', error);
             }
         },
-
-        // goToMonthlyReport() {
-        //     this.$router.push({
-        //         name: 'monthlyReport',
-        //         params: {
-        //             streakCount: this.streakCount,
-        //             mr_movingMinutes: this.mr_movingMinutes,
-        //             mr_topActivity: this.mr_topActivity,
-        //             mr_totalDistance: this.mr_totalDistance,
-        //             // mr_allActivitites: this.mr_allActivitites,
-        //             // mr_allActivitites: Object.keys(activities).length ? JSON.stringify(activities) : '{}', // Default to empty object
-
-                    
-
-        //             mr_month: this.month
-        //         }
-        //     });
-
-        //     this.$router.push('monthlyReport').then(() => { this.$route.params.mr_allActivitites = this.mr_allActivitites })
-        // }
-
         goToMonthlyReport() {
             this.$router.push({
                 name: 'monthlyReport',
@@ -465,22 +456,46 @@ export default {
             } catch (error) {
                 console.log("error in updating goal:", error);
             }
-        }
-    },
+        },
+        getPreviousMonth() {
+            const currentDate = new Date();
+            let month = currentDate.getMonth();
 
+            if (month === 0) {
+                month = 11;
+            } else {
+                month -= 1;
+            }
+
+            // Get the month name from the month index
+            const monthNames = ["January", "February", "March", "April", "May", "June", 
+                                "July", "August", "September", "October", "November", "December"];
+            this.lastMonth = monthNames[month];
+        },
+
+        openStreakPopup() {
+            this.showStreakPopup = true;
+        },
+
+        closeStreakPopup() {
+            this.showStreakPopup = false;
+        },
+    },
     async mounted() {
         try {
-            this.getPreviousMonth();
             this.fetchUserData();
+            this.getPreviousMonth();
             await this.syncNow();
             await this.checkForPopup();
+            this.fetchUserData(); // update reflected healthcoins
         } catch (error) {
-            console.log("error:", error);
+            console.log("Error during component mount:", error);
         }
     },
 }
-
 </script>
+
+
 
 <style scoped>
 .pageHeader {
@@ -516,7 +531,7 @@ export default {
     background-color: var(--default-white);
     align-items: center;
     text-align: center;
-    padding: 10px;
+    padding-top: 15px;
     min-height: 70px;
 }
 
@@ -531,7 +546,7 @@ export default {
 
 .blockLeft p, .blockRight p {
     font-family: text-medium;
-    font-size: 13px;
+    font-size: 11px;
     color: var(--default-text);
     margin: 0;
 }
@@ -662,6 +677,91 @@ export default {
     font-size: 10px;
     color: var(--text-highlight);
     margin: 0;
+}
+
+.popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 20000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 16px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 28px 20px;
+    border-radius: 8px;
+    width: 350px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.popupContent {
+    display: flex;
+    padding: 0 10px;
+}
+
+.popupButton {
+    font-family: text-medium;
+    color: var(--grey);
+    font-size: 10px;
+    background-color: var(--blue);
+    border-radius: 5px;
+    border: none;
+    padding: 5px 10px;
+    display: flex;
+    margin: auto;
+    text-align: center;
+}
+
+.popupTitle {
+    font-family: text-bold;
+    font-size: 16px;
+    color: var(--orange);
+    margin-bottom: 10px;
+    text-align: center;
+    line-height: 18px;
+}
+
+.popupBody {
+    font-family: text-medium;
+    font-size: 12px;
+    color: var(--text-highlight);
+    margin-bottom: 10px;
+    text-align: justify;
+    line-height: 13px;
+    margin-bottom: 10px;
+    padding: 0 8px;
+}
+
+.popupBody span {
+    font-family: text-bold;
+    color: var(--red);
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 15px;
+}
+
+.left img {
+    width: 100px;
+    height: auto;
+}
+
+.right {
+    display: flex;
+    flex-direction: column;
 }
 
 
