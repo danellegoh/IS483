@@ -19,7 +19,9 @@
 
         <div class="eventDetails" style="padding-top: 0;">
             <div class="eventImage">
-                <img src="../assets/icons/events/event1.png">
+                <img 
+                    :src="getEventImage(eventTitle)" 
+                >
             </div>
 
             <div class="eventText">
@@ -92,9 +94,10 @@
             </div>
         </div>
 
-        <div class="bookNowContainer">
+        <div class="bookNowContainer" v-if="!isRegistered">
             <button class="bookButton" @click="openCodePopup"> Book Now </button>
         </div>
+
     </div>
 
     <Popup
@@ -152,10 +155,10 @@ export default {
             popupType: 'event-code',
             userEntryCode: "",
             errorMessage: '',
-
+            isRegistered: false, // New flag
             cameFromEventsPage: false,
             cameFromBookedEventsPage: false,
-        }
+        };
     },
 
     async mounted() {
@@ -163,6 +166,7 @@ export default {
         console.log("eventID:", eventId);
 
         try {
+            // Fetch event details
             const response = await this.$http.get("http://127.0.0.1:5002/event/" + eventId);
             const eventData = response.data.data;
             console.log(eventData);
@@ -180,18 +184,20 @@ export default {
             this.eventOrganiserPhone = eventData["organiser_phone"];
             this.entryCode = eventData["entry_code"];
 
-        }
-        catch (error) {
-            console.log("error:", error);
+            // Check if user is already registered for the event
+            const registrationResponse = await this.$http.get(`http://127.0.0.1:5007/userevent/active/${this.userId}`);
+            const registeredEvents = registrationResponse.data || [];
+            console.log("haha", registeredEvents)
+            this.isRegistered = registeredEvents.some(event => event.data.event_id == this.eventId);
+            console.log("Is user registered:", this.isRegistered);
+        } catch (error) {
+            console.log("Error:", error);
         }
     },
 
     methods: {
-        // Format date as '2 September 2024, Monday'
         formattedDate(dateStr) {
             const date = new Date(dateStr);
-
-            // Get the formatted day, month, and year
             const day = date.getDate(); // 1
             const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date); // August
             const year = date.getFullYear(); // 2024
@@ -199,7 +205,7 @@ export default {
 
             return `${day} ${month} ${year}, ${weekday}`;
         },
-        // Format time as '10.00am - 11.00am'
+
         formattedTime(startDateStr, endDateStr) {
             const startDate = new Date(startDateStr);
             const endDate = new Date(endDateStr);
@@ -270,6 +276,22 @@ export default {
         goTo(routeName) {
             this.$router.push({ name: routeName });
         },
+        getEventImage(programName) {
+            switch (programName) {
+                case 'Move It':
+                    return require('../assets/icons/events/event1.png');
+                case 'Family Fitness':
+                    return require('../assets/icons/events/event2.png');
+                case 'Shop, Cook, Eat Healthy':
+                    return require('../assets/icons/events/event3.png');
+                case 'Mall Workouts':
+                    return require('../assets/icons/events/event4.png');
+                case 'Step Up Challenge':
+                    return require('../assets/icons/events/event5.png');
+                default:
+                    return require('../assets/icons/events/event1.png');
+            }
+        }
     },
 
     computed: {

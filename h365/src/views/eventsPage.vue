@@ -36,68 +36,70 @@
                 <!-- recommended events -->
                 <div v-if="recommendedEvents[date] && recommendedEvents[date].length">
 
-                    <!-- recommended header -->
-                    <div class="pageHeading">
-                        <img src="../assets/icons/events/star.png">
-                        <p style="font-family: text-semibold; font-size: 16px;"> Recommended for you </p>
-                    </div>
+                <!-- recommended header -->
+                <div class="pageHeading">
+                    <img src="../assets/icons/events/star.png">
+                    <p style="font-family: text-semibold; font-size: 16px;"> Recommended for you </p>
+                </div>
 
-                    <!-- recommended events cards -->
-                    <div v-for="event in recommendedEvents[date]" :key="event.event_id">
-                        <router-link :to="{ name: 'viewEventPage', params: { eventId: event.event_id } }">
-                            <div class="basicCard">
-                                <div class="cardImage">
-                                    <img src="../assets/icons/events/event1.png">
+                <!-- recommended events cards -->
+                <div v-for="event in recommendedEvents[date]" :key="event.event_id">
+                    <router-link :to="{ name: 'viewEventPage', params: { eventId: event.event_id } }">
+                        <div class="basicCard">
+                            <div class="cardImage">
+                                <img class="eventImage" 
+                                    :src="getEventImage(event.title)" 
+                                >
+                            </div>
+
+                            <div class="cardText">
+
+                                <!-- v-if few slots left -->
+                                <div class="lowSlotAlert" v-if="event.slots_left <= 5">
+                                    Few Slots Left
                                 </div>
 
-                                <div class="cardText">
+                                <!-- programme name -->
+                                <p class="programmeName" v-if="event.event_program != 'Null'"> {{ event.event_program }} </p>
 
-                                    <!-- v-if few slots left -->
-                                    <div class="lowSlotAlert" v-if="event.slots_left <= 5">
-                                        Few Slots Left
+                                <!-- activity name -->
+                                <p class="eventName">{{ event.title }}</p>
+
+                                <!-- date, day, and time  -->
+                                <div class="eventInfo1">
+                                    <i class="uil uil-schedule eventIcon"></i>
+                                    <div class=eventDetails>
+                                        <p>{{ formattedDate(event.start_date) }}</p>
+                                        <p>{{ formattedTime(event.start_date, event.end_date) }}</p>
                                     </div>
+                                </div>
 
-                                    <!-- programme name -->
-                                    <p class="programmeName" v-if="event.event_program != 'Null'"> {{ event.event_program }} </p>
-
-                                    <!-- activity name -->
-                                    <p class="eventName">{{ event.title }}</p>
-
-                                    <!-- date, day, and time  -->
-                                    <div class="eventInfo">
-                                        <i class="uil uil-schedule eventIcon"></i>
-                                        <div class=eventDetails>
-                                            <p>{{ formattedDate(event.start_date) }}</p>
-                                            <p>{{ formattedTime(event.start_date, event.end_date) }}</p>
-                                        </div>
+                                <!-- location -->
+                                <div class="eventInfo2">
+                                    <i class="uil uil-map-pin eventIcon"></i>
+                                    <div class=eventDetails>
+                                        <p>{{ event.location }}</p>
                                     </div>
+                                </div>
+                                <div class="eventBtnIntensity">
+                                    <form action="">
+                                        <button class="bookEventBtn">Book Now</button>
+                                    </form>
 
-                                    <!-- location -->
-                                    <div class="eventInfo">
-                                        <i class="uil uil-map-pin eventIcon"></i>
-                                        <div class=eventDetails>
-                                            <p>{{ event.location }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="eventBtnIntensity">
-                                        <form action="">
-                                            <button class="bookEventBtn">Book Now</button>
-                                        </form>
-
-                                        <!-- intensity -->
-                                        <div class="intensity">
-                                            <p>Intensity: </p>
-                                            <img v-if="event.tier === 1" src="../assets/icons/events/intensity1.png">
-                                            <img v-else-if="event.tier === 2" src="../assets/icons/events/intensity2.png">
-                                            <img v-else-if="event.tier === 3" src="../assets/icons/events/intensity3.png">
-                                        </div>
+                                    <!-- intensity -->
+                                    <div class="intensity">
+                                        <p>Intensity: </p>
+                                        <img v-if="event.tier === 1" src="../assets/icons/events/intensity1.png">
+                                        <img v-else-if="event.tier === 2" src="../assets/icons/events/intensity2.png">
+                                        <img v-else-if="event.tier === 3" src="../assets/icons/events/intensity3.png">
                                     </div>
                                 </div>
                             </div>
-                        </router-link>
-                    </div>
+                        </div>
+                    </router-link>
+                </div>
 
-                    <br>
+                <br>
                 </div>
                 
                 <!-- all events header -->
@@ -111,7 +113,9 @@
                     <router-link :to="{ name: 'viewEventPage', params: { eventId: event.event_id } }">
                         <div class="basicCard">
                             <div class="cardImage">
-                                <img src="../assets/icons/events/event1.png">
+                                <img class="eventImage"
+                                    :src="getEventImage(event.title)" 
+                                >
                             </div>
 
                             <div class="cardText">
@@ -121,13 +125,17 @@
                                 </div>
 
                                 <!-- programme name -->
-                                <p class="programmeName" v-if="event.event_program != 'Null'">{{ event.event_program }}</p>
+                                <p class="programmeName" v-if="event.event_program != 'Null'">
+                                    {{ event.event_program }}
+                                </p>
 
                                 <!-- activity name -->
-                                <p class="eventName">{{ event.title }}</p>
+                                <p class="eventName">
+                                    {{ event.title }}
+                                </p>
 
                                 <!-- date, day, and time  -->
-                                <div class="eventInfo">
+                                <div class="eventInfo1">
                                     <i class="uil uil-schedule eventIcon"></i>
                                     <div class=eventDetails>
                                         <p>{{ formattedDate(event.start_date) }}</p>
@@ -136,7 +144,7 @@
                                 </div>
 
                                 <!-- location -->
-                                <div class="eventInfo">
+                                <div class="eventInfo2">
                                     <i class="uil uil-map-pin eventIcon"></i>
                                     <div class=eventDetails>
                                         <p>{{ event.location }}</p>
@@ -144,9 +152,7 @@
                                 </div>
 
                                 <div class="eventBtnIntensity">
-                                    <form action="">
-                                        <button class="bookEventBtn">Book Now</button>
-                                    </form>
+                                    <button class="bookEventBtn">Book Now</button>
 
                                     <!-- intensity -->
                                     <div class="intensity">
@@ -221,6 +227,10 @@
     justify-content: space-between;
 }
 
+.cardText {
+    max-height: 199px;
+}
+
 .lowSlotAlert {
     font-family: text-medium;
     font-size: 8px;
@@ -232,14 +242,14 @@
     font-family: text-medium;
     font-size: 10px;
     color: var(--text-highlight);
-    margin-bottom: 0px;
+    margin-bottom: 4px;
 }
 
 .eventName {
     font-family: text-bold;
     font-size: 16px;
     color: var(--default-text);
-    margin-bottom: 0px;
+    margin-bottom: 10px;
     line-height: 16px;
 }
 
@@ -247,9 +257,18 @@
     color: var(--text-highlight);
 }
 
-.eventInfo {
+.eventInfo1 {
     display: flex;
     padding: 0px;
+    margin-bottom: 0px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.eventInfo2 {
+    display: flex;
+    padding: 0px;
+    margin-bottom: 30px;
     align-items: center;
     justify-content: flex-start;
 }
@@ -259,6 +278,7 @@
     color: var(--text-highlight);
     font-size: 9px;
     padding-left: 10px;
+    line-height: 10px;
 }
 
 .eventDetails p {
@@ -272,7 +292,7 @@
     background-color: var(--blue);
     border-radius: 5px;
     border: none;
-    padding-top: 2px 10px;
+    padding: 4px 8px;
 }
 
 .eventBtnIntensity {
@@ -292,7 +312,7 @@
 
 .intensity p {
     font-family: text-semibold;
-    font-size: 10px;
+    font-size: 9px;
     color: var(--text-highlight);
     margin: 5px 5px 0 0;
 }
@@ -303,6 +323,10 @@
     color: var(--text-highlight);
     font-size: 14px;
     margin-top: 20px;
+}
+
+.eventImage {
+    border-radius: 5px 0 0 5px;
 }
 
 </style>
@@ -405,9 +429,9 @@ export default defineComponent({
         formattedDate(dateStr) {
             const date = new Date(dateStr);
             const day = date.getDate();
-            const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
+            const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
             const year = date.getFullYear();
-            const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
+            const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date);
             return `${day} ${month} ${year}, ${weekday}`;
         },
         formattedDateHeader(dateStr) {
@@ -454,8 +478,25 @@ export default defineComponent({
                 this.filteredEvents = null;
                 this.sortedDates = [];
             }
-        }
+        },
+        getEventImage(programName) {
+            switch (programName) {
+                case 'Move It':
+                    return require('../assets/icons/events/event1.png');
+                case 'Family Fitness':
+                    return require('../assets/icons/events/event2.png');
+                case 'Shop, Cook, Eat Healthy':
+                    return require('../assets/icons/events/event3.png');
+                case 'Mall Workouts':
+                    return require('../assets/icons/events/event4.png');
+                case 'Step Up Challenge':
+                    return require('../assets/icons/events/event5.png');
+                default:
+                    return require('../assets/icons/events/event1.png');
+            }
+        },
     },
+
     computed: {
         filteredEventsData() {
             return this.searchInput || this.dateInput ? this.filteredEvents || {} : this.eventData;
