@@ -89,7 +89,7 @@ def callback():
         return jsonify({'error': 'Failed to obtain access token'}), 400
 
     # Retrieve or create the user in the database
-    user_id = token_data['athlete']['id']
+    user_id = str(token_data['athlete']['id'])
     user = strava_users.query.filter_by(strava_id=user_id).first()
 
     if user:
