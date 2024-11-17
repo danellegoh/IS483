@@ -87,7 +87,7 @@
                 </div>
 
                 <div class="updateDetails">
-                    <button class="syncButton" @click="stravaLogin"> Sync now </button>
+                    <button class="syncButton" type="button" @click="stravaLogin"> Sync now </button>
                 </div>
             </div>
 
@@ -250,6 +250,7 @@ export default {
             weekStarted: 0,
             weekCurrent: 0,
             goalId: 0,
+            streakId: 0,
 
             goalMet: false,
             toPrompt: false,
@@ -340,8 +341,8 @@ export default {
             return `${formatTime(startDate)} - ${formatTime(endDate)}`;
         },
         async stravaLogin() {
-            window.location.href = "http://localhost:5020/connect";
-            await this.syncNow();
+            // window.location.href = "http://localhost:5020/connect";
+            await this.syncStrava();
         },
         async syncNow() {
             try {
@@ -350,37 +351,44 @@ export default {
                 // console.log(goalData)
                 const goal_id = goalData[0].goal_id;
                 this.goalId = goal_id;
+                this.goalWeekly = goalData[0].target;
 
                 const streakResponse = await this.$http.get("http://127.0.0.1:5010/streaks/" + goal_id)
                 const streakData = streakResponse.data;
                 // console.log(streakData)
                 const streak_id = streakData["data"][0].streak_id;
-
-                const payload = {
-                    goal_id: goal_id,
-                    user_id: this.userId,
-                    streak_id: streak_id,
-                };
-                const response = await axios.post('http://localhost:5030/update_streak', payload, {
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                console.log(response.data.data);
-                this.streakCount = response.data.data.streak_count;
-                this.weekStarted = response.data.data.week_started;
-                this.weekCurrent = response.data.data.week_current;
-                this.goalMet = response.data.data.goal_met;
-                this.toPrompt = response.data.data.to_prompt;
-
-                this.currentWeekly = response.data.data.weekly_time_lapse;
-                this.goalWeekly = goalData[0].target;
-                this.minutesToday = response.data.data.daily_time_lapse;
-                this.mr_movingMinutes = response.data.data.monthly_time_lapse;
-                this.mr_topActivity = response.data.data.monthly_top_activity;
-                this.mr_totalDistance = response.data.data.monthly_distance;
-                this.mr_allActivitites = response.data.data.activities_in_month;
+                this.streakId = streak_id;
+                this.streakCount = streakData["data"][0].streak_count;
+                
             } catch (error) {
                 console.error('Sync failed:', error);
             }
+        },
+        async syncStrava() {
+            const payload = {
+                goal_id: this.goalId,
+                user_id: this.userId,
+                streak_id: this.streakId,
+            };
+            const response = await axios.post('http://localhost:5030/update_streak', payload, {
+                headers: { 'Content-Type': 'application/json' }
+            });
+            console.log(response.data.data);
+            this.weekStarted = response.data.data.week_started;
+            this.weekCurrent = response.data.data.week_current;
+            this.goalMet = response.data.data.goal_met;
+            this.toPrompt = response.data.data.to_prompt;
+
+            this.currentWeekly = response.data.data.weekly_time_lapse;
+            this.minutesToday = response.data.data.daily_time_lapse;
+            this.mr_movingMinutes = response.data.data.monthly_time_lapse;
+            this.mr_topActivity = response.data.data.monthly_top_activity;
+            this.mr_totalDistance = response.data.data.monthly_distance;
+            this.mr_allActivitites = response.data.data.activities_in_month;
+
+            await this.checkForPopup();
+            await this.syncNow();
+            this.fetchUserData(); // update reflected healthcoins
         },
         goToMonthlyReport() {
             this.$router.push({
@@ -467,8 +475,9 @@ export default {
             this.fetchRecommendedEvents();
             this.getPreviousMonth();
             await this.syncNow();
-            await this.checkForPopup();
-            this.fetchUserData(); // update reflected healthcoins
+            // await this.checkForPopup();
+            // this.fetchUserData(); // update reflected healthcoins
+            console.log(this.streakCount);
         } catch (error) {
             console.log("Error during component mount:", error);
         }

@@ -53,8 +53,8 @@ def processStreakInformation(streak_information):
         met_result = invoke_http(f"{mvp_URL}")
         print("mvpaEstimation", met_result)
         # estimated_met = met_result["weekly_met"]
-        weekly_time_lapse = met_result["weekly_time_lapse"]
-        # weekly_time_lapse = 180 # EDIT HERE FOR DEMO
+        # weekly_time_lapse = met_result["weekly_time_lapse"]
+        weekly_time_lapse = 180 # EDIT HERE FOR DEMO
         
         # Get Streak 
         streak_check_result = invoke_http(f"{streak_URL}/{streak_id}", method='GET')
@@ -163,7 +163,7 @@ def processStreakInformation(streak_information):
                 "source": "streak"
             }
             coin_result = invoke_http(f"{coin_URL}", method='POST', json=coin_json)
-            print(coin_result)
+            print("adding coins", coin_result)
             
             user_result = invoke_http(f"{user_URL}/id/{user_id}", method='GET')
             user_email = user_result["data"]["email"]
