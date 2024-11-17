@@ -101,8 +101,8 @@ export default {
             // labels: [],
             datasets: [
                 {
-                    data: [],
-                    // data: [0, 0, 0, 0, 0, 0, 6001.5, 0, 0, 0, 0, 0, 0, 5708.5, 0, 0, 0, 0, 0, 0, 7104.9, 0, 0, 0, 0, 0, 0, 6006.2, 0, 0],
+                    // data: [],
+                    data: [0, 0, 0, 0, 0, 0, 6001.5, 0, 0, 0, 0, 0, 0, 5708.5, 0, 0, 0, 0, 0, 0, 7104.9, 0, 0, 0, 0, 0, 0, 6006.2, 0, 0], // EDIT HERE FOR DEMO
                     fill: false,
                     borderColor: 'rgb(28, 131, 225)',
                     tension: 0.1,
@@ -111,10 +111,10 @@ export default {
                 }
             ]
         },
-        streakCount: this.$route.params.streakCount || 0,
-        mr_movingMinutes: this.$route.params.mr_movingMinutes || 154,
-        mr_topActivity: this.$route.params.mr_topActivity || "Run",
-        mr_totalDistance: Math.round((this.$route.params.mr_totalDistance / 1000), 2) || 31,
+        streakCount: 6, // EDIT HERE FOR DEMO
+        mr_movingMinutes: 92, // EDIT HERE FOR DEMO
+        mr_topActivity: "Run", // EDIT HERE FOR DEMO
+        mr_totalDistance: 31, // EDIT HERE FOR DEMO
         mr_allActivitites: {},
         mr_month: this.$route.params.mr_month || 0,
         lastMonth: "",

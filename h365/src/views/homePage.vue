@@ -380,7 +380,7 @@ export default {
             this.toPrompt = response.data.data.to_prompt;
 
             this.currentWeekly = response.data.data.weekly_time_lapse;
-            this.minutesToday = response.data.data.daily_time_lapse;
+            this.minutesToday = 180; // EDIT HERE FOR DEMO
             this.mr_movingMinutes = response.data.data.monthly_time_lapse;
             this.mr_topActivity = response.data.data.monthly_top_activity;
             this.mr_totalDistance = response.data.data.monthly_distance;
