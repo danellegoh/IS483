@@ -1,8 +1,8 @@
-1,Ben,5/5/09,Male,152.03,62.16,94671761,Singaporean,ben@gmail.com,Clementi,Anglo-Chinese School,pass1,NULL,User,26/6/22 0:00,11/9/24 0:00,500,2,100,1,11/9/24 0:00
-2,Alice,5/8/09,Female,198.12,91.65,91507890,Singaporean,alice@gmail.com,Simei,Victoria School,pass2,NULL,User,12/1/22 0:00,11/9/24 0:00,150,2,120,1,12/9/24 0:00
-3,Elizabeth,20/12/09,Female,177.54,95.07,96682253,Singaporean,eliz@gmail.com,Woodlands,Woodlands Secondary School,pass3,1,User,12/5/22 0:00,11/9/24 0:00,1000,3,150,1,13/9/24 0:00
-4,Felicia,25/9/10,Female,189.49,75.46,96956301,Singaporean,fel@gmail.com,Bras Basah,Raffles Institution,pass4,NULL,User,26/6/22 0:00,11/9/24 0:00,500,2,200,1,14/9/24 0:00
-5,Dan,15/3/04,Male,183.15,51.11,92847561,Singaporean,dan@gmail.com,Tanjong Pagar,Tampines Secondary School,pass5,NULL,User,12/1/22 0:00,11/9/24 0:00,100,3,150,2,15/9/24 0:00
-6,Bobby,6/10/09,Male,0,0,98058502,Singaporean,bobby@gmail.com,Simei,Victoria School,testpass,NULL,User,26/6/22 0:00,11/9/24 0:00,0,0,0,0,16/9/24 0:00
-7,Admin,6/10/09,Male,0,0,91122334,Singaporean,admin@gmail.com,Bedok,Dunman High School,admin123,NULL,Admin,12/1/22 0:00,11/9/24 0:00,0,0,0,0,17/9/24 0:00
-8,Bobby,6/10/09,Male,0,0,98058502,Singaporean,bobby2@gmail.com,Simei,Victoria School,testpass,NULL,User,26/6/22 0:00,11/9/24 0:00,260,1,150,1,18/9/24 0:00
+1,Ben,5/5/09,Male,152.03,62.16,94671761,Singaporean,ben@gmail.com,Clementi,Anglo-Chinese School,pass1,NULL,User,2022-06-26 00:00,2024-09-11 00:00,500,2,100,1,2024-09-11 00:00
+2,Alice,5/8/09,Female,198.12,91.65,91507890,Singaporean,alice@gmail.com,Simei,Victoria School,pass2,NULL,User,2022-01-12 00:00,2024-09-11 00:00,150,2,120,1,2024-09-12 00:00
+3,Elizabeth,20/12/09,Female,177.54,95.07,96682253,Singaporean,eliz@gmail.com,Woodlands,Woodlands Secondary School,pass3,1,User,2022-05-12 00:00,2024-09-11 00:00,1000,3,150,1,2024-09-13 00:00
+4,Felicia,25/9/10,Female,189.49,75.46,96956301,Singaporean,fel@gmail.com,Bras Basah,Raffles Institution,pass4,NULL,User,2022-06-26 00:00,2024-09-11 00:00,500,2,200,1,2024-09-14 00:00
+5,Dan,15/3/04,Male,183.15,51.11,92847561,Singaporean,dan@gmail.com,Tanjong Pagar,Tampines Secondary School,pass5,NULL,User,2022-01-12 00:00,2024-09-11 00:00,100,3,150,2,2024-09-15 00:00
+6,Bobby,6/10/09,Male,0,0,98058502,Singaporean,bobby@gmail.com,Simei,Victoria School,testpass,NULL,User,2022-06-26 00:00,2024-09-11 00:00,0,0,0,0,2024-09-16 00:00
+7,Admin,6/10/09,Male,0,0,91122334,Singaporean,admin@gmail.com,Bedok,Dunman High School,admin123,NULL,Admin,2022-01-12 00:00,2024-09-11 00:00,0,0,0,0,2024-09-17 00:00
+8,Bobby,6/10/09,Male,160,50,98058502,Singaporean,bobby2@gmail.com,Simei,Victoria School,testpass,NULL,User,2022-06-26 00:00,2024-09-11 00:00,260,1,150,1,2024-09-18 00:00

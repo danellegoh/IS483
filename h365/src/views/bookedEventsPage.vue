@@ -263,7 +263,7 @@ export default
                     case 'Step Up Challenge':
                         return require('../assets/icons/events/event5.png');
                     default:
-                        return require('../assets/icons/events/event1.png');
+                        return require('../assets/icons/events/event5.png');
                 }
             },
             isEmpty(eventsData) {
