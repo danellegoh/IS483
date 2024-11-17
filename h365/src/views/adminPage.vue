@@ -76,7 +76,7 @@
                         <tr v-for="participant in participants[event.event_id]" :key="participant.user_event_id">
                             <td>{{ participant.name }}</td>
                             <td>{{ participant.contact_details }}</td>
-                            <td>{{ participant.completed }}</td>
+                            <!-- <td>{{ participant.completed }}</td> -->
 
                             <td>
                                 <n-checkbox

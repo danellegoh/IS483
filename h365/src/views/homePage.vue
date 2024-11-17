@@ -464,8 +464,9 @@ export default {
     async mounted() {
         try {
             this.fetchUserData();
+            this.fetchRecommendedEvents();
             this.getPreviousMonth();
-            await this.syncNow();
+            // await this.syncNow();
             await this.checkForPopup();
             this.fetchUserData(); // update reflected healthcoins
         } catch (error) {
