@@ -381,9 +381,9 @@ export default {
 
             this.currentWeekly = response.data.data.weekly_time_lapse;
             this.minutesToday = 180; // EDIT HERE FOR DEMO
-            this.mr_movingMinutes = response.data.data.monthly_time_lapse;
+            this.mr_movingMinutes = 634; // EDIT HERE FOR DEMO
             this.mr_topActivity = response.data.data.monthly_top_activity;
-            this.mr_totalDistance = response.data.data.monthly_distance;
+            this.mr_totalDistance = 97; // EDIT HERE FOR DEMO
             this.mr_allActivitites = response.data.data.activities_in_month;
 
             await this.checkForPopup();
@@ -441,6 +441,8 @@ export default {
                 console.log(userResponse);
 
                 this.showPopup = false;
+                await this.syncNow();
+                this.fetchUserData();
             } catch (error) {
                 console.log("error in updating goal:", error);
             }
