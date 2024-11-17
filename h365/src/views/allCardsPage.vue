@@ -1,6 +1,7 @@
 <template>
     <div class="stickyHeader">
         <div class="pageHeader">
+            <i class="uil uil-angle-left" @click="goBack"></i>
             <p> Collection Overview </p>
         </div>
     </div>
@@ -115,6 +116,10 @@ export default {
 
         goTo(routeName) {
             this.$router.push({ name: routeName });
+        },
+
+        goBack() {
+            this.$router.go(-1);
         },
     },
 
