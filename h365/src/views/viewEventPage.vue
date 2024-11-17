@@ -1,6 +1,6 @@
 <template>
     <div class="pageContainer">
-        <div class="pageHeader">
+        <div class="pageHeader stickyHeader">
             <i class="uil uil-angle-left" @click="goBack"></i>
             <p>Event details</p>
         </div>
@@ -330,6 +330,11 @@ export default {
 
 .pageHeader {
     background-color: var(--yellow);
+}
+
+.stickyHeader {
+    align-items: center;
+    justify-content: center;
 }
 
 .eventDetails {
